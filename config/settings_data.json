@@ -107,8 +107,8 @@
     "badge_corner_radius": 40,
     "sale_badge_color_scheme": "accent-2",
     "sold_out_badge_color_scheme": "inverse",
-    "brand_headline": "",
-    "brand_description": "<p></p>",
+    "brand_headline": "Cartel Lash Supply",
+    "brand_description": "<p>Pro-grade lash & brow supplies for certified artists — curated in Vancouver, shipped across Canada.</p>",
     "brand_image_width": 100,
     "social_facebook_link": "",
     "social_instagram_link": "",
@@ -157,6 +157,17 @@
       },
       "background-2": {
         "settings": {
+          "background": "#ECE2D4",
+          "background_gradient": "",
+          "text": "#3A2226",
+          "button": "#4A1224",
+          "button_label": "#FAF6F0",
+          "secondary_button_label": "#4A1224",
+          "shadow": "#3A2226"
+        }
+      },
+      "inverse": {
+        "settings": {
           "background": "#4A1224",
           "background_gradient": "",
           "text": "#FAF6F0",
@@ -166,36 +177,25 @@
           "shadow": "#121212"
         }
       },
-      "inverse": {
-        "settings": {
-          "background": "#242833",
-          "background_gradient": "",
-          "text": "#ffffff",
-          "button": "#ffffff",
-          "button_label": "#000000",
-          "secondary_button_label": "#ffffff",
-          "shadow": "#121212"
-        }
-      },
       "accent-1": {
         "settings": {
-          "background": "#121212",
+          "background": "#7C1B40",
           "background_gradient": "",
-          "text": "#ffffff",
-          "button": "#ffffff",
-          "button_label": "#121212",
-          "secondary_button_label": "#ffffff",
+          "text": "#FAF6F0",
+          "button": "#FAF6F0",
+          "button_label": "#7C1B40",
+          "secondary_button_label": "#FAF6F0",
           "shadow": "#121212"
         }
       },
       "accent-2": {
         "settings": {
-          "background": "#334fb4",
+          "background": "#D2B48C",
           "background_gradient": "",
-          "text": "#ffffff",
-          "button": "#ffffff",
-          "button_label": "#334fb4",
-          "secondary_button_label": "#ffffff",
+          "text": "#3A2226",
+          "button": "#4A1224",
+          "button_label": "#FAF6F0",
+          "secondary_button_label": "#3A2226",
           "shadow": "#121212"
         }
       }

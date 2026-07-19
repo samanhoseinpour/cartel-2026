@@ -1,5 +1,5 @@
 /* ============================================================
-   Cartel Lash Supply — brand layer over Dawn
+   Cartel Lash Supply — brand layer over Dawn (batch 2)
    Load AFTER Dawn's base.css (stylesheet_tag in theme.liquid head)
    ============================================================ */
 :root{
@@ -7,6 +7,7 @@
   --cartel-plum: 124,27,64;   /* #7C1B40 */
   --cartel-bronze: 210,180,140;/* #D2B48C */
   --cartel-cream: 250,246,240;/* #FAF6F0 */
+  --cartel-greige: 236,226,212;/* #ece2d4 */
   --cartel-ink: 58,34,38;     /* #3a2226 */
 }
 /* Type — Hanken Grotesk everywhere (works even if the theme font picker lacks it) */
@@ -28,6 +29,75 @@ h1,.h0,.h1{ font-weight:900; letter-spacing:-.04em; }
 .card, .card__inner, .card__media{ border-radius:24px; overflow:hidden; }
 /* Badges — pill */
 .badge{ border-radius:100px; font-weight:700; }
+
+/* ===== Announcement bar (scheme: inverse = dark wine) ===== */
+.utility-bar{ border-bottom:0; }
+.announcement-bar__message{ font-weight:600; font-size:1.3rem; letter-spacing:.03em; padding:1rem 0; }
+.utility-bar .slider-button{ color:rgba(var(--cartel-cream),.75); }
+.utility-bar .slider-button:hover{ color:rgb(var(--cartel-cream)); }
+
+/* ===== Header — cream bar + pill nav ===== */
+.header-wrapper{ border-bottom:0; }
+.header{ padding-top:1.2rem; padding-bottom:1.2rem; }
+.shopify-section-header-sticky.animate .header-wrapper,
+.shopify-section-header-sticky .header-wrapper{
+  box-shadow:0 14px 34px -24px rgba(var(--cartel-ink),.35);
+}
+/* the pill container around top-level links */
+.header__inline-menu > ul.list-menu--inline{
+  display:inline-flex; align-items:center; gap:.3rem;
+  padding:.5rem; border:1px solid rgba(var(--cartel-ink),.14);
+  border-radius:100px; background:rgba(255,255,255,.55);
+}
+.header__inline-menu .header__menu-item{
+  border-radius:100px; padding:.9rem 1.7rem;
+  font-weight:600; font-size:1.4rem; color:rgb(var(--cartel-ink));
+  transition:background .18s ease, color .18s ease;
+}
+.header__inline-menu .header__menu-item:hover{ background:rgba(var(--cartel-ink),.07); }
+.header__inline-menu .header__menu-item span,
+.header__inline-menu .header__menu-item:hover span{ text-decoration:none !important; text-underline-offset:0; }
+.header__inline-menu span.header__active-menu-item{
+  text-decoration:none !important; color:rgb(var(--cartel-bord)); font-weight:800;
+}
+.header__inline-menu details[open] > .header__menu-item{
+  background:rgb(var(--cartel-bord)); color:rgb(var(--cartel-cream));
+}
+/* dropdown + mega panels */
+.header__submenu.list-menu{ border-radius:16px; border:1px solid rgba(var(--cartel-ink),.1);
+  box-shadow:0 24px 50px -30px rgba(var(--cartel-ink),.45); }
+.header__submenu .header__menu-item:hover{ color:rgb(var(--cartel-plum)); text-decoration:none; }
+.mega-menu__content{
+  border-bottom:1px solid rgba(var(--cartel-ink),.08);
+  border-radius:0 0 28px 28px;
+  box-shadow:0 34px 60px -40px rgba(var(--cartel-ink),.4);
+}
+.mega-menu__link--level-2{
+  font-size:1.15rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase;
+  color:rgb(var(--cartel-plum));
+}
+.mega-menu__link{ font-size:1.4rem; }
+.mega-menu__link:hover{ color:rgb(var(--cartel-bord)); text-decoration:none; }
+/* header icons — round hover chips */
+.header__icon{ border-radius:100px; transition:background .18s ease; }
+.header__icon:hover{ background:rgba(var(--cartel-ink),.07); }
+.header__icon:hover .icon{ transform:none; }
+
+/* ===== Footer (scheme: inverse = dark wine) ===== */
+.footer{ border-top:0; }
+.footer-block__heading{
+  font-size:1.15rem !important; font-weight:700; letter-spacing:.16em; text-transform:uppercase;
+  color:rgb(var(--cartel-bronze));
+}
+.footer-block__list-item .link{ opacity:.85; }
+.footer-block__list-item .link:hover{ color:rgb(var(--cartel-bronze)); opacity:1; text-decoration:none; }
+.footer-block--newsletter .footer-block__heading{ font-size:1.8rem !important; letter-spacing:-.01em; text-transform:none; color:rgb(var(--cartel-cream)); }
+.footer__field .field__input{ border-radius:100px; }
+.footer .list-social__link:hover{ color:rgb(var(--cartel-bronze)); }
+.footer__content-bottom{ border-top:1px solid rgba(var(--cartel-cream),.12); }
+.footer__copyright{ opacity:.65; }
+.footer .list-payment__item svg{ border-radius:4px; }
+
 /* ===== Thuya login gate ===== */
 .cartel-gate{ display:flex; flex-direction:column; gap:1rem; }
 .cartel-gate__label{
