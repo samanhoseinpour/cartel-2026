@@ -1,12 +1,3 @@
-/*
- * ------------------------------------------------------------
- * IMPORTANT: The contents of this file are auto-generated.
- *
- * This file may be updated by the Shopify admin theme editor
- * or related systems. Please exercise caution as any changes
- * made to this file may be overwritten.
- * ------------------------------------------------------------
- */
 {
   "name": "t:sections.header.name",
   "type": "header",
@@ -14,22 +5,38 @@
     "announcement-bar": {
       "type": "announcement-bar",
       "blocks": {
-        "announcement-bar-0": {
+        "ann-thuya": {
           "type": "announcement",
           "settings": {
-            "text": "Welcome to our store",
+            "text": "Log in to unlock pricing on Thuya professional products",
+            "link": "/account/login"
+          }
+        },
+        "ann-ship": {
+          "type": "announcement",
+          "settings": {
+            "text": "Free shipping over $150 across Canada",
+            "link": ""
+          }
+        },
+        "ann-pickup": {
+          "type": "announcement",
+          "settings": {
+            "text": "Local pick-up — West Vancouver & Burnaby",
             "link": ""
           }
         }
       },
       "block_order": [
-        "announcement-bar-0"
+        "ann-thuya",
+        "ann-ship",
+        "ann-pickup"
       ],
       "settings": {
-        "auto_rotate": false,
+        "auto_rotate": true,
         "change_slides_speed": 5,
-        "color_scheme": "background-1",
-        "show_line_separator": true,
+        "color_scheme": "inverse",
+        "show_line_separator": false,
         "show_social": false,
         "enable_country_selector": false,
         "enable_language_selector": false
@@ -41,16 +48,16 @@
         "logo_position": "middle-left",
         "mobile_logo_position": "center",
         "menu": "main-menu",
-        "menu_type_desktop": "dropdown",
-        "sticky_header_type": "on-scroll-up",
-        "show_line_separator": true,
+        "menu_type_desktop": "mega",
+        "sticky_header_type": "always",
+        "show_line_separator": false,
         "color_scheme": "background-1",
         "menu_color_scheme": "background-1",
-        "enable_country_selector": true,
-        "enable_language_selector": true,
+        "enable_country_selector": false,
+        "enable_language_selector": false,
         "margin_bottom": 0,
-        "padding_top": 20,
-        "padding_bottom": 20
+        "padding_top": 12,
+        "padding_bottom": 12
       }
     }
   },
