@@ -1,5 +1,6 @@
 {% comment %}
   Renders a list of product's price (regular, sale)
+  CARTEL EDIT: Thuya products hide their price for logged-out visitors (login gate).
 
   Accepts:
   - product: {Object} Product Liquid object (optional)
@@ -13,6 +14,11 @@
   {% render 'price', product: product %}
 {% endcomment %}
 {%- liquid
+  assign cartel_locked = false
+  if product.vendor == 'Thuya' and customer == nil
+    assign cartel_locked = true
+  endif
+
   if use_variant
     assign target = product.selected_or_first_available_variant
   elsif placeholder
@@ -40,6 +46,9 @@
   endif
 -%}
 
+{%- if cartel_locked -%}
+  {%- render 'cartel-gate-cta' -%}
+{%- else -%}
 {%- unless target == null and placeholder == null -%}
   <div
     class="
@@ -123,3 +132,4 @@
     {%- endif -%}
   </div>
 {% endunless %}
+{%- endif -%}

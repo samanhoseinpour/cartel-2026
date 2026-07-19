@@ -1,0 +1,14 @@
+{% comment %}
+  Cartel: Thuya login-gate UI.
+  Usage: {% render 'cartel-gate-cta', gate_style: 'product' %}  (or 'card' / blank)
+{% endcomment %}
+<div class="cartel-gate cartel-gate--{{ gate_style | default: 'card' }}">
+  <span class="cartel-gate__label">
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="5" y="11" width="14" height="9" rx="2.5" fill="currentColor"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="2.2" fill="none"></path></svg>
+    Log in to see price
+  </span>
+  {%- if gate_style == 'product' -%}
+    <a href="{{ routes.account_login_url }}" class="button button--full-width cartel-gate__btn">Log in to view pricing</a>
+    <a href="{{ routes.account_register_url }}" class="link underlined-link cartel-gate__note">New here? Create a free account — it takes a minute.</a>
+  {%- endif -%}
+</div>
