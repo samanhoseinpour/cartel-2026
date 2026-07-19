@@ -112,3 +112,11 @@ h1,.h0,.h1{ font-weight:900; letter-spacing:-.04em; }
   border-radius:100px !important;
 }
 .cartel-gate__note{ font-size:1.3rem; color:rgb(var(--cartel-ink)); }
+
+/* ===== Batch 3: pill inputs + form polish ===== */
+.field__input, .select__select, .customer .field input, .search__input{
+  border-radius:100px !important;
+}
+.newsletter-form__field-wrapper .field__input{ padding-left:2rem; }
+textarea.text-area, .cart__note textarea{ border-radius:24px !important; }
+.quantity{ border-radius:100px; overflow:hidden; }
