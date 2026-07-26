@@ -12,6 +12,10 @@
   Usage:
   {% render 'price', product: product %}
 {% endcomment %}
+{%- if product.vendor == 'Thuya' and customer == nil -%}
+  {%- comment -%} Cartel: Thuya pricing is login-gated for guests {%- endcomment -%}
+  {%- render 'cartel-gate-cta' -%}
+{%- else -%}
 {%- liquid
   if use_variant
     assign target = product.selected_or_first_available_variant
@@ -123,3 +127,4 @@
     {%- endif -%}
   </div>
 {% endunless %}
+{%- endif -%}
