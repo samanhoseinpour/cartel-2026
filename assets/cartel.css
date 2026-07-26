@@ -32,7 +32,9 @@ h1,.h0,.h1{ font-weight:900; letter-spacing:-.04em; }
 
 /* ===== Announcement bar (scheme: inverse = dark wine) ===== */
 .utility-bar{ border-bottom:0; }
-.announcement-bar__message{ font-weight:600; font-size:1.3rem; letter-spacing:.03em; padding:1rem 0; }
+.announcement-bar__message{
+  font-weight:600; font-size:1.15rem; letter-spacing:.16em; text-transform:uppercase; padding:1.15rem 0;
+}
 .utility-bar .slider-button{ color:rgba(var(--cartel-cream),.75); }
 .utility-bar .slider-button:hover{ color:rgb(var(--cartel-cream)); }
 
