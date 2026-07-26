@@ -39,6 +39,11 @@
     if ratio == 0 or ratio == null
       assign ratio = 1
     endif
+    # Cartel: Thuya login gate — price shows a lock (via price.liquid), quick-add becomes a login link
+    assign cartel_gated = false
+    if card_product.vendor == 'Thuya' and customer == nil
+      assign cartel_gated = true
+    endif
   -%}
 
   <product-component view-event-payload="{{ card_product | standard_event_data: 'view', context: product_view_context | escape }}">
@@ -207,7 +212,7 @@
               {%- endif -%}
 
               {% render 'price', product: card_product, price_class: '', show_compare_at_price: true %}
-              {%- if card_product.quantity_price_breaks_configured? -%}
+              {%- if card_product.quantity_price_breaks_configured? and cartel_gated == false -%}
                 {% if card_product.variants_count == 1 and quick_add == 'bulk' %}
                   {% liquid
                     assign quantity_rule = card_product.selected_or_first_available_variant.quantity_rule
@@ -291,7 +296,11 @@
             </div>
           </div>
           {% assign product_form_id = 'quick-add-' | append: section_id | append: card_product.id %}
-          {% if quick_add == 'standard' %}
+          {% if cartel_gated %}
+            {% if quick_add == 'standard' or quick_add == 'bulk' %}
+              {% render 'cartel-gate-cta', gate_style: 'quick-add' %}
+            {% endif %}
+          {% elsif quick_add == 'standard' %}
             <div class="quick-add no-js-hidden">
               {%- liquid
                 assign qty_rules = false
