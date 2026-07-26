@@ -96,8 +96,8 @@ h1,.h0,.h1{ font-weight:900; letter-spacing:-.04em; }
   font-size:1.15rem !important; font-weight:700; letter-spacing:.16em; text-transform:uppercase;
   color:rgb(var(--cartel-bronze));
 }
-.footer-block__list-item .link{ opacity:.85; text-decoration:none; }
-.footer-block__list-item .link:hover{ color:rgb(var(--cartel-bronze)); opacity:1; text-decoration:none; }
+.footer .footer-block__details-content .link{ opacity:.85; text-decoration:none; }
+.footer .footer-block__details-content .link:hover{ color:rgb(var(--cartel-bronze)); opacity:1; text-decoration:none; }
 .footer-block--newsletter .footer-block__heading{ font-size:1.8rem !important; letter-spacing:-.01em; text-transform:none; color:rgb(var(--cartel-cream)); }
 .footer__field .field__input{ border-radius:100px; }
 .footer .list-social__link:hover{ color:rgb(var(--cartel-bronze)); }
