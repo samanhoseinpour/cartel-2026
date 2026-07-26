@@ -1,0 +1,125 @@
+{% comment %}
+  Cartel category spotlight — 1:1 with the approved prototype (.brandspot in Home.dc.html).
+  The numbered index list drives the dark preview panel (hover on desktop, tap on mobile).
+  Panels are pre-rendered and stacked; JS toggles [hidden].
+{% endcomment %}
+<cl-spotlight class="cl">
+  <section class="sec wrap" style="padding-top:{{ section.settings.pad_top }}px;padding-bottom:{{ section.settings.pad_bottom }}px">
+    <div class="sec-head">
+      <div class="sh-l">
+        {%- if section.settings.kicker != blank -%}
+          <span class="kick">{{ section.settings.kicker }}</span>
+        {%- endif -%}
+        {%- if section.settings.title != blank -%}<h2 class="stitle">{{ section.settings.title }}</h2>{%- endif -%}
+      </div>
+      {%- if section.settings.view_all_label != blank -%}
+        <a class="viewlink deskonly" href="{{ section.settings.view_all_link | default: '/collections/all' }}">
+          {{- section.settings.view_all_label -}}
+          <svg class="ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+        </a>
+      {%- endif -%}
+    </div>
+    <div class="brandspot">
+      <div class="bp-stack">
+        {%- for block in section.blocks -%}
+          {%- liquid
+            assign num = forloop.index | prepend: '0' | slice: -2, 2
+            assign initial = block.settings.name | slice: 0, 1
+          -%}
+          <div
+            class="bp"
+            data-panel="{{ forloop.index0 }}"
+            {% unless forloop.first %}
+              hidden
+            {% endunless %}
+            {{ block.shopify_attributes }}
+          >
+            <div class="bp-glow"></div>
+            <span class="bp-ghost">{{ initial }}</span>
+            <div class="bp-grid">
+              <div class="bp-info">
+                <span class="bp-kick">{{ section.settings.panel_kicker }} · {{ num }}</span>
+                <h3 class="bp-name">{{ block.settings.name }}</h3>
+                {%- if block.settings.blurb != blank -%}<p class="bp-blurb">{{ block.settings.blurb }}</p>{%- endif -%}
+                {%- if block.settings.chips != blank -%}
+                  <div class="bp-chips">
+                    {%- assign chips = block.settings.chips | split: ',' -%}
+                    {%- for chip in chips -%}<span class="bp-chip">{{ chip | strip }}</span>{%- endfor -%}
+                  </div>
+                {%- endif -%}
+                <a class="btn btn-bronze" href="{{ block.settings.link | default: '/collections/all' }}">
+                  <span>Shop {{ block.settings.name | downcase }}</span>
+                  <svg class="ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+                </a>
+              </div>
+              <div class="bp-visual">
+                {%- if block.settings.image != blank -%}
+                  {{
+                    block.settings.image
+                    | image_url: width: 1000
+                    | image_tag: widths: '420,640,1000', loading: 'lazy', alt: block.settings.name
+                  }}
+                {%- endif -%}
+              </div>
+            </div>
+          </div>
+        {%- endfor -%}
+      </div>
+      <div class="bindex">
+        {%- for block in section.blocks -%}
+          {%- assign num = forloop.index | prepend: '0' | slice: -2, 2 -%}
+          <button
+            class="brow{% if forloop.first %} on first{% endif %}"
+            type="button"
+            data-row="{{ forloop.index0 }}"
+          >
+            <span class="brow-n">{{ num }}</span>
+            <span class="brow-main">
+              <span class="brow-name">{{ block.settings.name }}</span>
+              <span class="brow-tag">{{ block.settings.tag }}</span>
+            </span>
+            <svg class="brow-arrow ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+          </button>
+        {%- endfor -%}
+      </div>
+    </div>
+  </section>
+</cl-spotlight>
+
+{% schema %}
+{
+  "name": "Cartel category spotlight",
+  "tag": "section",
+  "class": "cartel-section",
+  "max_blocks": 6,
+  "settings": [
+    { "type": "text", "id": "kicker", "label": "Kicker", "default": "Shop by specialty" },
+    { "type": "text", "id": "title", "label": "Heading", "default": "Supplies for every service" },
+    { "type": "text", "id": "panel_kicker", "label": "Panel kicker", "default": "Featured category" },
+    { "type": "text", "id": "view_all_label", "label": "\"View all\" label", "default": "Shop all supplies" },
+    { "type": "url", "id": "view_all_link", "label": "\"View all\" link" },
+    { "type": "range", "id": "pad_top", "min": 0, "max": 120, "step": 4, "unit": "px", "label": "Padding top", "default": 0 },
+    { "type": "range", "id": "pad_bottom", "min": 0, "max": 120, "step": 4, "unit": "px", "label": "Padding bottom", "default": 92 }
+  ],
+  "blocks": [
+    {
+      "type": "category",
+      "name": "Category",
+      "settings": [
+        { "type": "text", "id": "name", "label": "Name", "default": "Korean Lash Lift" },
+        { "type": "text", "id": "tag", "label": "Index subtitle", "default": "Lifting & fixing systems" },
+        { "type": "textarea", "id": "blurb", "label": "Blurb" },
+        { "type": "text", "id": "chips", "label": "Chips (comma separated)", "default": "Solutions, Rods & shields, Tools" },
+        { "type": "image_picker", "id": "image", "label": "Preview image" },
+        { "type": "url", "id": "link", "label": "Collection link" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Cartel category spotlight",
+      "blocks": [{ "type": "category" }, { "type": "category" }, { "type": "category" }, { "type": "category" }]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,88 @@
+{% comment %}
+  Cartel product carousel — 1:1 with the approved prototype (best sellers / kits & sets).
+  card_style: product = .card, kit = .kitcard
+{% endcomment %}
+{%- liquid
+  assign coll = collections[section.settings.collection]
+  assign limit = section.settings.count | default: 8
+  assign is_kit = false
+  if section.settings.card_style == 'kit'
+    assign is_kit = true
+  endif
+-%}
+<script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
+<cl-carousel class="cl">
+  <section class="sec" style="padding-top:{{ section.settings.pad_top }}px;padding-bottom:{{ section.settings.pad_bottom }}px">
+    <div class="wrap sec-head">
+      <div class="sh-l">
+        {%- if section.settings.kicker != blank -%}
+          <span class="kick">{{ section.settings.kicker }}</span>
+        {%- endif -%}
+        {%- if section.settings.title != blank -%}<h2 class="stitle">{{ section.settings.title }}</h2>{%- endif -%}
+      </div>
+      {%- if section.settings.view_all_label != blank -%}
+        <a class="viewlink deskonly" href="{{ section.settings.view_all_link | default: coll.url | default: '/collections/all' }}">
+          {{- section.settings.view_all_label -}}
+          <svg class="ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+        </a>
+      {%- else -%}
+        <div class="caro-nav deskonly">
+          <button class="caro-btn" type="button" data-caro-prev aria-label="Previous">
+            <svg class="ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg>
+          </button>
+          <button class="caro-btn" type="button" data-caro-next aria-label="Next">
+            <svg class="ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg>
+          </button>
+        </div>
+      {%- endif -%}
+    </div>
+    <div class="carousel{% if is_kit %} c-kits{% endif %}">
+      {%- if coll.products.size > 0 -%}
+        {%- for product in coll.products limit: limit -%}
+          {%- if is_kit -%}
+            {%- render 'cartel-card-kit', card_product: product -%}
+          {%- else -%}
+            {%- render 'cartel-card', card_product: product -%}
+          {%- endif -%}
+        {%- endfor -%}
+      {%- else -%}
+        {%- for i in (1..4) -%}
+          {%- if is_kit -%}
+            {%- render 'cartel-card-kit' -%}
+          {%- else -%}
+            {%- render 'cartel-card' -%}
+          {%- endif -%}
+        {%- endfor -%}
+      {%- endif -%}
+    </div>
+  </section>
+</cl-carousel>
+
+{% schema %}
+{
+  "name": "Cartel product row",
+  "tag": "section",
+  "class": "cartel-section",
+  "settings": [
+    { "type": "text", "id": "kicker", "label": "Kicker", "default": "Best sellers" },
+    { "type": "text", "id": "title", "label": "Heading", "default": "What pros reorder most" },
+    { "type": "collection", "id": "collection", "label": "Collection" },
+    { "type": "range", "id": "count", "min": 4, "max": 16, "step": 1, "label": "Products to show", "default": 8 },
+    {
+      "type": "select",
+      "id": "card_style",
+      "label": "Card style",
+      "options": [
+        { "value": "product", "label": "Product card" },
+        { "value": "kit", "label": "Kit / bundle card" }
+      ],
+      "default": "product"
+    },
+    { "type": "text", "id": "view_all_label", "label": "\"View all\" link label (replaces arrows)" },
+    { "type": "url", "id": "view_all_link", "label": "\"View all\" link" },
+    { "type": "range", "id": "pad_top", "min": 0, "max": 120, "step": 4, "unit": "px", "label": "Padding top", "default": 0 },
+    { "type": "range", "id": "pad_bottom", "min": 0, "max": 120, "step": 4, "unit": "px", "label": "Padding bottom", "default": 92 }
+  ],
+  "presets": [{ "name": "Cartel product row" }]
+}
+{% endschema %}

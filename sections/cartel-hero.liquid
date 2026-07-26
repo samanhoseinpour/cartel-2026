@@ -1,0 +1,145 @@
+{% comment %}
+  Cartel hero slideshow — 1:1 with the approved prototype (.herowrap in Home.dc.html).
+  Each slide = one block. Image OR video per slide; the video slide advances when it ends.
+{% endcomment %}
+<cl-hero class="cl">
+  <section class="herowrap">
+    <div class="hero-c ondark">
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign fit = block.settings.image_fit
+          assign has_video = false
+          if block.settings.video != blank
+            assign has_video = true
+          endif
+        -%}
+        <div class="hero-slide{% if forloop.first %} on{% endif %}" {{ block.shopify_attributes }}>
+          <div class="hero-media
+            {%- if has_video %} hero-media-vid{% endif -%}
+            {%- if fit == 'contain' %} hero-media-prod{% endif -%}
+            {%- if block.settings.image == blank and has_video == false %} hero-media--empty{% endif -%}
+          ">
+            {%- if has_video -%}
+              {{
+                block.settings.video
+                | video_tag: image_size: '1600x', class: 'hero-photo', autoplay: false, loop: false, muted: true, controls: false, preload: 'metadata'
+              }}
+            {%- elsif block.settings.image != blank -%}
+              {{
+                block.settings.image
+                | image_url: width: 2400
+                | image_tag:
+                  class: 'hero-photo',
+                  widths: '760,1100,1600,2000,2400',
+                  sizes: '100vw',
+                  loading: 'eager',
+                  fetchpriority: 'high',
+                  alt: block.settings.image.alt
+              }}
+            {%- endif -%}
+          </div>
+          <div class="hero-ov"></div>
+          <div class="hero-txt">
+            {%- if block.settings.eyebrow != blank -%}
+              <span class="hero-eyebrow"><span class="dot"></span>{{ block.settings.eyebrow }}</span>
+            {%- endif -%}
+            {%- if block.settings.heading != blank -%}
+              <h1 class="h-hero">
+                {{- block.settings.heading -}}
+                {%- if block.settings.heading_accent != blank -%}
+                  <span class="hero-accent">{{ block.settings.heading_accent }}</span>
+                {%- endif -%}
+              </h1>
+            {%- endif -%}
+            {%- if block.settings.sub != blank -%}<p class="hero-sub">{{ block.settings.sub }}</p>{%- endif -%}
+            <div class="hero-cta">
+              {%- if block.settings.btn1_label != blank -%}
+                <a class="btn btn-bronze" href="{{ block.settings.btn1_link | default: '/collections/all' }}">
+                  {{- block.settings.btn1_label -}}
+                </a>
+              {%- endif -%}
+              {%- if block.settings.btn2_label != blank -%}
+                <a class="btn btn-ghost-l" href="{{ block.settings.btn2_link | default: '/collections/all' }}">
+                  {{- block.settings.btn2_label -}}
+                  <svg class="ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+                </a>
+              {%- endif -%}
+            </div>
+          </div>
+        </div>
+      {%- endfor -%}
+      {%- if section.blocks.size > 1 -%}
+        <div class="hero-dots">
+          {%- for block in section.blocks -%}
+            <button
+              class="hero-dot{% if forloop.first %} on{% endif %}"
+              type="button"
+              data-hero-dot
+              aria-label="Show slide {{ forloop.index }}"
+            >
+              <span class="hero-fill"></span>
+            </button>
+          {%- endfor -%}
+          <button class="hero-play" type="button" data-hero-play aria-label="Pause slideshow">
+            <svg class="ic-xs" data-icon-pause viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="7" y="5" width="3.4" height="14" rx="1.2"></rect><rect x="13.6" y="5" width="3.4" height="14" rx="1.2"></rect></svg>
+            <svg class="ic-xs" data-icon-play viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" hidden><path d="M8 5.5l11 6.5-11 6.5z"></path></svg>
+          </button>
+        </div>
+      {%- endif -%}
+    </div>
+  </section>
+</cl-hero>
+
+{% schema %}
+{
+  "name": "Cartel hero",
+  "tag": "section",
+  "class": "cartel-section",
+  "max_blocks": 6,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Each slide holds an image or a video. Upload web-optimised MP4s (faststart) so the video slide starts instantly."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "slide",
+      "name": "Slide",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Image" },
+        { "type": "video", "id": "video", "label": "Video (overrides image)" },
+        {
+          "type": "select",
+          "id": "image_fit",
+          "label": "Media fit",
+          "options": [
+            { "value": "cover", "label": "Fill the frame (photos)" },
+            { "value": "contain", "label": "Show the whole product (packshots)" }
+          ],
+          "default": "cover"
+        },
+        { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "New season · 2026" },
+        { "type": "text", "id": "heading", "label": "Heading", "default": "Stock your kit like a " },
+        { "type": "text", "id": "heading_accent", "label": "Heading accent (bronze)", "default": "pro." },
+        {
+          "type": "textarea",
+          "id": "sub",
+          "label": "Subheading",
+          "default": "Pro-grade adhesives, Korean lash lift, brow lamination and tints, curated for Canadian artists, shipped fast and 100% authentic."
+        },
+        { "type": "text", "id": "btn1_label", "label": "Primary button", "default": "Shop the collection" },
+        { "type": "url", "id": "btn1_link", "label": "Primary link" },
+        { "type": "text", "id": "btn2_label", "label": "Secondary button", "default": "Explore lash lift" },
+        { "type": "url", "id": "btn2_link", "label": "Secondary link" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Cartel hero",
+      "blocks": [{ "type": "slide" }, { "type": "slide" }, { "type": "slide" }, { "type": "slide" }]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,79 @@
+{% comment %}
+  Cartel product card — 1:1 with the approved prototype (.card in Home.dc.html).
+  Accepts: card_product (product object)
+  Thuya = login-gated pricing (brand match only, no pro tier). Everything else is public.
+{% endcomment %}
+{%- liquid
+  assign p = card_product
+  assign gated = false
+  if p.vendor == 'Thuya' and customer == nil
+    assign gated = true
+  endif
+  assign v = p.selected_or_first_available_variant
+  assign tag_label = ''
+  assign tag_class = ''
+  if p.compare_at_price > p.price
+    assign saved = p.compare_at_price | minus: p.price | money_without_trailing_zeros
+    assign tag_label = 'Save ' | append: saved
+  elsif p.tags contains 'best-seller' or p.tags contains 'Best seller'
+    assign tag_label = 'Best seller'
+  elsif p.tags contains 'new' or p.tags contains 'New'
+    assign tag_label = 'New'
+  endif
+  assign form_id = 'cartel-add-' | append: section.id | append: '-' | append: p.id
+-%}
+<div class="card">
+  <div class="card-img">
+    {%- if tag_label != blank -%}<span class="ptag {{ tag_class }}">{{ tag_label }}</span>{%- endif -%}
+    <a class="imglink" href="{{ p.url }}" aria-label="{{ p.title | escape }}">
+      {%- if p.featured_media -%}
+        {{
+          p.featured_media
+          | image_url: width: 800
+          | image_tag: class: 'card-photo', widths: '300,450,600,800', loading: 'lazy', alt: p.title
+        }}
+      {%- else -%}
+        {{ 'product-1' | placeholder_svg_tag: 'card-photo' }}
+      {%- endif -%}
+    </a>
+  </div>
+  {%- if p.vendor != blank -%}<span class="pbrand">{{ p.vendor }}</span>{%- endif -%}
+  <a class="plink" href="{{ p.url }}"><h3 class="pname">{{ p.title | default: 'Product name' | escape }}</h3></a>
+  {%- unless v.title == 'Default Title' or v.title == blank -%}
+    <span class="pvar">{{ v.title }}</span>
+  {%- endunless -%}
+  <div class="prow">
+    {%- if gated -%}
+      <span class="plock">
+        <svg class="ic-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2.5" fill="currentColor"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="2.2" fill="none"></path></svg>
+        Log in to see price
+      </span>
+    {%- elsif p == blank -%}
+      <span class="pprice">$00.00</span>
+    {%- elsif p.price == 0 and p.available -%}
+      <span class="pprice">Price on request</span>
+    {%- else -%}
+      <span class="pprice">{{ p.price | money }}</span>
+    {%- endif -%}
+  </div>
+  {%- if gated -%}
+    <a class="btn btn-out btn-sm w100" href="{{ routes.account_login_url }}">Log in to view</a>
+  {%- elsif p == blank -%}
+    <span class="btn btn-fill btn-sm w100" aria-disabled="true">Add to bag</span>
+  {%- elsif p.available == false -%}
+    <span class="btn btn-out btn-sm w100" aria-disabled="true">Sold out</span>
+  {%- elsif p.price == 0 -%}
+    <a class="btn btn-out btn-sm w100" href="{{ pages.contact.url | default: '/pages/contact' }}">Enquire about pricing</a>
+  {%- elsif p.variants_count > 1 -%}
+    <a class="btn btn-fill btn-sm w100" href="{{ p.url }}">Choose options</a>
+  {%- else -%}
+    <product-form data-section-id="{{ section.id }}">
+      {%- form 'product', p, id: form_id, class: 'w100', novalidate: 'novalidate', data-type: 'add-to-cart-form' -%}
+        <input type="hidden" name="id" value="{{ v.id }}">
+        <button type="submit" name="add" class="btn btn-fill btn-sm w100">
+          <span>Add to bag</span>
+        </button>
+      {%- endform -%}
+    </product-form>
+  {%- endif -%}
+</div>

@@ -1,0 +1,75 @@
+{% comment %}
+  Cartel free-resources row — 1:1 with the approved prototype (.resgrid in Home.dc.html).
+{% endcomment %}
+<div class="cl">
+  <section class="sec wrap" style="padding-top:{{ section.settings.pad_top }}px;padding-bottom:{{ section.settings.pad_bottom }}px">
+    <div class="sec-head">
+      <div class="sh-l">
+        {%- if section.settings.kicker != blank -%}
+          <span class="kick">{{ section.settings.kicker }}</span>
+        {%- endif -%}
+        {%- if section.settings.title != blank -%}<h2 class="stitle">{{ section.settings.title }}</h2>{%- endif -%}
+      </div>
+      {%- if section.settings.view_all_label != blank -%}
+        <a class="viewlink deskonly" href="{{ section.settings.view_all_link | default: '/pages/free-resources' }}">
+          {{- section.settings.view_all_label -}}
+          <svg class="ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+        </a>
+      {%- endif -%}
+    </div>
+    <div class="resgrid">
+      {%- for block in section.blocks -%}
+        <a class="rescard" href="{{ block.settings.link | default: '/pages/free-resources' }}" {{ block.shopify_attributes }}>
+          <div class="res-img">
+            {%- if block.settings.tag != blank -%}<span class="res-tag">{{ block.settings.tag }}</span>{%- endif -%}
+            {%- if block.settings.image != blank -%}
+              {{
+                block.settings.image
+                | image_url: width: 900
+                | image_tag: widths: '340,520,700,900', loading: 'lazy', alt: block.settings.title
+              }}
+            {%- endif -%}
+          </div>
+          <h3 class="res-t">{{ block.settings.title }}</h3>
+          <span class="res-cta">
+            {{- block.settings.cta | default: 'Get the guide' -}}
+            <svg class="ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+          </span>
+        </a>
+      {%- endfor -%}
+    </div>
+  </section>
+</div>
+
+{% schema %}
+{
+  "name": "Cartel resources",
+  "tag": "section",
+  "class": "cartel-section",
+  "max_blocks": 3,
+  "settings": [
+    { "type": "text", "id": "kicker", "label": "Kicker", "default": "Free resources" },
+    { "type": "text", "id": "title", "label": "Heading", "default": "Free guides & tutorials" },
+    { "type": "text", "id": "view_all_label", "label": "\"View all\" label", "default": "Browse all resources" },
+    { "type": "url", "id": "view_all_link", "label": "\"View all\" link" },
+    { "type": "range", "id": "pad_top", "min": 0, "max": 120, "step": 4, "unit": "px", "label": "Padding top", "default": 0 },
+    { "type": "range", "id": "pad_bottom", "min": 0, "max": 120, "step": 4, "unit": "px", "label": "Padding bottom", "default": 92 }
+  ],
+  "blocks": [
+    {
+      "type": "resource",
+      "name": "Resource",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Image" },
+        { "type": "text", "id": "tag", "label": "Tag", "default": "Guide" },
+        { "type": "text", "id": "title", "label": "Title", "default": "The Korean lash lift cheat sheet" },
+        { "type": "text", "id": "cta", "label": "Link label", "default": "Get the guide" },
+        { "type": "url", "id": "link", "label": "Link" }
+      ]
+    }
+  ],
+  "presets": [
+    { "name": "Cartel resources", "blocks": [{ "type": "resource" }, { "type": "resource" }, { "type": "resource" }] }
+  ]
+}
+{% endschema %}

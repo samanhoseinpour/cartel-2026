@@ -280,6 +280,9 @@
 
     {% render 'cartel-fonts' %}
     {{ 'base.css' | asset_url | stylesheet_tag }}
+    {{ 'cartel.css' | asset_url | stylesheet_tag }}
+    {{ 'cartel-home.css' | asset_url | stylesheet_tag }}
+    <script src="{{ 'cartel-home.js' | asset_url }}" defer="defer"></script>
     <link rel="stylesheet" href="{{ 'component-cart-items.css' | asset_url }}" media="print" onload="this.media='all'">
 
     {%- if settings.cart_type == 'drawer' -%}

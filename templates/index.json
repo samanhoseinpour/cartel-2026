@@ -1,83 +1,338 @@
-/*
- * ------------------------------------------------------------
- * IMPORTANT: The contents of this file are auto-generated.
- *
- * This file may be updated by the Shopify admin theme editor
- * or related systems. Please exercise caution as any changes
- * made to this file may be overwritten.
- * ------------------------------------------------------------
- */
 {
   "sections": {
-    "image_banner": {
-      "type": "image-banner",
+    "hero": {
+      "type": "cartel-hero",
       "blocks": {
-        "heading": {
-          "type": "heading",
+        "slide1": {
+          "type": "slide",
           "settings": {
-            "heading": "Browse our latest products",
-            "heading_size": "h0"
+            "image_fit": "cover",
+            "eyebrow": "New season · 2026",
+            "heading": "Stock your kit like a ",
+            "heading_accent": "pro.",
+            "sub": "Pro-grade adhesives, Korean lash lift, brow lamination and tints, curated for Canadian artists, shipped fast and 100% authentic.",
+            "btn1_label": "Shop the collection",
+            "btn1_link": "/collections/all",
+            "btn2_label": "Explore lash lift",
+            "btn2_link": "/collections/lash-lift"
           }
         },
-        "button": {
-          "type": "buttons",
+        "slide2": {
+          "type": "slide",
           "settings": {
-            "button_label_1": "Shop all",
-            "button_link_1": "shopify://collections/all",
-            "button_style_secondary_1": true,
-            "button_label_2": "",
-            "button_link_2": "",
-            "button_style_secondary_2": false
+            "image_fit": "cover",
+            "eyebrow": "Korean lash lift",
+            "heading": "Lifts that last ",
+            "heading_accent": "weeks.",
+            "sub": "Salon-grade lifting and fixing solutions, silicone rods and shields, everything you need for a clean, long-lasting lift.",
+            "btn1_label": "Shop lash lift",
+            "btn1_link": "/collections/lash-lift",
+            "btn2_label": "See the system",
+            "btn2_link": "/collections/korean-lash-lift"
+          }
+        },
+        "slide3": {
+          "type": "slide",
+          "settings": {
+            "image_fit": "cover",
+            "eyebrow": "Brows & tints",
+            "heading": "Bolder brows, ",
+            "heading_accent": "truer tint.",
+            "sub": "Bronsun and Noemi dye gels, henna and lamination, rich, true-to-tone colour that lands right the first time.",
+            "btn1_label": "Shop brows & tints",
+            "btn1_link": "/collections/dyes-tints",
+            "btn2_label": "Browse brands",
+            "btn2_link": "/collections"
+          }
+        },
+        "slide4": {
+          "type": "slide",
+          "settings": {
+            "image_fit": "contain",
+            "eyebrow": "Pro adhesives",
+            "heading": "Retention you can ",
+            "heading_accent": "trust.",
+            "sub": "Fast-grab, low-fume adhesives engineered for Canadian studios, and weeks of flawless, full-set wear.",
+            "btn1_label": "Shop adhesives",
+            "btn1_link": "/collections/adhesives",
+            "btn2_label": "Shop best sellers",
+            "btn2_link": "/collections/best-sellers"
           }
         }
       },
-      "block_order": [
-        "heading",
-        "button"
-      ],
+      "block_order": ["slide1", "slide2", "slide3", "slide4"],
+      "settings": {}
+    },
+    "marquee": {
+      "type": "cartel-marquee",
+      "blocks": {
+        "b1": { "type": "brand", "settings": { "name": "Thuya" } },
+        "b2": { "type": "brand", "settings": { "name": "Bronsun" } },
+        "b3": { "type": "brand", "settings": { "name": "Noemi" } },
+        "b4": { "type": "brand", "settings": { "name": "Linger Beauty" } },
+        "b5": { "type": "brand", "settings": { "name": "Cartel" } },
+        "b6": { "type": "brand", "settings": { "name": "Prolong" } }
+      },
+      "block_order": ["b1", "b2", "b3", "b4", "b5", "b6"],
       "settings": {
-        "image_overlay_opacity": 40,
-        "image_height": "large",
-        "image_behavior": "none",
-        "desktop_content_position": "bottom-center",
-        "desktop_content_alignment": "center",
-        "show_text_box": false,
-        "color_scheme": "inverse",
-        "stack_images_on_mobile": false,
-        "mobile_content_alignment": "center",
-        "show_text_below": false
+        "kicker": "Brands we carry",
+        "note": "Imported from trusted brands in Korea, Europe & Australia."
       }
     },
-    "featured_collection": {
-      "type": "featured-collection",
+    "best_sellers": {
+      "type": "cartel-product-row",
       "settings": {
-        "collection": "all",
-        "products_to_show": 8,
-        "title": "Featured products",
-        "heading_size": "h2",
-        "description": "",
-        "show_description": false,
-        "description_style": "body",
-        "columns_desktop": 4,
-        "enable_desktop_slider": false,
-        "full_width": false,
-        "show_view_all": true,
-        "view_all_style": "solid",
-        "color_scheme": "background-1",
-        "image_ratio": "adapt",
-        "image_shape": "default",
-        "show_secondary_image": true,
-        "show_vendor": false,
-        "show_rating": false,
-        "columns_mobile": "2",
-        "swipe_on_mobile": false,
-        "padding_top": 44,
-        "padding_bottom": 36
+        "kicker": "Best sellers",
+        "title": "What pros reorder most",
+        "collection": "best-sellers",
+        "count": 8,
+        "card_style": "product",
+        "view_all_label": "",
+        "pad_top": 0,
+        "pad_bottom": 92
+      }
+    },
+    "trust": {
+      "type": "cartel-trust",
+      "blocks": {
+        "t1": {
+          "type": "item",
+          "settings": { "icon": "truck", "title": "Free shipping $150+", "sub": "Across Canada" }
+        },
+        "t2": {
+          "type": "item",
+          "settings": { "icon": "pin", "title": "Local pick-up", "sub": "West Van + Burnaby" }
+        },
+        "t3": {
+          "type": "item",
+          "settings": { "icon": "star", "title": "Industry Leading Brands", "sub": "Professional favourites" }
+        },
+        "t4": {
+          "type": "item",
+          "settings": { "icon": "clock", "title": "Fast dispatch", "sub": "Out in 1–2 days" }
+        }
+      },
+      "block_order": ["t1", "t2", "t3", "t4"],
+      "settings": { "pad_bottom": 92 }
+    },
+    "kits": {
+      "type": "cartel-product-row",
+      "settings": {
+        "kicker": "Bundle & save",
+        "title": "Kits & sets",
+        "collection": "kits-sets",
+        "count": 6,
+        "card_style": "kit",
+        "view_all_label": "",
+        "pad_top": 0,
+        "pad_bottom": 92
+      }
+    },
+    "reels": {
+      "type": "cartel-reels",
+      "blocks": {
+        "r1": { "type": "reel", "settings": { "caption": "Korean lash lift, start to finish", "likes": "1.2k" } },
+        "r2": { "type": "reel", "settings": { "caption": "Brow lamination on a client", "likes": "864" } },
+        "r3": { "type": "reel", "settings": { "caption": "Tinting with Bronsun gel dye", "likes": "2.1k" } },
+        "r4": { "type": "reel", "settings": { "caption": "Adhesive test: 6-week retention", "likes": "978" } },
+        "rv1": {
+          "type": "review",
+          "settings": {
+            "quote": "Amazing retention, would definitely recommend!",
+            "name": "Breeanna Simms",
+            "role": "Vancouver, BC",
+            "initials": "BS"
+          }
+        },
+        "rv2": {
+          "type": "review",
+          "settings": {
+            "quote": "The smell is amazing and all my clients love how hydrating it is.",
+            "name": "Rebecca B.",
+            "role": "Surrey, BC",
+            "initials": "RB"
+          }
+        },
+        "rv3": {
+          "type": "review",
+          "settings": {
+            "quote": "I absolutely love this product and have been using it since it came on the market. Smudge proof and very natural appearance! Extends your lashes for a natural look!",
+            "name": "Paula Stamp",
+            "role": "Vancouver, BC",
+            "initials": "PS"
+          }
+        },
+        "rv4": {
+          "type": "review",
+          "settings": {
+            "quote": "The best lash technician supply shop in Burnaby. Highly recommended for anyone who is a lash tech in Canada. Perfect for my shop in Toronto and Burnaby.",
+            "name": "Andie A.",
+            "role": "Burnaby, BC",
+            "initials": "AA"
+          }
+        }
+      },
+      "block_order": ["r1", "r2", "r3", "r4", "rv1", "rv2", "rv3", "rv4"],
+      "settings": {
+        "kicker": "@cartellashsupply",
+        "title": "Watch Products in Action",
+        "pad_top": 0,
+        "pad_bottom": 92
+      }
+    },
+    "spotlight": {
+      "type": "cartel-spotlight",
+      "blocks": {
+        "c1": {
+          "type": "category",
+          "settings": {
+            "name": "Korean Lash Lift",
+            "tag": "Perm systems, solutions & shields",
+            "blurb": "Gentle, high-retention Korean lift and lamination systems, lotions, silicone rods and shields for clean curls that hold for weeks.",
+            "chips": "Solutions, Rods & Shields, Tools",
+            "link": "/collections/korean-lash-lift"
+          }
+        },
+        "c2": {
+          "type": "category",
+          "settings": {
+            "name": "Lash Extensions",
+            "tag": "Adhesives, trays & tools",
+            "blurb": "Fast-grab adhesives, mix-length volume and classic trays, cleansers and precision tools, everything a full set needs to last.",
+            "chips": "Adhesives, Lash Trays, Cleansers",
+            "link": "/collections/lash-extension"
+          }
+        },
+        "c3": {
+          "type": "category",
+          "settings": {
+            "name": "Brow Lamination",
+            "tag": "Lamination systems & brushes",
+            "blurb": "Complete brow lamination and styling systems with the tools and brushes pros reach for between clients.",
+            "chips": "Lamination, Tools, Brushes",
+            "link": "/collections/brow-lamination"
+          }
+        },
+        "c4": {
+          "type": "category",
+          "settings": {
+            "name": "Dyes & Tints",
+            "tag": "Gel dyes, hybrid dyes & developers",
+            "blurb": "True-to-tone gel and hybrid dyes in every shade your chair needs, with matched developers and removers.",
+            "chips": "Tints & Dyes, Developers",
+            "link": "/collections/dyes-tints"
+          }
+        }
+      },
+      "block_order": ["c1", "c2", "c3", "c4"],
+      "settings": {
+        "kicker": "Shop by specialty",
+        "title": "Supplies for every service",
+        "panel_kicker": "Featured category",
+        "view_all_label": "Shop all supplies",
+        "view_all_link": "/collections/all",
+        "pad_top": 0,
+        "pad_bottom": 92
+      }
+    },
+    "about": {
+      "type": "cartel-about-band",
+      "settings": {
+        "kicker": "About us",
+        "title": "Made by lash artists, for lash artists.",
+        "body": "Cartel Lash began on the lash bed, years of doing extensions, lifts and tints, and never quite trusting the supplies on the shelf. So we built the shop we always wanted: pro-grade products we use ourselves, stocked in Canada.",
+        "btn_label": "Read our story",
+        "btn_link": "/pages/about",
+        "pad_top": 0,
+        "pad_bottom": 92
+      }
+    },
+    "resources": {
+      "type": "cartel-resources",
+      "blocks": {
+        "g1": {
+          "type": "resource",
+          "settings": {
+            "tag": "Guide",
+            "title": "The Lash Lift Cheat Sheet",
+            "cta": "Download",
+            "link": "/pages/free-resources"
+          }
+        },
+        "g2": {
+          "type": "resource",
+          "settings": {
+            "tag": "Blog",
+            "title": "Adhesive & humidity, explained",
+            "cta": "Read",
+            "link": "/blogs/news"
+          }
+        },
+        "g3": {
+          "type": "resource",
+          "settings": {
+            "tag": "Template",
+            "title": "Client aftercare cards",
+            "cta": "Download",
+            "link": "/pages/free-resources"
+          }
+        }
+      },
+      "block_order": ["g1", "g2", "g3"],
+      "settings": {
+        "kicker": "Free resources",
+        "title": "Free guides & tutorials",
+        "view_all_label": "Browse all resources",
+        "view_all_link": "/pages/free-resources",
+        "pad_top": 0,
+        "pad_bottom": 92
+      }
+    },
+    "email": {
+      "type": "cartel-email",
+      "settings": {
+        "kicker": "Join the list",
+        "title": "10% off your first order.",
+        "body": "Pro tips, restock alerts and first access to new drops, straight to your inbox.",
+        "placeholder": "Your email address",
+        "btn_label": "Sign up",
+        "fine": "By signing up you agree to receive marketing emails. Unsubscribe anytime.",
+        "success_text": "You're on the list, check your inbox for 10% off.",
+        "pad_top": 0,
+        "pad_bottom": 8
+      }
+    },
+    "beforeafter": {
+      "type": "cartel-beforeafter",
+      "blocks": {
+        "p1": { "type": "pair", "settings": { "label": "Korean lash lift" } },
+        "p2": { "type": "pair", "settings": { "label": "Lash extensions" } },
+        "p3": { "type": "pair", "settings": { "label": "Brow lamination" } },
+        "p4": { "type": "pair", "settings": { "label": "Lash & brow tint" } }
+      },
+      "block_order": ["p1", "p2", "p3", "p4"],
+      "settings": {
+        "kicker": "See the difference",
+        "title": "Supplies that show in the results.",
+        "before_label": "Before",
+        "after_label": "After",
+        "hint": "Drag to reveal the before & after, tap a service to see more results.",
+        "pad_top": 92,
+        "pad_bottom": 92
       }
     }
   },
   "order": [
-    "image_banner",
-    "featured_collection"
+    "hero",
+    "marquee",
+    "best_sellers",
+    "trust",
+    "kits",
+    "reels",
+    "spotlight",
+    "about",
+    "resources",
+    "email",
+    "beforeafter"
   ]
 }

@@ -1,0 +1,80 @@
+{% comment %}
+  Cartel trust bar — 1:1 with the approved prototype (.vprops in Home.dc.html).
+{% endcomment %}
+<div class="cl">
+  <div class="wrap vpwrap" style="padding-bottom:{{ section.settings.pad_bottom }}px">
+    <div class="vprops">
+      {%- for block in section.blocks -%}
+        <div class="vp" {{ block.shopify_attributes }}>
+          <svg class="vp-ic" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            {%- case block.settings.icon -%}
+              {%- when 'truck' -%}
+                <path d="M4 10h16v13H4z"></path><path d="M20 14h6l5 5v4h-11z"></path><circle cx="9.5" cy="26" r="2.6"></circle><circle cx="24.5" cy="26" r="2.6"></circle>
+              {%- when 'pin' -%}
+                <path d="M18 4a8.5 8.5 0 0 1 8.5 8.5C26.5 19 18 32 18 32S9.5 19 9.5 12.5A8.5 8.5 0 0 1 18 4z"></path><circle cx="18" cy="12.5" r="3.2"></circle>
+              {%- when 'star' -%}
+                <path d="M18 5l3.9 8 8.6 1-6.3 5.9 1.6 8.6L18 24.4 10.2 28.5l1.6-8.6L5.5 14l8.6-1z"></path>
+              {%- when 'clock' -%}
+                <circle cx="18" cy="18" r="13"></circle><path d="M18 10v8.5l6 3.2"></path>
+              {%- when 'lock' -%}
+                <rect x="8" y="16" width="20" height="14" rx="3.5"></rect><path d="M13 16v-4.2a5 5 0 0 1 10 0V16"></path>
+              {%- else -%}
+                <path d="M5 12l13-6 13 6v12l-13 6-13-6z"></path><path d="M5 12l13 6 13-6M18 18v12"></path>
+            {%- endcase -%}
+          </svg>
+          <div>
+            <div class="vp-t">{{ block.settings.title }}</div>
+            <div class="vp-s">{{ block.settings.sub }}</div>
+          </div>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Cartel trust bar",
+  "tag": "section",
+  "class": "cartel-section",
+  "max_blocks": 4,
+  "settings": [
+    { "type": "range", "id": "pad_bottom", "min": 0, "max": 120, "step": 4, "unit": "px", "label": "Padding bottom", "default": 92 }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Item",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "truck", "label": "Truck" },
+            { "value": "pin", "label": "Map pin" },
+            { "value": "star", "label": "Star" },
+            { "value": "clock", "label": "Clock" },
+            { "value": "lock", "label": "Lock" },
+            { "value": "box", "label": "Box" }
+          ],
+          "default": "truck"
+        },
+        { "type": "text", "id": "title", "label": "Title", "default": "Free shipping $150+" },
+        { "type": "text", "id": "sub", "label": "Subtitle", "default": "Across Canada" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Cartel trust bar",
+      "blocks": [
+        { "type": "item", "settings": { "icon": "truck", "title": "Free shipping $150+", "sub": "Across Canada" } },
+        { "type": "item", "settings": { "icon": "pin", "title": "Local pick-up", "sub": "West Van + Burnaby" } },
+        { "type": "item", "settings": { "icon": "star", "title": "Industry Leading Brands", "sub": "Professional favourites" } },
+        { "type": "item", "settings": { "icon": "clock", "title": "Fast dispatch", "sub": "Out in 1–2 days" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
