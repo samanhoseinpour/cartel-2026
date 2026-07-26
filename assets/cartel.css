@@ -96,7 +96,7 @@ h1,.h0,.h1{ font-weight:900; letter-spacing:-.04em; }
   font-size:1.15rem !important; font-weight:700; letter-spacing:.16em; text-transform:uppercase;
   color:rgb(var(--cartel-bronze));
 }
-.footer-block__list-item .link{ opacity:.85; }
+.footer-block__list-item .link{ opacity:.85; text-decoration:none; }
 .footer-block__list-item .link:hover{ color:rgb(var(--cartel-bronze)); opacity:1; text-decoration:none; }
 .footer-block--newsletter .footer-block__heading{ font-size:1.8rem !important; letter-spacing:-.01em; text-transform:none; color:rgb(var(--cartel-cream)); }
 .footer__field .field__input{ border-radius:100px; }
@@ -104,6 +104,48 @@ h1,.h0,.h1{ font-weight:900; letter-spacing:-.04em; }
 .footer__content-bottom{ border-top:1px solid rgba(var(--cartel-cream),.12); }
 .footer__copyright{ opacity:.65; }
 .footer .list-payment__item svg{ border-radius:4px; }
+
+/* -- design port: 1.5fr brand column, contact under brand -- */
+@media screen and (min-width: 750px){
+  .footer .footer__blocks-wrapper{ grid-template-columns:1.5fr 1fr 1fr 1fr; column-gap:4rem; row-gap:3.6rem; }
+  .footer .footer-block--contact{ grid-column:1; margin-top:0; }
+}
+.footer-block--contact{ border-top:1px solid rgba(var(--cartel-cream),.14); padding-top:2.6rem; }
+/* brand column: cream logo (dark asset knocked to light), tagline, circled socials */
+.footer-block__brand-info .footer-block__image-wrapper img{ filter:brightness(0) invert(.97); }
+.footer-block__brand-info .rte{ font-size:1.5rem; line-height:1.7; color:rgba(var(--cartel-cream),.85); max-width:36ch; }
+.footer .footer__list-social.list-social{ justify-content:flex-start; gap:1.2rem; margin-top:2.2rem; }
+.footer .list-social__link{
+  width:4.4rem; height:4.4rem; padding:0; display:flex; align-items:center; justify-content:center;
+  border:1px solid rgba(var(--cartel-cream),.32); border-radius:50%;
+}
+.footer .list-social__link:hover{ border-color:rgb(var(--cartel-bronze)); }
+.footer .list-social__link .icon{ width:1.7rem; height:1.7rem; }
+/* get in touch rows */
+.footer-contact{ display:flex; flex-direction:column; gap:1.4rem; }
+.footer-contact__row{
+  display:inline-flex; align-items:center; gap:1.1rem; align-self:flex-start;
+  color:rgba(var(--cartel-cream),.88); text-decoration:none; font-size:1.5rem;
+}
+.footer-contact__row:hover{ color:rgb(var(--cartel-bronze)); }
+.footer-contact__icon{ display:inline-flex; flex:none; }
+.footer-contact__icon svg{ width:1.8rem; height:1.8rem; color:rgb(var(--cartel-bronze)); }
+/* perks strip above the bottom bar */
+.footer__perks{
+  display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:2.8rem 4rem;
+  margin-top:4rem; padding-top:3.4rem; padding-bottom:3.4rem;
+  border-top:1px solid rgba(var(--cartel-cream),.14);
+}
+@media screen and (max-width: 749px){ .footer__perks{ grid-template-columns:1fr; } }
+.footer-perk{ display:flex; gap:1.4rem; align-items:flex-start; }
+.footer-perk__icon{ flex:none; display:inline-flex; margin-top:.2rem; }
+.footer-perk__icon svg{ width:2.1rem; height:2.1rem; color:rgb(var(--cartel-bronze)); }
+.footer-perk__heading{ margin:0 0 .4rem; font-size:1.5rem; font-weight:700; letter-spacing:0; color:rgb(var(--cartel-cream)); }
+.footer-perk__text{ margin:0; font-size:1.4rem; line-height:1.6; color:rgba(var(--cartel-cream),.75); }
+/* bottom bar: copyright left, payments right, one row */
+.footer__content-bottom-wrapper{ align-items:center; justify-content:space-between; }
+.footer__copyright{ text-align:left; margin-top:0; }
+.footer__payment{ margin-top:0; }
 
 /* ===== Thuya login gate ===== */
 .cartel-gate{ display:flex; flex-direction:column; gap:1rem; }
