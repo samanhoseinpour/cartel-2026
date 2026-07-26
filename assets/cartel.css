@@ -105,9 +105,12 @@ h1,.h0,.h1{ font-weight:900; letter-spacing:-.04em; }
 .footer__copyright{ opacity:.65; }
 .footer .list-payment__item svg{ border-radius:4px; }
 
-/* -- design port: 1.5fr brand column, contact under brand -- */
+/* -- design port: real grid, 1.5fr brand column, contact under brand -- */
 @media screen and (min-width: 750px){
-  .footer .footer__blocks-wrapper{ grid-template-columns:1.5fr 1fr 1fr 1fr; column-gap:4rem; row-gap:3.6rem; }
+  .footer .footer__blocks-wrapper{
+    display:grid; grid-template-columns:1.5fr 1fr 1fr 1fr; column-gap:4rem; row-gap:4rem;
+  }
+  .footer .footer__blocks-wrapper > .footer-block.grid__item{ width:auto; max-width:none; margin:0; }
   .footer .footer-block--contact{ grid-column:1; margin-top:0; }
 }
 .footer-block--contact{ border-top:1px solid rgba(var(--cartel-cream),.14); padding-top:2.6rem; }
@@ -142,10 +145,14 @@ h1,.h0,.h1{ font-weight:900; letter-spacing:-.04em; }
 .footer-perk__icon svg{ width:2.1rem; height:2.1rem; color:rgb(var(--cartel-bronze)); }
 .footer-perk__heading{ margin:0 0 .4rem; font-size:1.5rem; font-weight:700; letter-spacing:0; color:rgb(var(--cartel-cream)); }
 .footer-perk__text{ margin:0; font-size:1.4rem; line-height:1.6; color:rgba(var(--cartel-cream),.75); }
-/* bottom bar: copyright left, payments right, one row */
-.footer__content-bottom-wrapper{ align-items:center; justify-content:space-between; }
-.footer__copyright{ text-align:left; margin-top:0; }
-.footer__payment{ margin-top:0; }
+/* bottom bar: copyright left, payments right, one row
+   (.caption bump needed — section-footer.css loads after this file) */
+.footer .footer__content-bottom-wrapper{ align-items:center; justify-content:space-between; }
+.footer .footer__content-bottom-wrapper .footer__copyright.caption{ text-align:left; margin-top:0; }
+@media screen and (min-width: 750px){
+  .footer .footer__content-bottom-wrapper .footer__copyright.caption{ white-space:nowrap; }
+}
+.footer .footer__payment{ margin-top:0; }
 
 /* ===== Thuya login gate ===== */
 .cartel-gate{ display:flex; flex-direction:column; gap:1rem; }
