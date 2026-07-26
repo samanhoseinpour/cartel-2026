@@ -8,6 +8,10 @@
       {%- for block in section.blocks -%}
         {%- liquid
           assign fit = block.settings.image_fit
+          assign photo_class = 'hero-photo'
+          if fit == 'contain'
+            assign photo_class = 'hero-photo hero-photo-prod'
+          endif
           assign has_video = false
           if block.settings.video != blank
             assign has_video = true
@@ -22,14 +26,14 @@
             {%- if has_video -%}
               {{
                 block.settings.video
-                | video_tag: image_size: '1600x', class: 'hero-photo', autoplay: false, loop: false, muted: true, controls: false, preload: 'metadata'
+                | video_tag: image_size: '1600x', class: photo_class, autoplay: false, loop: false, muted: true, controls: false, preload: 'metadata'
               }}
             {%- elsif block.settings.image != blank -%}
               {{
                 block.settings.image
                 | image_url: width: 2400
                 | image_tag:
-                  class: 'hero-photo',
+                  class: photo_class,
                   widths: '760,1100,1600,2000,2400',
                   sizes: '100vw',
                   loading: 'eager',
