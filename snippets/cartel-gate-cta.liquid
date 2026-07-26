@@ -1,14 +1,28 @@
 {% comment %}
-  Cartel: Thuya login-gate UI.
-  Usage: {% render 'cartel-gate-cta', gate_style: 'product' %}  (or 'card' / blank)
+  Cartel: Thuya login-gate UI — single source of the gate markup.
+  Callers evaluate the gate condition themselves: product.vendor == 'Thuya' and customer == nil
+  Usage:
+    {% render 'cartel-gate-cta' %}                           lock label only — price slot (price.liquid)
+    {% render 'cartel-gate-cta', gate_style: 'buttons' %}    login button + register note — PDP buy area (buy-buttons.liquid)
+    {% render 'cartel-gate-cta', gate_style: 'quick-add' %}  login link styled as a card quick-add button (card-product.liquid)
+    {% render 'cartel-gate-cta', gate_style: 'product' %}    full block: label + button + note
 {% endcomment %}
-<div class="cartel-gate cartel-gate--{{ gate_style | default: 'card' }}">
-  <span class="cartel-gate__label">
-    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="5" y="11" width="14" height="9" rx="2.5" fill="currentColor"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="2.2" fill="none"></path></svg>
-    Log in to see price
-  </span>
-  {%- if gate_style == 'product' -%}
-    <a href="{{ routes.account_login_url }}" class="button button--full-width cartel-gate__btn">Log in to view pricing</a>
-    <a href="{{ routes.account_register_url }}" class="link underlined-link cartel-gate__note">New here? Create a free account — it takes a minute.</a>
-  {%- endif -%}
-</div>
+{%- assign gate_style = gate_style | default: 'card' -%}
+{%- if gate_style == 'quick-add' -%}
+  <div class="quick-add">
+    <a class="quick-add__submit button button--full-width button--secondary" href="{{ routes.account_login_url }}">Log in to view</a>
+  </div>
+{%- else -%}
+  <div class="cartel-gate cartel-gate--{{ gate_style }}">
+    {%- unless gate_style == 'buttons' -%}
+      <span class="cartel-gate__label">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="5" y="11" width="14" height="9" rx="2.5" fill="currentColor"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="2.2" fill="none"></path></svg>
+        Log in to see price
+      </span>
+    {%- endunless -%}
+    {%- if gate_style == 'product' or gate_style == 'buttons' -%}
+      <a href="{{ routes.account_login_url }}" class="button button--full-width cartel-gate__btn">Log in to view pricing</a>
+      <a href="{{ routes.account_register_url }}" class="link underlined-link cartel-gate__note">New here? Create a free account — it takes a minute.</a>
+    {%- endif -%}
+  </div>
+{%- endif -%}
