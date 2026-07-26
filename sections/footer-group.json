@@ -40,27 +40,63 @@
             "heading": "Policies",
             "menu": "footer-policies-2026"
           }
+        },
+        "contact": {
+          "type": "contact",
+          "settings": {
+            "heading": "Get in touch",
+            "email": "info@cartellash.ca",
+            "phone": "(604) 555-0142"
+          }
+        },
+        "perk-pickup": {
+          "type": "perk",
+          "settings": {
+            "icon": "pickup",
+            "heading": "Local pick-up",
+            "text": "West Vancouver & Burnaby, BC, select at checkout, ready same day."
+          }
+        },
+        "perk-account": {
+          "type": "perk",
+          "settings": {
+            "icon": "account",
+            "heading": "Free account",
+            "text": "Sign in to see prices, save your favourites and reorder in a tap."
+          }
+        },
+        "perk-shipping": {
+          "type": "perk",
+          "settings": {
+            "icon": "shipping",
+            "heading": "Free shipping over $150",
+            "text": "Flat-rate Canada-wide shipping on orders under $150."
+          }
         }
       },
       "block_order": [
         "brand",
         "learn",
         "company",
-        "policies"
+        "policies",
+        "contact",
+        "perk-pickup",
+        "perk-account",
+        "perk-shipping"
       ],
       "settings": {
         "color_scheme": "inverse",
-        "newsletter_enable": true,
+        "newsletter_enable": false,
         "newsletter_heading": "Get 10% off your first order",
         "enable_follow_on_shop": false,
         "show_social": true,
-        "enable_country_selector": true,
+        "enable_country_selector": false,
         "enable_language_selector": false,
         "payment_enable": true,
         "show_policy": false,
         "margin_top": 0,
-        "padding_top": 48,
-        "padding_bottom": 36
+        "padding_top": 64,
+        "padding_bottom": 40
       }
     }
   },
