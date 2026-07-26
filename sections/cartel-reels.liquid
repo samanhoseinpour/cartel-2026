@@ -1,0 +1,153 @@
+{% comment %}
+  Cartel reels + review marquee — 1:1 with the approved prototype
+  (.reelrow + .reviewmarq, one section in Home.dc.html).
+  TikTok-style EXCLUSIVE audio: unmuting one reel mutes every other one.
+{% endcomment %}
+<cl-reels class="cl">
+  <section class="sec wrap" style="padding-top:{{ section.settings.pad_top }}px;padding-bottom:{{ section.settings.pad_bottom }}px">
+    <div class="sec-head">
+      <div class="sh-l">
+        {%- if section.settings.kicker != blank -%}
+          <span class="kick">{{ section.settings.kicker }}</span>
+        {%- endif -%}
+        {%- if section.settings.title != blank -%}<h2 class="stitle">{{ section.settings.title }}</h2>{%- endif -%}
+      </div>
+      <div class="caro-nav deskonly">
+        <button class="caro-btn" type="button" data-caro-prev aria-label="Previous">
+          <svg class="ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg>
+        </button>
+        <button class="caro-btn" type="button" data-caro-next aria-label="Next">
+          <svg class="ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg>
+        </button>
+      </div>
+    </div>
+    <div class="reelrow">
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'reel' -%}
+          <div class="reel" data-reel data-caption="{{ block.settings.caption | escape }}" {{ block.shopify_attributes }}>
+            {%- if block.settings.video != blank -%}
+              {{
+                block.settings.video
+                | video_tag: image_size: '600x', class: 'reel-media', autoplay: true, loop: true, muted: true, controls: false, preload: 'metadata'
+              }}
+            {%- elsif block.settings.image != blank -%}
+              {{ block.settings.image | image_url: width: 700 | image_tag: class: 'reel-media', widths: '300,480,700', loading: 'lazy', alt: block.settings.caption }}
+            {%- endif -%}
+            <div class="reel-grad"></div>
+            {%- if block.settings.link != blank -%}
+              <a class="reel-hit" href="{{ block.settings.link }}" aria-label="{{ block.settings.caption | escape }}"></a>
+            {%- else -%}
+              <button class="reel-hit" type="button" data-reel-open aria-label="Play {{ block.settings.caption | escape }}"></button>
+            {%- endif -%}
+            {%- if block.settings.video != blank -%}
+              <div class="reel-ctls">
+                <button class="reel-ctl" type="button" data-reel-play aria-label="Play or pause">
+                  <svg class="ic-xs" data-icon-pause viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="7" y="5" width="3.4" height="14" rx="1.2"></rect><rect x="13.6" y="5" width="3.4" height="14" rx="1.2"></rect></svg>
+                  <svg class="ic-xs" data-icon-play viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" hidden><path d="M8 5.5l11 6.5-11 6.5z"></path></svg>
+                </button>
+                <button class="reel-ctl" type="button" data-reel-mute aria-label="Mute or unmute">
+                  <svg class="ic-xs" data-icon-muted viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 9h3l4-3.5v13L7 15H4z"></path><path d="M15 9.5l5 5m0-5l-5 5" stroke="currentColor" stroke-width="2" fill="none"></path></svg>
+                  <svg class="ic-xs" data-icon-sound viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" hidden><path d="M4 9h3l4-3.5v13L7 15H4z"></path><path d="M15 8.5a5 5 0 0 1 0 7M17.5 6a8.5 8.5 0 0 1 0 12" stroke="currentColor" stroke-width="2" fill="none"></path></svg>
+                </button>
+              </div>
+            {%- else -%}
+              <div class="reel-play">
+                <svg class="ic" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5l11 6.5-11 6.5z"></path></svg>
+              </div>
+            {%- endif -%}
+            <div class="reel-cap">
+              {{- block.settings.caption -}}
+              {%- if block.settings.likes != blank -%}
+                <div class="reel-like">
+                  <svg class="ic-sm" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 20s-7-4.4-7-9.2A4.3 4.3 0 0 1 12 8a4.3 4.3 0 0 1 7 2.8C19 15.6 12 20 12 20z"></path></svg>
+                  {{- block.settings.likes -}}
+                </div>
+              {%- endif -%}
+            </div>
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+    {%- assign review_count = 0 -%}
+    {%- for block in section.blocks -%}
+      {%- if block.type == 'review' -%}{%- assign review_count = review_count | plus: 1 -%}{%- endif -%}
+    {%- endfor -%}
+    {%- if review_count > 0 -%}
+      <div class="reviewmarq">
+        <div class="reviewtrack">
+          {%- for i in (1..2) -%}
+            <div class="rev-group"{% if forloop.last %} aria-hidden="true"{% endif %}>
+              {%- for block in section.blocks -%}
+                {%- if block.type == 'review' -%}
+                  <div class="review" {{ block.shopify_attributes }}>
+                    <div class="stars">★★★★★</div>
+                    <p class="rq">{{ block.settings.quote }}</p>
+                    <div class="rmeta">
+                      <span class="ravatar">{{ block.settings.initials }}</span>
+                      <div>
+                        <div class="rname">{{ block.settings.name }}</div>
+                        <div class="rrole">{{ block.settings.role }}</div>
+                      </div>
+                    </div>
+                  </div>
+                {%- endif -%}
+              {%- endfor -%}
+            </div>
+          {%- endfor -%}
+        </div>
+      </div>
+    {%- endif -%}
+  </section>
+</cl-reels>
+
+{% schema %}
+{
+  "name": "Cartel reels + reviews",
+  "tag": "section",
+  "class": "cartel-section",
+  "settings": [
+    { "type": "text", "id": "kicker", "label": "Kicker", "default": "@cartellashsupply" },
+    { "type": "text", "id": "title", "label": "Heading", "default": "Watch Products in Action" },
+    { "type": "range", "id": "pad_top", "min": 0, "max": 120, "step": 4, "unit": "px", "label": "Padding top", "default": 0 },
+    { "type": "range", "id": "pad_bottom", "min": 0, "max": 120, "step": 4, "unit": "px", "label": "Padding bottom", "default": 92 }
+  ],
+  "blocks": [
+    {
+      "type": "reel",
+      "name": "Reel",
+      "settings": [
+        { "type": "video", "id": "video", "label": "Vertical video (9:16)" },
+        { "type": "image_picker", "id": "image", "label": "Fallback image" },
+        { "type": "text", "id": "caption", "label": "Caption", "default": "Korean lash lift, start to finish" },
+        { "type": "text", "id": "likes", "label": "Likes label", "default": "1.2k" },
+        { "type": "url", "id": "link", "label": "Link (optional — replaces the lightbox)" }
+      ]
+    },
+    {
+      "type": "review",
+      "name": "Review",
+      "settings": [
+        { "type": "textarea", "id": "quote", "label": "Quote" },
+        { "type": "text", "id": "name", "label": "Name" },
+        { "type": "text", "id": "role", "label": "Role / location" },
+        { "type": "text", "id": "initials", "label": "Initials", "default": "BS" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Cartel reels + reviews",
+      "blocks": [
+        { "type": "reel" },
+        { "type": "reel" },
+        { "type": "reel" },
+        { "type": "reel" },
+        { "type": "review" },
+        { "type": "review" },
+        { "type": "review" },
+        { "type": "review" }
+      ]
+    }
+  ]
+}
+{% endschema %}

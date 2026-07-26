@@ -1,0 +1,79 @@
+{% comment %}
+  Cartel 10%-off email band — 1:1 with the approved prototype (.news in Home.dc.html).
+  Uses Shopify's customer form so signups land in Customers (tagged "newsletter").
+{% endcomment %}
+<div class="cl">
+  <section class="wrap" style="padding-top:{{ section.settings.pad_top }}px;padding-bottom:{{ section.settings.pad_bottom }}px">
+    <div class="news ondark">
+      <div>
+        {%- if section.settings.kicker != blank -%}<span class="kick">{{ section.settings.kicker }}</span>{%- endif -%}
+        {%- if section.settings.title != blank -%}
+          <h2 class="stitle" style="margin-top:12px">{{ section.settings.title }}</h2>
+        {%- endif -%}
+        {%- if section.settings.body != blank -%}<p class="news-p">{{ section.settings.body }}</p>{%- endif -%}
+      </div>
+      <div>
+        {%- form 'customer', id: 'CartelNewsletter' -%}
+          {%- if form.posted_successfully? -%}
+            <div class="ndone">{{ section.settings.success_text }}</div>
+          {%- else -%}
+            <input type="hidden" name="contact[tags]" value="newsletter">
+            <div class="newsform">
+              <input
+                class="nf-input"
+                type="email"
+                name="contact[email]"
+                placeholder="{{ section.settings.placeholder }}"
+                autocomplete="email"
+                required
+                aria-label="Email address"
+              >
+              <button class="nf-btn" type="submit">{{ section.settings.btn_label }}</button>
+            </div>
+            {%- if form.errors -%}
+              <div class="news-fine">{{ form.errors.messages['email'] }}</div>
+            {%- endif -%}
+            {%- if section.settings.fine != blank -%}
+              <div class="news-fine">{{ section.settings.fine }}</div>
+            {%- endif -%}
+          {%- endif -%}
+        {%- endform -%}
+      </div>
+    </div>
+  </section>
+</div>
+
+{% schema %}
+{
+  "name": "Cartel email band",
+  "tag": "section",
+  "class": "cartel-section",
+  "settings": [
+    { "type": "text", "id": "kicker", "label": "Kicker", "default": "Join the list" },
+    { "type": "text", "id": "title", "label": "Heading", "default": "10% off your first order." },
+    {
+      "type": "textarea",
+      "id": "body",
+      "label": "Body",
+      "default": "Pro tips, restock alerts and first access to new drops, straight to your inbox."
+    },
+    { "type": "text", "id": "placeholder", "label": "Input placeholder", "default": "Your email address" },
+    { "type": "text", "id": "btn_label", "label": "Button label", "default": "Sign up" },
+    {
+      "type": "text",
+      "id": "fine",
+      "label": "Fine print",
+      "default": "By signing up you agree to receive marketing emails. Unsubscribe anytime."
+    },
+    {
+      "type": "text",
+      "id": "success_text",
+      "label": "Success message",
+      "default": "You're on the list, check your inbox for 10% off."
+    },
+    { "type": "range", "id": "pad_top", "min": 0, "max": 120, "step": 4, "unit": "px", "label": "Padding top", "default": 0 },
+    { "type": "range", "id": "pad_bottom", "min": 0, "max": 120, "step": 4, "unit": "px", "label": "Padding bottom", "default": 8 }
+  ],
+  "presets": [{ "name": "Cartel email band" }]
+}
+{% endschema %}

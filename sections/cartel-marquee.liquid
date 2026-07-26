@@ -1,0 +1,67 @@
+{% comment %}
+  Cartel brand marquee — 1:1 with the approved prototype (.marqsec in Home.dc.html).
+  Two identical .mq-group halves keep the loop seamless (translateX 0 → -50%).
+{% endcomment %}
+<div class="cl">
+  <section class="marqsec">
+    {%- if section.settings.kicker != blank -%}<span class="kick">{{ section.settings.kicker }}</span>{%- endif -%}
+    <div class="marquee">
+      <div class="marquee-track">
+        {%- for i in (1..2) -%}
+          <div class="mq-group"{% if forloop.last %} aria-hidden="true"{% endif %}>
+            {%- for block in section.blocks -%}
+              {%- if block.settings.link != blank -%}
+                <a class="brandname" href="{{ block.settings.link }}" {{ block.shopify_attributes }}>
+                  {{- block.settings.name -}}
+                </a>
+              {%- else -%}
+                <span class="brandname" {{ block.shopify_attributes }}>{{ block.settings.name }}</span>
+              {%- endif -%}
+            {%- endfor -%}
+          </div>
+        {%- endfor -%}
+      </div>
+    </div>
+    {%- if section.settings.note != blank -%}<p class="brandnote">{{ section.settings.note }}</p>{%- endif -%}
+  </section>
+</div>
+
+{% schema %}
+{
+  "name": "Cartel brand marquee",
+  "tag": "section",
+  "class": "cartel-section",
+  "settings": [
+    { "type": "text", "id": "kicker", "label": "Kicker", "default": "Brands we carry" },
+    {
+      "type": "text",
+      "id": "note",
+      "label": "Subline",
+      "default": "Imported from trusted brands in Korea, Europe & Australia."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "brand",
+      "name": "Brand",
+      "settings": [
+        { "type": "text", "id": "name", "label": "Brand name", "default": "Bronsun" },
+        { "type": "url", "id": "link", "label": "Link" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Cartel brand marquee",
+      "blocks": [
+        { "type": "brand", "settings": { "name": "Thuya" } },
+        { "type": "brand", "settings": { "name": "Bronsun" } },
+        { "type": "brand", "settings": { "name": "Noemi" } },
+        { "type": "brand", "settings": { "name": "Linger Beauty" } },
+        { "type": "brand", "settings": { "name": "Cartel" } },
+        { "type": "brand", "settings": { "name": "Prolong" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

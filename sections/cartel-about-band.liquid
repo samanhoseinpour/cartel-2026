@@ -1,0 +1,53 @@
+{% comment %}
+  Cartel "About us" band — 1:1 with the approved prototype (.abhome in Home.dc.html).
+{% endcomment %}
+<div class="cl">
+  <section class="sec wrap" style="padding-top:{{ section.settings.pad_top }}px;padding-bottom:{{ section.settings.pad_bottom }}px">
+    <div class="abhome ondark">
+      <div class="abhome-img">
+        {%- if section.settings.image != blank -%}
+          {{
+            section.settings.image
+            | image_url: width: 1400
+            | image_tag: class: 'abhome-photo', widths: '500,760,1000,1400', loading: 'lazy', alt: section.settings.image.alt
+          }}
+        {%- endif -%}
+      </div>
+      <div class="abhome-txt">
+        {%- if section.settings.kicker != blank -%}<span class="kick">{{ section.settings.kicker }}</span>{%- endif -%}
+        {%- if section.settings.title != blank -%}<h2 class="stitle m0">{{ section.settings.title }}</h2>{%- endif -%}
+        {%- if section.settings.body != blank -%}<p class="abhome-p">{{ section.settings.body }}</p>{%- endif -%}
+        {%- if section.settings.btn_label != blank -%}
+          <a class="btn btn-bronze" href="{{ section.settings.btn_link | default: '/pages/about' }}">
+            {{- section.settings.btn_label -}}
+            <svg class="ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+          </a>
+        {%- endif -%}
+      </div>
+    </div>
+  </section>
+</div>
+
+{% schema %}
+{
+  "name": "Cartel about band",
+  "tag": "section",
+  "class": "cartel-section",
+  "settings": [
+    { "type": "image_picker", "id": "image", "label": "Image" },
+    { "type": "text", "id": "kicker", "label": "Kicker", "default": "About us" },
+    { "type": "text", "id": "title", "label": "Heading", "default": "Made by lash artists, for lash artists." },
+    {
+      "type": "textarea",
+      "id": "body",
+      "label": "Body",
+      "default": "Cartel Lash began on the lash bed, years of doing extensions, lifts and tints, and never quite trusting the supplies on the shelf. So we built the shop we always wanted: pro-grade products we use ourselves, stocked in Canada."
+    },
+    { "type": "text", "id": "btn_label", "label": "Button label", "default": "Read our story" },
+    { "type": "url", "id": "btn_link", "label": "Button link" },
+    { "type": "range", "id": "pad_top", "min": 0, "max": 120, "step": 4, "unit": "px", "label": "Padding top", "default": 0 },
+    { "type": "range", "id": "pad_bottom", "min": 0, "max": 120, "step": 4, "unit": "px", "label": "Padding bottom", "default": 92 }
+  ],
+  "presets": [{ "name": "Cartel about band" }]
+}
+{% endschema %}
