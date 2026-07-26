@@ -14,19 +14,35 @@
     "announcement-bar": {
       "type": "announcement-bar",
       "blocks": {
+        "ann-shipping": {
+          "type": "announcement",
+          "settings": {
+            "text": "Free shipping on Canadian orders over $150",
+            "link": ""
+          }
+        },
         "ann-pickup": {
           "type": "announcement",
           "settings": {
             "text": "Local pick-up available, West Vancouver + Burnaby",
             "link": ""
           }
+        },
+        "ann-thuya": {
+          "type": "announcement",
+          "settings": {
+            "text": "Log in to unlock pricing on Thuya professional products",
+            "link": ""
+          }
         }
       },
       "block_order": [
-        "ann-pickup"
+        "ann-shipping",
+        "ann-pickup",
+        "ann-thuya"
       ],
       "settings": {
-        "auto_rotate": false,
+        "auto_rotate": true,
         "change_slides_speed": 5,
         "color_scheme": "inverse",
         "show_line_separator": false,
