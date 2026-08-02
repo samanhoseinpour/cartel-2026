@@ -1,0 +1,164 @@
+{% comment %}
+  Cartel contact cards — the two Contact bands under the form (Contact.dc.html):
+  "Quick help" cards (.ct-help) and the BC pick-up location cards (.ab-loc).
+  Cards are blocks; band headings + spacing are section settings.
+{% endcomment %}
+<div class="cl">
+  {%- liquid
+    assign has_help = false
+    assign has_loc = false
+    for block in section.blocks
+      if block.type == 'help'
+        assign has_help = true
+      elsif block.type == 'location'
+        assign has_loc = true
+      endif
+    endfor
+  -%}
+
+  {%- if has_help -%}
+    <section class="wrap ab-sec" style="--cl-pt:{{ section.settings.help_pad_top }}px;--cl-pb:{{ section.settings.help_pad_bottom }}px">
+      <div class="ab-sechead">
+        {%- if section.settings.help_kick != blank -%}<span class="kick">{{ section.settings.help_kick }}</span>{%- endif -%}
+        {%- if section.settings.help_heading != blank -%}<h2 class="stitle">{{ section.settings.help_heading }}</h2>{%- endif -%}
+      </div>
+      <div class="ct-help">
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'help' -%}
+            <a class="ct-help-card" href="{{ block.settings.url }}" {{ block.shopify_attributes }}>
+              <div class="ct-help-ic">
+                {%- case block.settings.icon -%}
+                  {%- when 'store' -%}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 9l1.6-4.2h12.8L20 9"></path><path d="M4 9h16v10.5H4z"></path><path d="M9.5 19.5V14h5v5.5"></path></svg>
+                  {%- when 'chat' -%}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 5h14a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H9l-4 4V6a1 1 0 0 1 1-1z"></path></svg>
+                  {%- when 'mail' -%}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="5.5" width="18" height="13" rx="2.5"></rect><path d="M4 7.5l8 6 8-6"></path></svg>
+                  {%- else -%}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M3 7.5l9-4 9 4-9 4z"></path><path d="M3 7.5v9l9 4 9-4v-9"></path><path d="M12 11.5v9"></path></svg>
+                {%- endcase -%}
+              </div>
+              <div class="ct-help-t">{{ block.settings.title }}</div>
+              <div class="ct-help-s">{{ block.settings.text }}</div>
+              {%- if block.settings.cta_label != blank -%}
+                <span class="ct-help-cta">
+                  {{- block.settings.cta_label -}}
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"></path></svg>
+                </span>
+              {%- endif -%}
+            </a>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    </section>
+  {%- endif -%}
+
+  {%- if has_loc -%}
+    <section class="wrap ab-sec" style="--cl-pt:{{ section.settings.loc_pad_top }}px;--cl-pb:{{ section.settings.loc_pad_bottom }}px">
+      <div class="ab-sechead">
+        {%- if section.settings.loc_kick != blank -%}<span class="kick">{{ section.settings.loc_kick }}</span>{%- endif -%}
+        {%- if section.settings.loc_heading != blank -%}<h2 class="stitle">{{ section.settings.loc_heading }}</h2>{%- endif -%}
+      </div>
+      <div class="ab-loc">
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'location' -%}
+            <div class="ab-loc-card" {{ block.shopify_attributes }}>
+              <div class="ab-loc-img">
+                {%- if block.settings.image -%}
+                  {{ block.settings.image | image_url: width: 1000 | image_tag: widths: '520,760,1000', loading: 'lazy', alt: block.settings.title }}
+                {%- endif -%}
+                {%- if block.settings.pin != blank -%}<span class="ab-loc-pin">{{ block.settings.pin }}</span>{%- endif -%}
+              </div>
+              <div class="ab-loc-b">
+                <div class="ab-loc-t">{{ block.settings.title }}</div>
+                <div class="ab-loc-meta">
+                  {%- if block.settings.place != blank -%}
+                    <div class="ab-loc-row">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 21s-6-5.3-6-10A6 6 0 0 1 18 11c0 4.7-6 10-6 10z"></path><circle cx="12" cy="11" r="2.2"></circle></svg>
+                      {{- block.settings.place -}}
+                    </div>
+                  {%- endif -%}
+                  {%- if block.settings.how != blank -%}
+                    <div class="ab-loc-row">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 7.5V12l3 2"></path></svg>
+                      {{- block.settings.how -}}
+                    </div>
+                  {%- endif -%}
+                </div>
+                {%- if block.settings.note != blank -%}<div class="ab-loc-note">{{ block.settings.note }}</div>{%- endif -%}
+              </div>
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    </section>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "Cartel contact cards",
+  "tag": "section",
+  "class": "cartel-section",
+  "settings": [
+    { "type": "header", "content": "Quick help band" },
+    { "type": "text", "id": "help_kick", "label": "Eyebrow", "default": "Quick help" },
+    { "type": "text", "id": "help_heading", "label": "Heading", "default": "Find an answer faster." },
+    { "type": "range", "id": "help_pad_top", "min": 0, "max": 120, "step": 2, "unit": "px", "label": "Padding top", "default": 78 },
+    { "type": "range", "id": "help_pad_bottom", "min": 0, "max": 120, "step": 2, "unit": "px", "label": "Padding bottom", "default": 78 },
+    { "type": "header", "content": "Pick-up band" },
+    { "type": "text", "id": "loc_kick", "label": "Eyebrow", "default": "Collect your Order" },
+    { "type": "text", "id": "loc_heading", "label": "Heading", "default": "Local pick-up in BC." },
+    { "type": "range", "id": "loc_pad_top", "min": 0, "max": 120, "step": 2, "unit": "px", "label": "Padding top", "default": 0 },
+    { "type": "range", "id": "loc_pad_bottom", "min": 0, "max": 120, "step": 2, "unit": "px", "label": "Padding bottom", "default": 78 }
+  ],
+  "blocks": [
+    {
+      "type": "help",
+      "name": "Help card",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "box", "label": "Box" },
+            { "value": "store", "label": "Storefront" },
+            { "value": "chat", "label": "Chat bubble" },
+            { "value": "mail", "label": "Envelope" }
+          ],
+          "default": "box"
+        },
+        { "type": "text", "id": "title", "label": "Title", "default": "Orders & shipping" },
+        { "type": "textarea", "id": "text", "label": "Text", "default": "Delivery times, tracking, free shipping over $150 and local pick-up, most answers live in the FAQ." },
+        { "type": "text", "id": "cta_label", "label": "Link label", "default": "Browse the FAQ" },
+        { "type": "url", "id": "url", "label": "Link" }
+      ]
+    },
+    {
+      "type": "location",
+      "name": "Location card",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Image" },
+        { "type": "text", "id": "pin", "label": "Pin label", "default": "West Vancouver" },
+        { "type": "text", "id": "title", "label": "Title", "default": "West Vancouver pick-up" },
+        { "type": "text", "id": "place", "label": "Place line", "default": "West Vancouver, BC" },
+        { "type": "text", "id": "how", "label": "How line", "default": "By appointment, arranged once your order is ready" },
+        { "type": "textarea", "id": "note", "label": "Note", "default": "Choose “Local pick-up” at checkout and we'll email the exact address and a time to collect." }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Cartel contact cards",
+      "blocks": [
+        { "type": "help" },
+        { "type": "help", "settings": { "icon": "store", "title": "Wholesale & trade", "text": "Stocking Cartel in your studio or salon, or want pro pricing on Thuya? Tell us about your business.", "cta_label": "Email the team" } },
+        { "type": "help", "settings": { "icon": "chat", "title": "Product advice", "text": "Not sure which dye, lift system or adhesive is right for you? We'll point you to the one we trust.", "cta_label": "Shop by brand" } },
+        { "type": "location" },
+        { "type": "location", "settings": { "pin": "Burnaby", "title": "Burnaby pick-up", "place": "Burnaby, BC" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,217 +1,241 @@
-{{ 'section-contact-form.css' | asset_url | stylesheet_tag }}
+{% comment %}
+  Cartel contact — full .ct-hero band from Contact.dc.html (lane 7E rewrite of
+  Dawn's contact-form): intro + channel links on the left, the real Shopify
+  contact form card on the right. Success replaces the card; errors render
+  in-card above the fields. Email + phone live in section settings — the mock's
+  hello@cartellash.ca / (604) 555-0142 are placeholders (see REPORT.md).
+{% endcomment %}
+<div class="cl">
+  {%- if section.settings.show_breadcrumbs -%}
+    <section class="wrap">{% render 'cartel-breadcrumbs' %}</section>
+  {%- endif -%}
 
-{%- style -%}
-  .section-{{ section.id }}-padding {
-    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
-    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
-  }
+  {%- liquid
+    assign contact_email = section.settings.contact_email
+    assign contact_phone = section.settings.contact_phone
+    assign phone_digits = contact_phone | remove: '(' | remove: ')' | remove: '-' | remove: ' ' | remove: '.'
+    unless phone_digits contains '+'
+      assign phone_digits = '+1' | append: phone_digits
+    endunless
+  -%}
 
-  @media screen and (min-width: 750px) {
-    .section-{{ section.id }}-padding {
-      padding-top: {{ section.settings.padding_top }}px;
-      padding-bottom: {{ section.settings.padding_bottom }}px;
-    }
-  }
-{%- endstyle -%}
+  <section class="wrap">
+    <div class="ct-hero">
+      <div class="ct-intro">
+        {%- if section.settings.eyebrow != blank -%}<span class="kick">{{ section.settings.eyebrow }}</span>{%- endif -%}
+        <h1 class="ct-h1">{{ section.settings.heading | default: page.title }}</h1>
+        {%- if section.settings.lead != blank -%}<p class="ct-sub">{{ section.settings.lead }}</p>{%- endif -%}
+        {%- if section.blocks.size > 0 -%}
+          <div class="ct-channels">
+            {%- for block in section.blocks -%}
+              {%- if block.type == 'channel' -%}
+                {%- liquid
+                  assign ch_style = block.settings.style
+                  assign ch_href = block.settings.url
+                  assign ch_text = block.settings.text
+                  if ch_style == 'email'
+                    assign ch_href = 'mailto:' | append: contact_email
+                    assign ch_text = contact_email
+                  elsif ch_style == 'phone'
+                    assign ch_href = 'tel:' | append: phone_digits
+                    assign ch_text = contact_phone
+                  endif
+                -%}
+                <a class="ct-ch" href="{{ ch_href }}"{% if ch_style == 'instagram' %} target="_blank" rel="noopener"{% endif %} {{ block.shopify_attributes }}>
+                  <span class="ct-ch-ic">
+                    {%- case ch_style -%}
+                      {%- when 'instagram' -%}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="5"></rect><circle cx="12" cy="12" r="3.6"></circle><circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none"></circle></svg>
+                      {%- when 'phone' -%}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 4h4l2 5-3 2a12 12 0 0 0 5 5l2-3 5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"></path></svg>
+                      {%- when 'chat' -%}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 5h14a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H9l-4 4V6a1 1 0 0 1 1-1z"></path></svg>
+                      {%- else -%}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="5.5" width="18" height="13" rx="2.5"></rect><path d="M4 7.5l8 6 8-6"></path></svg>
+                    {%- endcase -%}
+                  </span>
+                  <span class="ct-ch-b">
+                    <b>{{ block.settings.title }}</b>
+                    <span>{{ ch_text }}</span>
+                  </span>
+                  <svg class="ct-ch-arr" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"></path></svg>
+                </a>
+              {%- endif -%}
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+      </div>
 
-<div class="color-{{ section.settings.color_scheme }} gradient">
-  <div class="contact page-width page-width--narrow section-{{ section.id }}-padding">
-    {%- if section.settings.heading != blank -%}
-      <h2 class="title title-wrapper--no-top-margin inline-richtext {{ section.settings.heading_size }}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
-        {{ section.settings.heading }}
-      </h2>
-    {%- else -%}
-      <h2 class="visually-hidden">{{ 'templates.contact.form.title' | t }}</h2>
-    {%- endif -%}
-    {%- liquid
-      assign contact_form_class = 'isolate'
-      if settings.animations_reveal_on_scroll
-        assign contact_form_class = 'isolate scroll-trigger animate--slide-in'
-      endif
-    -%}
-    {%- form 'contact', id: 'ContactForm', class: contact_form_class -%}
-      {%- if form.posted_successfully? -%}
-        <h2 class="form-status form-status-list form__message" tabindex="-1" autofocus>
-          {{- 'icon-success.svg' | inline_asset_content -}}
-          {{ 'templates.contact.form.post_success' | t }}
-        </h2>
-      {%- elsif form.errors -%}
-        <div class="form__message">
-          <h2 class="form-status caption-large text-body" role="alert" tabindex="-1" autofocus>
-            {{- 'icon-error.svg' | inline_asset_content -}}
-            {{ 'templates.contact.form.error_heading' | t }}
-          </h2>
-        </div>
-        <ul class="form-status-list caption-large" role="list">
-          <li>
-            <a href="#ContactForm-email" class="link">
-              {{ form.errors.translated_fields.email | capitalize }}
-              {{ form.errors.messages.email }}
-            </a>
-          </li>
-        </ul>
-      {%- endif -%}
-      <div class="contact__fields">
-        <div class="field">
-          <input
-            class="field__input"
-            autocomplete="name"
-            type="text"
-            id="ContactForm-name"
-            name="contact[{{ 'templates.contact.form.name' | t }}]"
-            value="{% if form.name %}{{ form.name }}{% elsif customer %}{{ customer.name }}{% endif %}"
-            placeholder="{{ 'templates.contact.form.name' | t }}"
-          >
-          <label class="field__label" for="ContactForm-name">{{ 'templates.contact.form.name' | t }}</label>
-        </div>
-        <div class="field field--with-error">
-          <input
-            autocomplete="email"
-            type="email"
-            id="ContactForm-email"
-            class="field__input"
-            name="contact[email]"
-            spellcheck="false"
-            autocapitalize="off"
-            value="{% if form.email %}{{ form.email }}{% elsif customer %}{{ customer.email }}{% endif %}"
-            aria-required="true"
-            {% if form.errors contains 'email' %}
-              aria-invalid="true"
-              aria-describedby="ContactForm-email-error"
-            {% endif %}
-            placeholder="{{ 'templates.contact.form.email' | t }}"
-          >
-          <label class="field__label" for="ContactForm-email">
-            {{- 'templates.contact.form.email' | t }}
-            <span aria-hidden="true">*</span></label
-          >
-          {%- if form.errors contains 'email' -%}
-            <small class="contact__field-error" id="ContactForm-email-error">
-              <span class="visually-hidden">{{ 'accessibility.error' | t }}</span>
-              <span class="form__message">
-                <span class="svg-wrapper">
-                  {{- 'icon-error.svg' | inline_asset_content -}}
-                </span>
-                {{- form.errors.translated_fields.email | capitalize }}
-                {{ form.errors.messages.email -}}
-              </span>
-            </small>
+      <div class="ct-formwrap">
+        {%- form 'contact', id: 'ContactForm' -%}
+          {%- if form.posted_successfully? -%}
+            <div class="ct-card ct-success">
+              <div class="ct-success-ic">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>
+              </div>
+              <h2 class="ct-card-h">{{ section.settings.success_heading }}</h2>
+              <p class="ct-card-p">{{ section.settings.success_text }}</p>
+              <div class="ct-success-row">
+                {%- if section.settings.success_btn_label != blank -%}
+                  <a class="btn btn-fill" href="{{ section.settings.success_btn_link | default: routes.all_products_collection_url }}">{{ section.settings.success_btn_label }}</a>
+                {%- endif -%}
+                <a class="btn btn-out" href="{{ page.url }}">{{ section.settings.success_again_label | default: 'Send another' }}</a>
+              </div>
+            </div>
+          {%- else -%}
+            <div class="ct-card">
+              <h2 class="ct-card-h">{{ section.settings.form_heading }}</h2>
+              {%- if section.settings.form_text != blank -%}<p class="ct-card-p">{{ section.settings.form_text }}</p>{%- endif -%}
+
+              {%- if form.errors -%}
+                <div class="ct-err" role="alert">
+                  <b>{{ section.settings.error_heading | default: "That didn't send — check the details below." }}</b>
+                  {%- for field in form.errors -%}
+                    <span>
+                      {%- if field == 'form' -%}
+                        {{ form.errors.messages[field] }}
+                      {%- else -%}
+                        {{ form.errors.translated_fields[field] | capitalize }} {{ form.errors.messages[field] }}
+                      {%- endif -%}
+                    </span>
+                  {%- endfor -%}
+                </div>
+              {%- endif -%}
+
+              {%- assign has_topics = false -%}
+              {%- for block in section.blocks -%}
+                {%- if block.type == 'topic' -%}{%- assign has_topics = true -%}{%- endif -%}
+              {%- endfor -%}
+              {%- if has_topics -%}
+                <div class="ct-topics">
+                  <span class="ct-label">{{ section.settings.topics_label }}</span>
+                  <div class="ct-chips">
+                    {%- for block in section.blocks -%}
+                      {%- if block.type == 'topic' -%}
+                        <button type="button" class="ct-chip" data-ct-topic aria-pressed="false" {{ block.shopify_attributes }}>{{ block.settings.label }}</button>
+                      {%- endif -%}
+                    {%- endfor -%}
+                  </div>
+                </div>
+              {%- endif -%}
+
+              <div class="ct-form">
+                <input type="hidden" name="contact[Topic]" data-ct-topic-input value="">
+                <div class="ct-row2">
+                  <label class="ct-field">
+                    <span class="ct-label">First name</span>
+                    <input class="ct-input" type="text" name="contact[name]" value="{{ form.name }}" placeholder="Your name" autocomplete="given-name" required>
+                  </label>
+                  <label class="ct-field">
+                    <span class="ct-label">Email</span>
+                    <input class="ct-input" type="email" name="contact[email]" value="{{ form.email }}" placeholder="you@studio.com" autocomplete="email" required>
+                  </label>
+                </div>
+                <label class="ct-field">
+                  <span class="ct-label">Order number <i>(optional)</i></span>
+                  <input class="ct-input" type="text" name="contact[Order number]" placeholder="#CL-00000">
+                </label>
+                <label class="ct-field">
+                  <span class="ct-label">Message</span>
+                  <textarea class="ct-textarea" name="contact[body]" placeholder="How can we help?" required>{{ form.body }}</textarea>
+                </label>
+                <button class="btn btn-fill w100 ct-send" type="submit">
+                  {{- section.settings.submit_label -}}
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"></path></svg>
+                </button>
+                {%- if section.settings.fineprint != blank -%}
+                  <p class="ct-fineprint">{{ section.settings.fineprint }}</p>
+                {%- endif -%}
+              </div>
+            </div>
           {%- endif -%}
-        </div>
+        {%- endform -%}
       </div>
-      <div class="field">
-        <input
-          type="tel"
-          id="ContactForm-phone"
-          class="field__input"
-          autocomplete="tel"
-          name="contact[{{ 'templates.contact.form.phone' | t }}]"
-          pattern="[0-9\-]*"
-          value="{% if form.phone %}{{ form.phone }}{% elsif customer %}{{ customer.phone }}{% endif %}"
-          placeholder="{{ 'templates.contact.form.phone' | t }}"
-        >
-        <label class="field__label" for="ContactForm-phone">{{ 'templates.contact.form.phone' | t }}</label>
-      </div>
-      <div class="field">
-        <textarea
-          rows="10"
-          id="ContactForm-body"
-          class="text-area field__input"
-          name="contact[{{ 'templates.contact.form.comment' | t }}]"
-          placeholder="{{ 'templates.contact.form.comment' | t }}"
-        >
-          {{- form.body -}}
-        </textarea>
-        <label class="form__label field__label" for="ContactForm-body">
-          {{- 'templates.contact.form.comment' | t -}}
-        </label>
-      </div>
-      <div class="contact__button">
-        <button type="submit" class="button">
-          {{ 'templates.contact.form.send' | t }}
-        </button>
-      </div>
-    {%- endform -%}
-  </div>
+    </div>
+  </section>
 </div>
 
 {% schema %}
 {
-  "name": "t:sections.contact-form.name",
+  "name": "Cartel contact",
   "tag": "section",
-  "class": "section",
-  "disabled_on": {
-    "groups": ["header", "footer"]
-  },
+  "class": "cartel-section",
   "settings": [
+    { "type": "checkbox", "id": "show_breadcrumbs", "label": "Show breadcrumbs", "default": true },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Contact us" },
+    { "type": "inline_richtext", "id": "heading", "label": "Heading", "default": "Get in <em>Touch</em>" },
+    { "type": "textarea", "id": "lead", "label": "Lead paragraph", "default": "A question about a product, your order, wholesale or training? We're lash artists too, drop us a line and a real human gets back to you, usually within one business day." },
+    { "type": "header", "content": "Store contact details" },
     {
-      "type": "inline_richtext",
-      "id": "heading",
-      "default": "t:sections.contact-form.settings.title.default",
-      "label": "t:sections.contact-form.settings.title.label"
+      "type": "text",
+      "id": "contact_email",
+      "label": "Email address",
+      "info": "The mock shows hello@cartellash.ca; the live store uses info@cartellash.ca — confirm with the client before launch.",
+      "default": "info@cartellash.ca"
     },
     {
-      "type": "select",
-      "id": "heading_size",
-      "options": [
+      "type": "text",
+      "id": "contact_phone",
+      "label": "Phone number",
+      "info": "The mock's (604) 555-0142 is a placeholder — confirm the real number.",
+      "default": "(604) 555-0142"
+    },
+    { "type": "header", "content": "Form card" },
+    { "type": "text", "id": "form_heading", "label": "Card heading", "default": "Send us a message" },
+    { "type": "text", "id": "form_text", "label": "Card text", "default": "Tell us what you need and we'll be in touch." },
+    { "type": "text", "id": "topics_label", "label": "Topics label", "default": "What's it about?" },
+    { "type": "text", "id": "submit_label", "label": "Submit label", "default": "Send message" },
+    { "type": "inline_richtext", "id": "fineprint", "label": "Fine print", "default": "We'll only use your details to reply. See our <a href=\"/pages/privacy-policy\">privacy policy</a>." },
+    { "type": "text", "id": "error_heading", "label": "Error heading", "default": "That didn't send — check the details below." },
+    { "type": "header", "content": "Success state" },
+    { "type": "text", "id": "success_heading", "label": "Success heading", "default": "Message sent, thank you!" },
+    { "type": "textarea", "id": "success_text", "label": "Success text", "default": "We've got your note and will reply within one business day. Keep an eye on your inbox (and the spam folder, just in case)." },
+    { "type": "text", "id": "success_btn_label", "label": "Success button label", "default": "Keep shopping" },
+    { "type": "url", "id": "success_btn_link", "label": "Success button link" },
+    { "type": "text", "id": "success_again_label", "label": "Send-another label", "default": "Send another" }
+  ],
+  "blocks": [
+    {
+      "type": "channel",
+      "name": "Contact channel",
+      "settings": [
         {
-          "value": "h2",
-          "label": "t:sections.all.heading_size.options__1.label"
+          "type": "select",
+          "id": "style",
+          "label": "Type",
+          "options": [
+            { "value": "email", "label": "Email (uses section email)" },
+            { "value": "phone", "label": "Phone (uses section phone)" },
+            { "value": "instagram", "label": "Instagram" },
+            { "value": "chat", "label": "Custom link" }
+          ],
+          "default": "email"
         },
-        {
-          "value": "h1",
-          "label": "t:sections.all.heading_size.options__2.label"
-        },
-        {
-          "value": "h0",
-          "label": "t:sections.all.heading_size.options__3.label"
-        },
-        {
-          "value": "hxl",
-          "label": "t:sections.all.heading_size.options__4.label"
-        },
-        {
-          "value": "hxxl",
-          "label": "t:sections.all.heading_size.options__5.label"
-        }
-      ],
-      "default": "h1",
-      "label": "t:sections.all.heading_size.label"
+        { "type": "text", "id": "title", "label": "Title", "default": "Email us" },
+        { "type": "text", "id": "text", "label": "Subtitle (Instagram / custom)", "default": "@cartel.lash" },
+        { "type": "url", "id": "url", "label": "Link (Instagram / custom)" }
+      ]
     },
     {
-      "type": "color_scheme",
-      "id": "color_scheme",
-      "label": "t:sections.all.colors.label",
-      "default": "scheme-1"
-    },
-    {
-      "type": "header",
-      "content": "t:sections.all.padding.section_padding_heading"
-    },
-    {
-      "type": "range",
-      "id": "padding_top",
-      "min": 0,
-      "max": 100,
-      "step": 4,
-      "unit": "px",
-      "label": "t:sections.all.padding.padding_top",
-      "default": 36
-    },
-    {
-      "type": "range",
-      "id": "padding_bottom",
-      "min": 0,
-      "max": 100,
-      "step": 4,
-      "unit": "px",
-      "label": "t:sections.all.padding.padding_bottom",
-      "default": 36
+      "type": "topic",
+      "name": "Topic chip",
+      "settings": [
+        { "type": "text", "id": "label", "label": "Label", "default": "Order help" }
+      ]
     }
   ],
   "presets": [
     {
-      "name": "t:sections.contact-form.presets.name"
+      "name": "Cartel contact",
+      "blocks": [
+        { "type": "channel", "settings": { "style": "email", "title": "Email us" } },
+        { "type": "channel", "settings": { "style": "instagram", "title": "Slide into the DMs", "text": "@cartel.lash", "url": "https://www.instagram.com/cartel.lash/" } },
+        { "type": "topic", "settings": { "label": "Order help" } },
+        { "type": "topic", "settings": { "label": "Product question" } },
+        { "type": "topic", "settings": { "label": "Wholesale & trade" } },
+        { "type": "topic", "settings": { "label": "Training" } },
+        { "type": "topic", "settings": { "label": "Something else" } }
+      ]
     }
   ]
 }

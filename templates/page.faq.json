@@ -1,0 +1,143 @@
+{
+  "sections": {
+    "hero": {
+      "type": "cartel-page-hero",
+      "settings": {
+        "style": "faq",
+        "show_breadcrumbs": true,
+        "eyebrow": "Help centre",
+        "heading": "Frequently asked questions",
+        "lead": "Everything about ordering, pricing, our pro brands and returns. Can't find what you need? The Cartel team is a message away.",
+        "show_search": true,
+        "search_placeholder": "Search questions"
+      }
+    },
+    "faq": {
+      "type": "cartel-faq-list",
+      "blocks": {
+        "q1": {
+          "type": "question",
+          "settings": {
+            "category": "Ordering & pricing",
+            "question": "Why can't I see prices on some products?",
+            "answer": "<p>Professional Thuya products are reserved for verified pros — log in or create a free account to unlock their pricing. Everything else shows its price to everyone.</p>"
+          }
+        },
+        "q2": {
+          "type": "question",
+          "settings": {
+            "category": "Ordering & pricing",
+            "question": "Do I need an account to order?",
+            "answer": "<p>No — guest checkout works fine. A free account does unlock professional pricing, saves your details and makes reordering your studio staples much faster.</p>"
+          }
+        },
+        "q3": {
+          "type": "question",
+          "settings": {
+            "category": "Ordering & pricing",
+            "question": "How do I get 10% off my first order?",
+            "answer": "<p>Join the Cartel list — the sign-up form lives in the footer of every page. Your welcome code arrives by email and applies at checkout.</p>"
+          }
+        },
+        "q4": {
+          "type": "question",
+          "settings": {
+            "category": "Ordering & pricing",
+            "question": "Do you offer wholesale or trade pricing?",
+            "answer": "<p>Yes — if you're stocking Cartel in your studio, salon or academy, tell us about your business through the <a href=\"/pages/contact\">contact page</a> and pick the “Wholesale &amp; trade” topic.</p>"
+          }
+        },
+        "q5": {
+          "type": "question",
+          "settings": {
+            "category": "Shipping & pick-up",
+            "question": "How much is shipping?",
+            "answer": "<p>Shipping is free across Canada on orders over $150. Under that, a flat rate is calculated at checkout based on your address.</p>"
+          }
+        },
+        "q6": {
+          "type": "question",
+          "settings": {
+            "category": "Shipping & pick-up",
+            "question": "How fast will my order arrive?",
+            "answer": "<p>Orders leave our BC studio within 1–2 business days. Delivery time depends on the carrier and your region — tracking is emailed the moment your parcel ships.</p>"
+          }
+        },
+        "q7": {
+          "type": "question",
+          "settings": {
+            "category": "Shipping & pick-up",
+            "question": "How does local pick-up work?",
+            "answer": "<p>Choose “Local pick-up” at checkout and select West Vancouver or Burnaby. We'll email you the exact address and arrange a time as soon as your order is ready — usually same day.</p>"
+          }
+        },
+        "q8": {
+          "type": "question",
+          "settings": {
+            "category": "Shipping & pick-up",
+            "question": "Do you ship outside Canada?",
+            "answer": "<p>We currently ship within Canada. If you're outside Canada and want Cartel supplies, <a href=\"/pages/contact\">get in touch</a> — we'll see what we can do.</p>"
+          }
+        },
+        "q9": {
+          "type": "question",
+          "settings": {
+            "category": "Products & brands",
+            "question": "Are your products authentic?",
+            "answer": "<p>Always. Every line we carry is sourced directly from the brand or its authorized distributor and stocked in Canada — no grey-market stock, no border surprises.</p>"
+          }
+        },
+        "q10": {
+          "type": "question",
+          "settings": {
+            "category": "Products & brands",
+            "question": "Which brands do you carry?",
+            "answer": "<p>Bronsun, Noemi, Thuya, Linger Beauty, Prolong and our own Cartel line — chosen because we use them on the lash bed ourselves. Browse the <a href=\"/collections\">brands page</a> for the full list.</p>"
+          }
+        },
+        "q11": {
+          "type": "question",
+          "settings": {
+            "category": "Products & brands",
+            "question": "How should I store adhesives and tints?",
+            "answer": "<p>Cool, dry and upright: adhesives sealed with their silica pack, away from sunlight and humidity swings. Opened tints and developers keep best tightly closed at room temperature — and note the period-after-opening on the label.</p>"
+          }
+        },
+        "q12": {
+          "type": "question",
+          "settings": {
+            "category": "Products & brands",
+            "question": "Can you help me choose the right product?",
+            "answer": "<p>That's what we're here for. Message us with your clients' needs and your experience level and we'll point you to the dye, lift system or adhesive we genuinely trust for the job.</p>"
+          }
+        },
+        "q13": {
+          "type": "question",
+          "settings": {
+            "category": "Returns & support",
+            "question": "What is your return policy?",
+            "answer": "<p>Unopened, unused products can be returned within 30 days of delivery. For hygiene reasons opened consumables can't be restocked. Full details live on the <a href=\"/pages/return-policy\">returns page</a>.</p>"
+          }
+        },
+        "q14": {
+          "type": "question",
+          "settings": {
+            "category": "Returns & support",
+            "question": "My order arrived damaged — what now?",
+            "answer": "<p>Photograph the parcel and the product, then <a href=\"/pages/contact\">contact us</a> within 7 days with your order number. We'll replace or refund it — no long forms.</p>"
+          }
+        },
+        "q15": {
+          "type": "question",
+          "settings": {
+            "category": "Returns & support",
+            "question": "How do I reach the team?",
+            "answer": "<p>The <a href=\"/pages/contact\">contact form</a> or Instagram DMs — real humans, usually replying within one business day, Monday to Friday.</p>"
+          }
+        }
+      },
+      "block_order": ["q1", "q2", "q3", "q4", "q5", "q6", "q7", "q8", "q9", "q10", "q11", "q12", "q13", "q14", "q15"]
+    }
+  },
+  "order": ["hero", "faq"]
+}

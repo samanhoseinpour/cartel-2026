@@ -1,58 +1,32 @@
-{{ 'section-main-page.css' | asset_url | stylesheet_tag }}
-
-{%- style -%}
-  .section-{{ section.id }}-padding {
-    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
-    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
-  }
-
-  @media screen and (min-width: 750px) {
-    .section-{{ section.id }}-padding {
-      padding-top: {{ section.settings.padding_top }}px;
-      padding-bottom: {{ section.settings.padding_bottom }}px;
-    }
-  }
-{%- endstyle -%}
-
-<div class="page-width page-width--narrow section-{{ section.id }}-padding">
-  <h1 class="main-page-title page-title h0{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}">
-    {{ page.title | escape }}
-  </h1>
-  <div class="rte{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
-    {{ page.content }}
-  </div>
+{% comment %}
+  Cartel plain page (lane 7E rewrite of Dawn's main-page) — used by pages with
+  no template suffix. Breadcrumb + kick + title + the page's rich text, styled
+  by cartel-page-default.css. Dawn's section-main-page.css is intentionally no
+  longer loaded.
+{% endcomment %}
+<div class="cl">
+  {%- if section.settings.show_breadcrumbs -%}
+    <section class="wrap">{% render 'cartel-breadcrumbs' %}</section>
+  {%- endif -%}
+  <section class="sec wrap page-plain" style="--cl-pt:{{ section.settings.pad_top }}px;--cl-pb:{{ section.settings.pad_bottom }}px">
+    {%- if section.settings.eyebrow != blank -%}<span class="kick">{{ section.settings.eyebrow }}</span>{%- endif -%}
+    <h1 class="stitle">{{ page.title | escape }}</h1>
+    <div class="page-rte rte">
+      {{ page.content }}
+    </div>
+  </section>
 </div>
 
 {% schema %}
 {
-  "name": "t:sections.main-page.name",
+  "name": "Cartel page",
   "tag": "section",
-  "class": "section",
+  "class": "cartel-section",
   "settings": [
-    {
-      "type": "header",
-      "content": "t:sections.all.padding.section_padding_heading"
-    },
-    {
-      "type": "range",
-      "id": "padding_top",
-      "min": 0,
-      "max": 100,
-      "step": 4,
-      "unit": "px",
-      "label": "t:sections.all.padding.padding_top",
-      "default": 36
-    },
-    {
-      "type": "range",
-      "id": "padding_bottom",
-      "min": 0,
-      "max": 100,
-      "step": 4,
-      "unit": "px",
-      "label": "t:sections.all.padding.padding_bottom",
-      "default": 36
-    }
+    { "type": "checkbox", "id": "show_breadcrumbs", "label": "Show breadcrumbs", "default": true },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Cartel Lash" },
+    { "type": "range", "id": "pad_top", "min": 0, "max": 120, "step": 2, "unit": "px", "label": "Padding top", "default": 10 },
+    { "type": "range", "id": "pad_bottom", "min": 0, "max": 120, "step": 2, "unit": "px", "label": "Padding bottom", "default": 78 }
   ]
 }
 {% endschema %}

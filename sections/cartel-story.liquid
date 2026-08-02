@@ -1,0 +1,408 @@
+{% comment %}
+  Cartel story — every About band as its own block so the client can reorder /
+  remove them in the theme editor. 1:1 with About.dc.html:
+  story split · values grid · before/after compare · brand marquee ·
+  pick-up locations · Instagram strip · closing CTA.
+  Band spacing: blocks emit --cl-pt/--cl-pb (consumed by the lane-7E rules
+  appended to cartel-page-about.css) — never inline padding.
+{% endcomment %}
+<div class="cl">
+  {%- for block in section.blocks -%}
+    {%- case block.type -%}
+
+      {%- when 'story' -%}
+        <section class="wrap ab-sec" style="--cl-pt:{{ block.settings.pad_top }}px;--cl-pb:{{ block.settings.pad_bottom }}px" {{ block.shopify_attributes }}>
+          <div class="ab-story">
+            <div class="ab-story-img">
+              {%- if block.settings.image -%}
+                {{ block.settings.image | image_url: width: 1200 | image_tag: widths: '520,760,1200', loading: 'lazy', alt: block.settings.image.alt }}
+              {%- endif -%}
+            </div>
+            <div class="ab-story-b">
+              {%- if block.settings.kick != blank -%}<span class="kick">{{ block.settings.kick }}</span>{%- endif -%}
+              {%- if block.settings.heading != blank -%}<h2 class="stitle">{{ block.settings.heading }}</h2>{%- endif -%}
+              {%- if block.settings.text_1 != blank -%}<p class="ab-p">{{ block.settings.text_1 }}</p>{%- endif -%}
+              {%- if block.settings.text_2 != blank -%}<p class="ab-p">{{ block.settings.text_2 }}</p>{%- endif -%}
+              {%- if block.settings.quote != blank -%}
+                <div>
+                  <div class="ab-pq">{{ block.settings.quote }}</div>
+                  {%- if block.settings.quote_by != blank -%}<div class="ab-pq-by">{{ block.settings.quote_by }}</div>{%- endif -%}
+                </div>
+              {%- endif -%}
+            </div>
+          </div>
+        </section>
+
+      {%- when 'values' -%}
+        <section class="wrap ab-sec" style="--cl-pt:{{ block.settings.pad_top }}px;--cl-pb:{{ block.settings.pad_bottom }}px" {{ block.shopify_attributes }}>
+          <div class="ab-sechead">
+            {%- if block.settings.kick != blank -%}<span class="kick">{{ block.settings.kick }}</span>{%- endif -%}
+            {%- if block.settings.heading != blank -%}<h2 class="stitle">{{ block.settings.heading }}</h2>{%- endif -%}
+          </div>
+          <div class="ab-values">
+            {%- for i in (1..4) -%}
+              {%- liquid
+                assign t_key = 'title_' | append: i
+                assign s_key = 'text_' | append: i
+                assign i_key = 'icon_' | append: i
+                assign v_title = block.settings[t_key]
+                assign v_text = block.settings[s_key]
+                assign v_icon = block.settings[i_key]
+              -%}
+              {%- if v_title != blank -%}
+                <div class="ab-val">
+                  <div class="ab-val-ic">
+                    {%- case v_icon -%}
+                      {%- when 'star' -%}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 4l2.4 5 5.4.6-4 3.7 1.1 5.3L12 21l-4.9-2.4 1.1-5.3-4-3.7 5.4-.6z"></path></svg>
+                      {%- when 'book' -%}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 5.5A2 2 0 0 1 7 4h11v13H7a2 2 0 0 0-2 2z"></path><path d="M5 19.5A2 2 0 0 1 7 18h11"></path></svg>
+                      {%- when 'box' -%}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M3 7.5l9-4 9 4-9 4z"></path><path d="M3 7.5v9l9 4 9-4v-9"></path><path d="M12 11.5v9"></path></svg>
+                      {%- when 'heart' -%}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 20s-6.5-4.2-6.5-9A3.5 3.5 0 0 1 12 7a3.5 3.5 0 0 1 6.5 4c0 4.8-6.5 9-6.5 9z"></path></svg>
+                      {%- else -%}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"></path><path d="M9 12l2 2 4-4"></path></svg>
+                    {%- endcase -%}
+                  </div>
+                  <div class="ab-val-t">{{ v_title }}</div>
+                  <div class="ab-val-s">{{ v_text }}</div>
+                </div>
+              {%- endif -%}
+            {%- endfor -%}
+          </div>
+        </section>
+
+      {%- when 'compare' -%}
+        <section class="wrap ab-sec" style="--cl-pt:{{ block.settings.pad_top }}px;--cl-pb:{{ block.settings.pad_bottom }}px" {{ block.shopify_attributes }}>
+          <div class="ab-sechead">
+            {%- if block.settings.kick != blank -%}<span class="kick">{{ block.settings.kick }}</span>{%- endif -%}
+            {%- if block.settings.heading != blank -%}<h2 class="stitle">{{ block.settings.heading }}</h2>{%- endif -%}
+          </div>
+          <div class="ab-cmp" data-cmp>
+            <div class="ab-cmp-layer">
+              {%- if block.settings.image_after -%}
+                {{ block.settings.image_after | image_url: width: 1600 | image_tag: widths: '760,1200,1600', loading: 'lazy', alt: block.settings.label_after }}
+              {%- endif -%}
+              <span class="ab-cmp-tag ab-cmp-tagr">{{ block.settings.label_after | default: 'After' }}</span>
+            </div>
+            <div class="ab-cmp-layer ab-cmp-before" data-cmp-before>
+              {%- if block.settings.image_before -%}
+                {{ block.settings.image_before | image_url: width: 1600 | image_tag: widths: '760,1200,1600', loading: 'lazy', alt: block.settings.label_before }}
+              {%- endif -%}
+              <span class="ab-cmp-tag ab-cmp-tagl">{{ block.settings.label_before | default: 'Before' }}</span>
+            </div>
+            <div class="ab-cmp-handle" data-cmp-handle>
+              <div class="ab-cmp-grip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9.5 7l-5 5 5 5M14.5 7l5 5-5 5"></path></svg>
+              </div>
+            </div>
+            <input class="ab-cmp-range" data-cmp-range type="range" min="0" max="100" value="50" aria-label="Drag to compare before and after">
+          </div>
+          {%- if block.settings.hint != blank -%}<p class="ab-cmp-hint">{{ block.settings.hint }}</p>{%- endif -%}
+        </section>
+
+      {%- when 'brands' -%}
+        <section class="ab-brands" style="--cl-pt:{{ block.settings.pad_top }}px;--cl-pb:{{ block.settings.pad_bottom }}px" {{ block.shopify_attributes }}>
+          <div class="wrap">
+            {%- if block.settings.kick != blank -%}<span class="kick">{{ block.settings.kick }}</span>{%- endif -%}
+            {%- if block.settings.heading != blank -%}<h2 class="stitle" style="margin-top:13px">{{ block.settings.heading }}</h2>{%- endif -%}
+          </div>
+          {%- assign brand_names = block.settings.brands | strip | newline_to_br | split: '<br />' -%}
+          {%- if brand_names.size > 0 -%}
+            <div class="ab-mq">
+              <div class="ab-mq-track">
+                <div class="ab-mq-g">
+                  {%- for rep in (1..2) -%}
+                    {%- for name in brand_names -%}
+                      <a class="ab-bname" href="{{ block.settings.link | default: routes.collections_url }}">{{ name | strip }}</a>
+                    {%- endfor -%}
+                  {%- endfor -%}
+                </div>
+                <div class="ab-mq-g" aria-hidden="true">
+                  {%- for rep in (1..2) -%}
+                    {%- for name in brand_names -%}
+                      <a class="ab-bname" href="{{ block.settings.link | default: routes.collections_url }}" tabindex="-1">{{ name | strip }}</a>
+                    {%- endfor -%}
+                  {%- endfor -%}
+                </div>
+              </div>
+            </div>
+          {%- endif -%}
+          {%- if block.settings.btn_label != blank -%}
+            <div class="wrap">
+              <a class="btn btn-out" href="{{ block.settings.link | default: routes.collections_url }}">
+                {{- block.settings.btn_label -}}
+                <svg class="ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"></path></svg>
+              </a>
+            </div>
+          {%- endif -%}
+        </section>
+
+      {%- when 'locations' -%}
+        <section class="wrap ab-sec" style="--cl-pt:{{ block.settings.pad_top }}px;--cl-pb:{{ block.settings.pad_bottom }}px" {{ block.shopify_attributes }}>
+          <div class="ab-sechead">
+            {%- if block.settings.kick != blank -%}<span class="kick">{{ block.settings.kick }}</span>{%- endif -%}
+            {%- if block.settings.heading != blank -%}<h2 class="stitle">{{ block.settings.heading }}</h2>{%- endif -%}
+          </div>
+          <div class="ab-loc">
+            {%- for i in (1..2) -%}
+              {%- liquid
+                assign img_key = 'image_' | append: i
+                assign pin_key = 'pin_' | append: i
+                assign title_key = 'title_' | append: i
+                assign place_key = 'place_' | append: i
+                assign how_key = 'how_' | append: i
+                assign note_key = 'note_' | append: i
+                assign loc_title = block.settings[title_key]
+              -%}
+              {%- if loc_title != blank -%}
+                <div class="ab-loc-card">
+                  <div class="ab-loc-img">
+                    {%- if block.settings[img_key] -%}
+                      {{ block.settings[img_key] | image_url: width: 1000 | image_tag: widths: '520,760,1000', loading: 'lazy', alt: loc_title }}
+                    {%- endif -%}
+                    {%- if block.settings[pin_key] != blank -%}<span class="ab-loc-pin">{{ block.settings[pin_key] }}</span>{%- endif -%}
+                  </div>
+                  <div class="ab-loc-b">
+                    <div class="ab-loc-t">{{ loc_title }}</div>
+                    <div class="ab-loc-meta">
+                      {%- if block.settings[place_key] != blank -%}
+                        <div class="ab-loc-row">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 21s-6-5.3-6-10A6 6 0 0 1 18 11c0 4.7-6 10-6 10z"></path><circle cx="12" cy="11" r="2.2"></circle></svg>
+                          {{- block.settings[place_key] -}}
+                        </div>
+                      {%- endif -%}
+                      {%- if block.settings[how_key] != blank -%}
+                        <div class="ab-loc-row">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 7.5V12l3 2"></path></svg>
+                          {{- block.settings[how_key] -}}
+                        </div>
+                      {%- endif -%}
+                    </div>
+                    {%- if block.settings[note_key] != blank -%}<div class="ab-loc-note">{{ block.settings[note_key] }}</div>{%- endif -%}
+                  </div>
+                </div>
+              {%- endif -%}
+            {%- endfor -%}
+          </div>
+        </section>
+
+      {%- when 'instagram' -%}
+        <section class="wrap ab-sec" style="--cl-pt:{{ block.settings.pad_top }}px;--cl-pb:{{ block.settings.pad_bottom }}px" {{ block.shopify_attributes }}>
+          <div class="ab-ig-head">
+            <div class="ab-sechead" style="margin-bottom:0">
+              {%- if block.settings.kick != blank -%}<span class="kick">{{ block.settings.kick }}</span>{%- endif -%}
+              {%- if block.settings.heading != blank -%}<h2 class="stitle">{{ block.settings.heading }}</h2>{%- endif -%}
+            </div>
+            {%- if block.settings.btn_label != blank -%}
+              <a class="btn btn-out" href="{{ block.settings.url }}" target="_blank" rel="noopener">{{ block.settings.btn_label }}</a>
+            {%- endif -%}
+          </div>
+          <div class="ab-ig-wrap">
+            <button class="ab-ig-nav ab-ig-prev" type="button" data-ig-prev aria-label="Previous posts">
+              <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg>
+            </button>
+            <div class="ab-ig-car" data-ig-car>
+              {%- for i in (1..6) -%}
+                {%- liquid
+                  assign tile_key = 'tile_' | append: i
+                  assign tile = block.settings[tile_key]
+                -%}
+                {%- if tile -%}
+                  <a class="ab-ig-cell" href="{{ block.settings.url }}" target="_blank" rel="noopener">
+                    {{ tile | image_url: width: 520 | image_tag: widths: '300,520', loading: 'lazy', alt: block.settings.handle }}
+                    <div class="ab-ig-shade"></div>
+                    <span class="ab-ig-user">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="5"></rect><circle cx="12" cy="12" r="3.6"></circle><circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none"></circle></svg>
+                      {{- block.settings.handle -}}
+                    </span>
+                  </a>
+                {%- endif -%}
+              {%- endfor -%}
+            </div>
+            <button class="ab-ig-nav ab-ig-next" type="button" data-ig-next aria-label="More posts">
+              <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg>
+            </button>
+          </div>
+        </section>
+
+      {%- when 'cta' -%}
+        <section class="sec wrap" style="--cl-pt:{{ block.settings.pad_top }}px;--cl-pb:{{ block.settings.pad_bottom }}px" {{ block.shopify_attributes }}>
+          <div class="ab-cta">
+            {%- if block.settings.kick != blank -%}<span class="kick">{{ block.settings.kick }}</span>{%- endif -%}
+            {%- if block.settings.heading != blank -%}<h2 class="ab-cta-h">{{ block.settings.heading }}</h2>{%- endif -%}
+            {%- if block.settings.text != blank -%}<p class="ab-cta-p">{{ block.settings.text }}</p>{%- endif -%}
+            <div class="ab-cta-row">
+              {%- if block.settings.btn_primary_label != blank -%}
+                <a class="btn btn-bronze" href="{{ block.settings.btn_primary_link | default: routes.all_products_collection_url }}">{{ block.settings.btn_primary_label }}</a>
+              {%- endif -%}
+              {%- if block.settings.btn_secondary_label != blank -%}
+                <a class="btn btn-out" href="{{ block.settings.btn_secondary_link | default: routes.account_register_url }}">{{ block.settings.btn_secondary_label }}</a>
+              {%- endif -%}
+            </div>
+          </div>
+        </section>
+
+    {%- endcase -%}
+  {%- endfor -%}
+</div>
+
+{% schema %}
+{
+  "name": "Cartel story bands",
+  "tag": "section",
+  "class": "cartel-section",
+  "settings": [],
+  "blocks": [
+    {
+      "type": "story",
+      "name": "Story split",
+      "limit": 2,
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Image (1:1)" },
+        { "type": "text", "id": "kick", "label": "Eyebrow", "default": "Our story" },
+        { "type": "text", "id": "heading", "label": "Heading", "default": "It started on the lash bed." },
+        { "type": "textarea", "id": "text_1", "label": "Paragraph 1", "default": "Cartel Lash grew out of a passion for lash extensions, years of being lash techs in the industry. As extensions became more popular, the need for quality supplies grew with it. But the products on the market weren't up to standard, and too often they led to irritation and retention issues." },
+        { "type": "textarea", "id": "text_2", "label": "Paragraph 2", "default": "So we built Cartel Lash: a place to find quality products, accessories and tools for lash extensions, lifts and tints, and to inform, educate and support a growing lash community with supplies we actually trust." },
+        { "type": "textarea", "id": "quote", "label": "Pull quote", "default": "\"Tried, tested and true, that's our guarantee. We don't play favourites.\"" },
+        { "type": "text", "id": "quote_by", "label": "Quote attribution", "default": "The Cartel Lash founders" },
+        { "type": "range", "id": "pad_top", "min": 0, "max": 120, "step": 2, "unit": "px", "label": "Padding top", "default": 78 },
+        { "type": "range", "id": "pad_bottom", "min": 0, "max": 120, "step": 2, "unit": "px", "label": "Padding bottom", "default": 78 }
+      ]
+    },
+    {
+      "type": "values",
+      "name": "Values grid",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "kick", "label": "Eyebrow", "default": "What we stand for" },
+        { "type": "text", "id": "heading", "label": "Heading", "default": "Our promise to pros" },
+        { "type": "header", "content": "Card 1" },
+        { "type": "select", "id": "icon_1", "label": "Icon", "options": [ { "value": "shield", "label": "Shield check" }, { "value": "star", "label": "Star" }, { "value": "book", "label": "Book" }, { "value": "box", "label": "Box" }, { "value": "heart", "label": "Heart" } ], "default": "shield" },
+        { "type": "text", "id": "title_1", "label": "Title", "default": "Tried, tested & true" },
+        { "type": "textarea", "id": "text_1", "label": "Text", "default": "Being artists ourselves, we've tried every product we carry. If it's on the shelf, it earned its place on the lash bed first." },
+        { "type": "header", "content": "Card 2" },
+        { "type": "select", "id": "icon_2", "label": "Icon", "options": [ { "value": "shield", "label": "Shield check" }, { "value": "star", "label": "Star" }, { "value": "book", "label": "Book" }, { "value": "box", "label": "Box" }, { "value": "heart", "label": "Heart" } ], "default": "star" },
+        { "type": "text", "id": "title_2", "label": "Title", "default": "No favourites" },
+        { "type": "textarea", "id": "text_2", "label": "Text", "default": "We don't play favourites. If we think a brand or product is genuinely good, we'll do our best to bring it in for you." },
+        { "type": "header", "content": "Card 3" },
+        { "type": "select", "id": "icon_3", "label": "Icon", "options": [ { "value": "shield", "label": "Shield check" }, { "value": "star", "label": "Star" }, { "value": "book", "label": "Book" }, { "value": "box", "label": "Box" }, { "value": "heart", "label": "Heart" } ], "default": "book" },
+        { "type": "text", "id": "title_3", "label": "Title", "default": "Built to educate" },
+        { "type": "textarea", "id": "text_3", "label": "Text", "default": "We're here to inform and educate the lash community, sharing what works, how to use it, and why it matters." },
+        { "type": "header", "content": "Card 4" },
+        { "type": "select", "id": "icon_4", "label": "Icon", "options": [ { "value": "shield", "label": "Shield check" }, { "value": "star", "label": "Star" }, { "value": "book", "label": "Book" }, { "value": "box", "label": "Box" }, { "value": "heart", "label": "Heart" } ], "default": "box" },
+        { "type": "text", "id": "title_4", "label": "Title", "default": "Authentic & in stock" },
+        { "type": "textarea", "id": "text_4", "label": "Text", "default": "Sourced direct from trusted brands and stocked in Canada, so you skip the border and the wait." },
+        { "type": "range", "id": "pad_top", "min": 0, "max": 120, "step": 2, "unit": "px", "label": "Padding top", "default": 0 },
+        { "type": "range", "id": "pad_bottom", "min": 0, "max": 120, "step": 2, "unit": "px", "label": "Padding bottom", "default": 78 }
+      ]
+    },
+    {
+      "type": "compare",
+      "name": "Before / after compare",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "kick", "label": "Eyebrow", "default": "See the difference" },
+        { "type": "text", "id": "heading", "label": "Heading", "default": "Supplies that show in the results." },
+        { "type": "image_picker", "id": "image_before", "label": "Before image (16:10)" },
+        { "type": "image_picker", "id": "image_after", "label": "After image (16:10)" },
+        { "type": "text", "id": "label_before", "label": "Before label", "default": "Before" },
+        { "type": "text", "id": "label_after", "label": "After label", "default": "After" },
+        { "type": "text", "id": "hint", "label": "Hint text", "default": "Move your cursor across the photo to reveal the before & after." },
+        { "type": "range", "id": "pad_top", "min": 0, "max": 120, "step": 2, "unit": "px", "label": "Padding top", "default": 0 },
+        { "type": "range", "id": "pad_bottom", "min": 0, "max": 120, "step": 2, "unit": "px", "label": "Padding bottom", "default": 78 }
+      ]
+    },
+    {
+      "type": "brands",
+      "name": "Brand marquee",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "kick", "label": "Eyebrow", "default": "The lines we carry" },
+        { "type": "text", "id": "heading", "label": "Heading", "default": "Pro brands, stocked authentic." },
+        { "type": "textarea", "id": "brands", "label": "Brand names (one per line)", "default": "Bronsun\nNoemi\nThuya\nLinger Beauty\nCartel\nProlong" },
+        { "type": "url", "id": "link", "label": "Link" },
+        { "type": "text", "id": "btn_label", "label": "Button label", "default": "Explore all brands" },
+        { "type": "range", "id": "pad_top", "min": 0, "max": 120, "step": 2, "unit": "px", "label": "Padding top", "default": 74 },
+        { "type": "range", "id": "pad_bottom", "min": 0, "max": 120, "step": 2, "unit": "px", "label": "Padding bottom", "default": 74 }
+      ]
+    },
+    {
+      "type": "locations",
+      "name": "Pick-up locations",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "kick", "label": "Eyebrow", "default": "Come say hi" },
+        { "type": "text", "id": "heading", "label": "Heading", "default": "Collect Your Order" },
+        { "type": "header", "content": "Location 1" },
+        { "type": "image_picker", "id": "image_1", "label": "Image" },
+        { "type": "text", "id": "pin_1", "label": "Pin label", "default": "West Vancouver" },
+        { "type": "text", "id": "title_1", "label": "Title", "default": "West Vancouver pick-up" },
+        { "type": "text", "id": "place_1", "label": "Place line", "default": "West Vancouver, BC" },
+        { "type": "text", "id": "how_1", "label": "How line", "default": "Order online, collect locally" },
+        { "type": "textarea", "id": "note_1", "label": "Note", "default": "Pick-up by appointment, exact address shared at checkout." },
+        { "type": "header", "content": "Location 2" },
+        { "type": "image_picker", "id": "image_2", "label": "Image" },
+        { "type": "text", "id": "pin_2", "label": "Pin label", "default": "Burnaby" },
+        { "type": "text", "id": "title_2", "label": "Title", "default": "Burnaby pick-up" },
+        { "type": "text", "id": "place_2", "label": "Place line", "default": "Burnaby, BC" },
+        { "type": "text", "id": "how_2", "label": "How line", "default": "Order online, collect locally" },
+        { "type": "textarea", "id": "note_2", "label": "Note", "default": "Pick-up by appointment, exact address shared at checkout." },
+        { "type": "range", "id": "pad_top", "min": 0, "max": 120, "step": 2, "unit": "px", "label": "Padding top", "default": 78 },
+        { "type": "range", "id": "pad_bottom", "min": 0, "max": 120, "step": 2, "unit": "px", "label": "Padding bottom", "default": 78 }
+      ]
+    },
+    {
+      "type": "instagram",
+      "name": "Instagram strip",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "kick", "label": "Eyebrow", "default": "On the grid" },
+        { "type": "text", "id": "heading", "label": "Heading", "default": "@cartel.lash" },
+        { "type": "text", "id": "handle", "label": "Handle overlay", "default": "@cartel.lash" },
+        { "type": "url", "id": "url", "label": "Instagram URL" },
+        { "type": "text", "id": "btn_label", "label": "Button label", "default": "Follow on Instagram" },
+        { "type": "image_picker", "id": "tile_1", "label": "Tile 1 (9:16)" },
+        { "type": "image_picker", "id": "tile_2", "label": "Tile 2 (9:16)" },
+        { "type": "image_picker", "id": "tile_3", "label": "Tile 3 (9:16)" },
+        { "type": "image_picker", "id": "tile_4", "label": "Tile 4 (9:16)" },
+        { "type": "image_picker", "id": "tile_5", "label": "Tile 5 (9:16)" },
+        { "type": "image_picker", "id": "tile_6", "label": "Tile 6 (9:16)" },
+        { "type": "range", "id": "pad_top", "min": 0, "max": 120, "step": 2, "unit": "px", "label": "Padding top", "default": 0 },
+        { "type": "range", "id": "pad_bottom", "min": 0, "max": 120, "step": 2, "unit": "px", "label": "Padding bottom", "default": 78 }
+      ]
+    },
+    {
+      "type": "cta",
+      "name": "Closing CTA",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "kick", "label": "Eyebrow", "default": "Stock your studio" },
+        { "type": "text", "id": "heading", "label": "Heading", "default": "Everything your lash bed needs, in one place." },
+        { "type": "textarea", "id": "text", "label": "Text", "default": "Join thousands of Canadian lash and brow artists who trust Cartel Lash for authentic, pro-grade supplies, shipped fast or ready for local pick-up." },
+        { "type": "text", "id": "btn_primary_label", "label": "Primary button label", "default": "Shop the collection" },
+        { "type": "url", "id": "btn_primary_link", "label": "Primary button link" },
+        { "type": "text", "id": "btn_secondary_label", "label": "Secondary button label", "default": "Create a free account" },
+        { "type": "url", "id": "btn_secondary_link", "label": "Secondary button link" },
+        { "type": "range", "id": "pad_top", "min": 0, "max": 120, "step": 2, "unit": "px", "label": "Padding top", "default": 0 },
+        { "type": "range", "id": "pad_bottom", "min": 0, "max": 120, "step": 2, "unit": "px", "label": "Padding bottom", "default": 90 }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Cartel story bands",
+      "blocks": [
+        { "type": "story" },
+        { "type": "values" },
+        { "type": "compare" },
+        { "type": "brands" },
+        { "type": "locations" },
+        { "type": "instagram" },
+        { "type": "cta" }
+      ]
+    }
+  ]
+}
+{% endschema %}
