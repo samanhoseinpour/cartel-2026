@@ -1,0 +1,84 @@
+{
+  "sections": {
+    "library": {
+      "type": "cartel-resource-grid",
+      "blocks": {
+        "r1": {
+          "type": "resource",
+          "settings": {
+            "title": "Lash Lift Rod Sizing Chart",
+            "category": "Charts",
+            "type_label": "Printable chart",
+            "badge": "Free",
+            "text": "Match every client to the right rod in seconds — natural, lifted or doll-eye.",
+            "meta": "PDF · 1 page",
+            "btn_label": "Download"
+          }
+        },
+        "r2": {
+          "type": "resource",
+          "settings": {
+            "title": "Adhesive Troubleshooting Guide",
+            "category": "Guides",
+            "type_label": "PDF guide",
+            "badge": "Free",
+            "text": "Humidity, temperature, dip size — fix poor retention at the source with our go-to checklist.",
+            "meta": "PDF · 6 pages",
+            "btn_label": "Download"
+          }
+        },
+        "r3": {
+          "type": "resource",
+          "settings": {
+            "title": "Client Consultation Form",
+            "category": "Templates",
+            "type_label": "Template",
+            "badge": "Free",
+            "text": "Patch tests, contraindications and consent, ready to print or adapt for your studio.",
+            "meta": "PDF · 2 pages",
+            "btn_label": "Download"
+          }
+        },
+        "r4": {
+          "type": "resource",
+          "settings": {
+            "title": "Aftercare Cards — Lift & Tint",
+            "category": "Templates",
+            "type_label": "Printable cards",
+            "badge": "Free",
+            "text": "Hand your clients the do's and don'ts for the first 24 hours — print four to a page.",
+            "meta": "PDF · 1 page",
+            "btn_label": "Download"
+          }
+        },
+        "r5": {
+          "type": "resource",
+          "settings": {
+            "title": "Lash Mapping Masterclass",
+            "category": "Video",
+            "type_label": "Video tutorial",
+            "badge": "Free",
+            "text": "Styling maps for every eye shape, from soft cat to open doll — follow along at the bed.",
+            "meta": "Video · 18 min",
+            "btn_label": "Watch now",
+            "is_video": true
+          }
+        },
+        "r6": {
+          "type": "resource",
+          "settings": {
+            "title": "Brow Tint Mixing Chart",
+            "category": "Charts",
+            "type_label": "Printable chart",
+            "badge": "Free",
+            "text": "Bronsun shade mixing ratios and processing times for every brow tone, on one sheet.",
+            "meta": "PDF · 1 page",
+            "btn_label": "Download"
+          }
+        }
+      },
+      "block_order": ["r1", "r2", "r3", "r4", "r5", "r6"]
+    }
+  },
+  "order": ["library"]
+}
