@@ -1,0 +1,49 @@
+{% comment %}
+  Cartel breadcrumbs — 1:1 with the prototype (<nav class="crumb"> in Collection.dc.html).
+  Shared by the PLP, PDP, blog and content-page lanes: markup lives here so no lane forks it.
+  The .crumb / .crumb-a / .crumb-sep / .crumb-cur rules ship in each lane's stylesheet.
+
+  Usage:
+    {% render 'cartel-breadcrumbs' %}                          auto (collection / product / blog / article / page)
+    {% render 'cartel-breadcrumbs', extra_label: 'Search' %}    append one custom crumb
+{% endcomment %}
+{%- liquid
+  assign shop_url = routes.collections_url | default: '/collections/all'
+-%}
+<nav class="crumb" aria-label="Breadcrumb">
+  <a class="crumb-a" href="{{ routes.root_url }}">Home</a>
+  {%- case request.page_type -%}
+    {%- when 'product' -%}
+      <span class="crumb-sep">/</span>
+      <a class="crumb-a" href="{{ shop_url }}">Shop</a>
+      {%- if collection.title != blank -%}
+        <span class="crumb-sep">/</span>
+        <a class="crumb-a" href="{{ collection.url }}">{{ collection.title }}</a>
+      {%- endif -%}
+      <span class="crumb-sep">/</span>
+      <span class="crumb-cur">{{ product.title }}</span>
+    {%- when 'collection' -%}
+      <span class="crumb-sep">/</span>
+      <a class="crumb-a" href="{{ shop_url }}">Shop</a>
+      <span class="crumb-sep">/</span>
+      <span class="crumb-cur">{{ collection.title }}</span>
+    {%- when 'list-collections' -%}
+      <span class="crumb-sep">/</span>
+      <span class="crumb-cur">Brands</span>
+    {%- when 'blog' -%}
+      <span class="crumb-sep">/</span>
+      <span class="crumb-cur">{{ blog.title }}</span>
+    {%- when 'article' -%}
+      <span class="crumb-sep">/</span>
+      <a class="crumb-a" href="{{ blog.url }}">{{ blog.title }}</a>
+      <span class="crumb-sep">/</span>
+      <span class="crumb-cur">{{ article.title | truncate: 46 }}</span>
+    {%- when 'page' -%}
+      <span class="crumb-sep">/</span>
+      <span class="crumb-cur">{{ page.title }}</span>
+  {%- endcase -%}
+  {%- if extra_label != blank -%}
+    <span class="crumb-sep">/</span>
+    <span class="crumb-cur">{{ extra_label }}</span>
+  {%- endif -%}
+</nav>

@@ -5,6 +5,7 @@
 {% endcomment %}
 {%- liquid
   assign p = card_product
+  assign card_extra = card_class | default: ''
   assign gated = false
   if p.vendor == 'Thuya' and customer == nil
     assign gated = true
@@ -22,7 +23,7 @@
   endif
   assign form_id = 'cartel-add-' | append: section.id | append: '-' | append: p.id
 -%}
-<div class="card">
+<div class="card {{ card_extra }}">
   <div class="card-img">
     {%- if tag_label != blank -%}<span class="ptag {{ tag_class }}">{{ tag_label }}</span>{%- endif -%}
     <a class="imglink" href="{{ p.url }}" aria-label="{{ p.title | escape }}">
