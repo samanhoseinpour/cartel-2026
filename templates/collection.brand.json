@@ -1,0 +1,58 @@
+{
+  "sections": {
+    "brand-hero": {
+      "type": "cartel-brand-hero",
+      "settings": {
+        "mode": "hero",
+        "tabs_label": "Shop by brand"
+      }
+    },
+    "product-grid": {
+      "type": "main-collection-product-grid",
+      "settings": {
+        "products_per_page": 12,
+        "enable_filtering": false,
+        "enable_sorting": true
+      }
+    },
+    "brand-story": {
+      "type": "cartel-brand-hero",
+      "blocks": {
+        "point-1": {
+          "type": "point",
+          "settings": {
+            "title": "Chosen for pro results",
+            "text": "Every product in this line is tested in the studio before it earns shelf space."
+          }
+        },
+        "point-2": {
+          "type": "point",
+          "settings": {
+            "title": "Stocked authentic in Canada",
+            "text": "Ordered direct from the brand and shipped from BC, no grey-market stock."
+          }
+        },
+        "point-3": {
+          "type": "point",
+          "settings": {
+            "title": "Backed by real artists",
+            "text": "We use this line on our own clients and answer questions from experience."
+          }
+        }
+      },
+      "block_order": ["point-1", "point-2", "point-3"],
+      "settings": {
+        "mode": "story",
+        "why_kick": "The line",
+        "cross_kick": "Keep exploring",
+        "cross_heading": "",
+        "cross_label": "View the line"
+      }
+    }
+  },
+  "order": [
+    "brand-hero",
+    "product-grid",
+    "brand-story"
+  ]
+}
