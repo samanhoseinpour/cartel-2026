@@ -1,142 +1,416 @@
-{{ 'component-article-card.css' | asset_url | stylesheet_tag }}
-{{ 'component-card.css' | asset_url | stylesheet_tag }}
-{{ 'section-main-blog.css' | asset_url | stylesheet_tag }}
+{% comment %}
+  Cartel blog index — 1:1 with the prototype (view: index in Blog.dc.html).
+  Categories come from article TAGS (Technique / Education / Business / Supplies);
+  chips link to {{ blog.url }}/tagged/<handle> so filtering is server-side.
 
-{%- style -%}
-  .section-{{ section.id }}-padding {
-    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
-    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
-  }
+  Tag counts: Liquid can only see the first 50 articles outside a tag filter, so
+  with 70 posts the per-tag window counts undercount. Exact counts can be pinned
+  via blog metafields custom.count_technique / count_education / count_business /
+  count_supplies (integer) — set once at migration; they override the window count.
+{% endcomment %}
+{%- liquid
+  assign cl_cats = 'Technique,Education,Business,Supplies' | split: ','
+  assign c_technique = 0
+  assign c_education = 0
+  assign c_business = 0
+  assign c_supplies = 0
+  if current_tags == blank
+    for a in blog.articles
+      for t in a.tags
+        assign td = t | downcase
+        case td
+          when 'technique'
+            assign c_technique = c_technique | plus: 1
+          when 'education'
+            assign c_education = c_education | plus: 1
+          when 'business'
+            assign c_business = c_business | plus: 1
+          when 'supplies'
+            assign c_supplies = c_supplies | plus: 1
+        endcase
+      endfor
+    endfor
+  endif
+  if blog.metafields.custom.count_technique != blank
+    assign c_technique = blog.metafields.custom.count_technique
+  endif
+  if blog.metafields.custom.count_education != blank
+    assign c_education = blog.metafields.custom.count_education
+  endif
+  if blog.metafields.custom.count_business != blank
+    assign c_business = blog.metafields.custom.count_business
+  endif
+  if blog.metafields.custom.count_supplies != blank
+    assign c_supplies = blog.metafields.custom.count_supplies
+  endif
+  assign curtags_d = current_tags | join: ',' | downcase
+-%}
+<div class="cl">
+  <section class="wrap">
+    {% render 'cartel-breadcrumbs' %}
+  </section>
 
-  @media screen and (min-width: 750px) {
-    .section-{{ section.id }}-padding {
-      padding-top: {{ section.settings.padding_top }}px;
-      padding-bottom: {{ section.settings.padding_bottom }}px;
-    }
-  }
-{%- endstyle -%}
+  {%- paginate blog.articles by section.settings.per_page -%}
+    <section class="wrap bl-wrap">
+      <header class="bl-head">
+        <span class="kick">{{ section.settings.heading_kick }}</span>
+        <h1 class="bl-h1">{{ section.settings.heading }}</h1>
+        {%- if section.settings.lead != blank -%}
+          <p class="bl-lead">{{ section.settings.lead }}</p>
+        {%- endif -%}
+      </header>
 
-{%- paginate blog.articles by 6 -%}
-  <div class="main-blog page-width section-{{ section.id }}-padding">
-    <h1 class="title--primary{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}">
-      {{ blog.title | escape }}
-    </h1>
-
-    <div class="blog-articles {% if section.settings.layout == 'collage' %}blog-articles--collage{% endif %}">
-      {%- for article in blog.articles -%}
-        <div
-          class="blog-articles__article article{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
-          {% if settings.animations_reveal_on_scroll %}
-            data-cascade
-            style="--animation-order: {{ forloop.index }};"
-          {% endif %}
+      <div class="bl-filters" id="bl-top">
+        <a
+          class="bl-fchip{% if current_tags == blank %} on{% endif %}"
+          href="{{ blog.url }}"
         >
-          {%- render 'article-card',
-            article: article,
-            media_height: section.settings.image_height,
-            media_aspect_ratio: article.image.aspect_ratio,
-            show_image: section.settings.show_image,
-            show_date: section.settings.show_date,
-            show_author: section.settings.show_author,
-            show_excerpt: true
+          All
+          {%- if blog.articles_count > 0 -%}
+            <span class="bl-fchip-n">{{ blog.articles_count }}</span>
+          {%- endif -%}
+        </a>
+        {%- for c in cl_cats -%}
+          {%- liquid
+            assign cd = c | downcase
+            assign chip_count = 0
+            case cd
+              when 'technique'
+                assign chip_count = c_technique
+              when 'education'
+                assign chip_count = c_education
+              when 'business'
+                assign chip_count = c_business
+              when 'supplies'
+                assign chip_count = c_supplies
+            endcase
+            assign chip_on = false
+            if curtags_d contains cd
+              assign chip_on = true
+              if chip_count == 0
+                assign chip_count = paginate.items
+              endif
+            endif
           -%}
-        </div>
-      {%- endfor -%}
-    </div>
+          <a
+            class="bl-fchip{% if chip_on %} on{% endif %}"
+            href="{{ blog.url }}/tagged/{{ c | handle }}"
+          >
+            {{ c }}
+            {%- if chip_count > 0 -%}
+              <span class="bl-fchip-n">{{ chip_count }}</span>
+            {%- endif -%}
+          </a>
+        {%- endfor -%}
+      </div>
 
-    {%- if paginate.pages > 1 -%}
-      {%- render 'pagination', paginate: paginate -%}
-    {%- endif -%}
-  </div>
-{%- endpaginate -%}
+      {%- liquid
+        assign grid_offset = 0
+        assign show_feature = false
+        if current_tags == blank and paginate.current_page == 1 and blog.articles.size > 0
+          assign show_feature = true
+          assign grid_offset = 1
+        endif
+      -%}
+
+      {%- if show_feature -%}
+        {%- liquid
+          assign feat = blog.articles.first
+          assign feat_cat = ''
+          for t in feat.tags
+            assign td = t | downcase
+            for c in cl_cats
+              assign cd = c | downcase
+              if td == cd
+                assign feat_cat = c
+                break
+              endif
+            endfor
+            if feat_cat != blank
+              break
+            endif
+          endfor
+          assign feat_initials = ''
+          assign feat_words = feat.author | strip | split: ' '
+          for w in feat_words limit: 2
+            assign letter = w | slice: 0, 1 | upcase
+            assign feat_initials = feat_initials | append: letter
+          endfor
+          if feat_initials == blank
+            assign feat_initials = 'CL'
+          endif
+          assign feat_wc = feat.content | strip_html | split: ' ' | size
+          assign feat_mins = feat_wc | divided_by: 200 | at_least: 1
+        -%}
+        <article class="bl-feat">
+          <div class="bl-feat-img">
+            {%- if feat_cat != blank -%}<span class="bl-card-cat">{{ feat_cat }}</span>{%- endif -%}
+            <a href="{{ feat.url }}" aria-label="{{ feat.title | escape }}" tabindex="-1">
+              {%- if feat.image -%}
+                {{
+                  feat.image
+                  | image_url: width: 1400
+                  | image_tag:
+                    class: 'bl-card-photo',
+                    widths: '700,1000,1400',
+                    sizes: '(min-width: 760px) 58vw, 100vw',
+                    loading: 'eager',
+                    alt: feat.title
+                }}
+              {%- else -%}
+                {{ 'image' | placeholder_svg_tag: 'bl-card-photo' }}
+              {%- endif -%}
+            </a>
+          </div>
+          <div class="bl-feat-b">
+            <span class="bl-feat-k">The latest</span>
+            <h2 class="bl-feat-h"><a href="{{ feat.url }}">{{ feat.title | escape }}</a></h2>
+            <p class="bl-feat-x">{{ feat.excerpt_or_content | strip_html | truncate: 180 }}</p>
+            <div class="bl-card-meta">
+              <div class="bl-avatar sm" aria-hidden="true">{{ feat_initials }}</div>
+              <div class="bl-meta-txt">
+                <span class="bl-meta-by">{{ feat.author }}</span>
+                <span class="bl-meta-sub">
+                  {{- feat.published_at | date: '%b %-d, %Y' }} · {{ feat_mins }} min read
+                </span>
+              </div>
+            </div>
+            <a class="btn btn-fill" href="{{ feat.url }}">
+              Read article
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"></path></svg>
+            </a>
+          </div>
+        </article>
+      {%- endif -%}
+
+      {%- if blog.articles.size > 0 -%}
+        <div class="bl-grid">
+          {%- for article in blog.articles offset: grid_offset -%}
+            {% render 'article-card', article: article %}
+          {%- endfor -%}
+        </div>
+      {%- else -%}
+        <div class="bl-empty">No articles in this category yet, check back soon.</div>
+      {%- endif -%}
+
+      {%- if paginate.pages > 1 -%}
+        <nav class="bl-pag" aria-label="Pagination">
+          {%- if paginate.previous -%}
+            <a class="bl-pag-arrow" href="{{ paginate.previous.url }}" aria-label="Previous page">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg>
+            </a>
+          {%- else -%}
+            <span class="bl-pag-arrow" aria-disabled="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg>
+            </span>
+          {%- endif -%}
+          {%- for part in paginate.parts -%}
+            {%- if part.is_link -%}
+              <a class="bl-pag-num" href="{{ part.url }}">{{ part.title }}</a>
+            {%- elsif part.title contains 'hellip' or part.title == '…' -%}
+              <span class="bl-pag-gap">…</span>
+            {%- else -%}
+              <span class="bl-pag-num on" aria-current="page">{{ part.title }}</span>
+            {%- endif -%}
+          {%- endfor -%}
+          {%- if paginate.next -%}
+            <a class="bl-pag-arrow" href="{{ paginate.next.url }}" aria-label="Next page">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg>
+            </a>
+          {%- else -%}
+            <span class="bl-pag-arrow" aria-disabled="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg>
+            </span>
+          {%- endif -%}
+        </nav>
+      {%- endif -%}
+
+      {%- liquid
+        assign promo_col = section.settings.promo_collection
+        assign promo_url = routes.all_products_collection_url
+        if promo_col != blank
+          assign promo_url = promo_col.url
+        endif
+      -%}
+      <div class="bl-promo">
+        <div class="bl-promo-img">
+          {%- if section.settings.promo_image -%}
+            {{
+              section.settings.promo_image
+              | image_url: width: 1200
+              | image_tag: class: 'bl-card-photo', widths: '600,900,1200', sizes: '(min-width: 760px) 52vw, 100vw', loading: 'lazy', alt: section.settings.promo_heading
+            }}
+          {%- elsif promo_col.featured_image -%}
+            {{
+              promo_col.featured_image
+              | image_url: width: 1200
+              | image_tag: class: 'bl-card-photo', widths: '600,900,1200', sizes: '(min-width: 760px) 52vw, 100vw', loading: 'lazy', alt: section.settings.promo_heading
+            }}
+          {%- else -%}
+            {{ 'collection-1' | placeholder_svg_tag: 'bl-card-photo' }}
+          {%- endif -%}
+          {%- if section.settings.promo_badge != blank -%}
+            <span class="bl-promo-badge">{{ section.settings.promo_badge }}</span>
+          {%- endif -%}
+        </div>
+        <div class="bl-promo-b">
+          <span class="bl-promo-k">{{ section.settings.promo_kick }}</span>
+          <h2 class="bl-promo-h">{{ section.settings.promo_heading }}</h2>
+          <p class="bl-promo-x">{{ section.settings.promo_text }}</p>
+          <a class="btn btn-fill" href="{{ promo_url }}">
+            {{ section.settings.promo_cta }}
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"></path></svg>
+          </a>
+        </div>
+      </div>
+
+      <div class="bl-news">
+        <div class="bl-news-glow"></div>
+        <div class="bl-news-l">
+          <span class="bl-news-k">{{ section.settings.news_kick }}</span>
+          <h2 class="bl-news-h">{{ section.settings.news_heading }}</h2>
+          <p class="bl-news-p">{{ section.settings.news_text }}</p>
+        </div>
+        <div class="bl-news-r">
+          {%- form 'customer', class: 'bl-news-formwrap' -%}
+            {%- if form.posted_successfully? -%}
+              <div class="bl-news-done">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>
+                You’re on the list, see you in your inbox.
+              </div>
+            {%- else -%}
+              <input type="hidden" name="contact[tags]" value="newsletter">
+              <div class="bl-news-form">
+                <input
+                  class="bl-news-input"
+                  type="email"
+                  name="contact[email]"
+                  value="{{ form.email }}"
+                  aria-label="Email address"
+                  placeholder="Your email address"
+                  autocomplete="email"
+                  autocorrect="off"
+                  autocapitalize="off"
+                  required
+                >
+                <button class="btn btn-bronze" type="submit">Subscribe</button>
+              </div>
+              {%- if form.errors -%}
+                <span class="bl-news-err" role="alert">Please enter a valid email address.</span>
+              {%- endif -%}
+              <span class="bl-news-note">{{ section.settings.news_note }}</span>
+            {%- endif -%}
+          {%- endform -%}
+        </div>
+      </div>
+    </section>
+  {%- endpaginate -%}
+</div>
 
 {% schema %}
 {
-  "name": "t:sections.main-blog.name",
+  "name": "Cartel blog index",
   "tag": "section",
-  "class": "section",
+  "class": "cartel-section",
   "settings": [
     {
-      "type": "select",
-      "id": "layout",
-      "options": [
-        {
-          "value": "grid",
-          "label": "t:sections.main-blog.settings.layout.options__1.label"
-        },
-        {
-          "value": "collage",
-          "label": "t:sections.main-blog.settings.layout.options__2.label"
-        }
-      ],
-      "default": "collage",
-      "label": "t:sections.main-blog.settings.layout.label"
+      "type": "text",
+      "id": "heading_kick",
+      "label": "Kicker",
+      "default": "The Cartel Journal"
     },
     {
-      "type": "checkbox",
-      "id": "show_image",
-      "default": true,
-      "label": "t:sections.main-blog.settings.show_image.label"
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Field notes for lash & brow pros"
     },
     {
-      "type": "select",
-      "id": "image_height",
-      "options": [
-        {
-          "value": "adapt",
-          "label": "t:sections.main-blog.settings.image_height.options__1.label"
-        },
-        {
-          "value": "small",
-          "label": "t:sections.main-blog.settings.image_height.options__2.label"
-        },
-        {
-          "value": "medium",
-          "label": "t:sections.main-blog.settings.image_height.options__3.label"
-        },
-        {
-          "value": "large",
-          "label": "t:sections.main-blog.settings.image_height.options__4.label"
-        }
-      ],
-      "default": "medium",
-      "label": "t:sections.main-blog.settings.image_height.label"
+      "type": "textarea",
+      "id": "lead",
+      "label": "Lead",
+      "default": "Technique, education and the business of beauty, written by our educators for the artists we supply."
     },
     {
-      "type": "checkbox",
-      "id": "show_date",
-      "default": true,
-      "label": "t:sections.main-blog.settings.show_date.label"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_author",
-      "default": false,
-      "label": "t:sections.main-blog.settings.show_author.label"
+      "type": "range",
+      "id": "per_page",
+      "min": 6,
+      "max": 24,
+      "step": 3,
+      "label": "Articles per page",
+      "default": 12
     },
     {
       "type": "header",
-      "content": "t:sections.all.padding.section_padding_heading"
+      "content": "Shop promo band"
     },
     {
-      "type": "range",
-      "id": "padding_top",
-      "min": 0,
-      "max": 100,
-      "step": 4,
-      "unit": "px",
-      "label": "t:sections.all.padding.padding_top",
-      "default": 36
+      "type": "text",
+      "id": "promo_kick",
+      "label": "Kicker",
+      "default": "From the shop"
     },
     {
-      "type": "range",
-      "id": "padding_bottom",
-      "min": 0,
-      "max": 100,
-      "step": 4,
-      "unit": "px",
-      "label": "t:sections.all.padding.padding_bottom",
-      "default": 36
+      "type": "text",
+      "id": "promo_heading",
+      "label": "Heading",
+      "default": "Eyelash aftercare your clients will actually use"
+    },
+    {
+      "type": "textarea",
+      "id": "promo_text",
+      "label": "Text",
+      "default": "Every client needs to care for their extensions, it’s a must. Stock the cleansers, brushes and serums they reach for between fills."
+    },
+    {
+      "type": "text",
+      "id": "promo_badge",
+      "label": "Image badge",
+      "default": "Popular right now"
+    },
+    {
+      "type": "text",
+      "id": "promo_cta",
+      "label": "Button label",
+      "default": "Shop aftercare"
+    },
+    {
+      "type": "collection",
+      "id": "promo_collection",
+      "label": "Collection"
+    },
+    {
+      "type": "image_picker",
+      "id": "promo_image",
+      "label": "Image (falls back to the collection image)"
+    },
+    {
+      "type": "header",
+      "content": "Newsletter band"
+    },
+    {
+      "type": "text",
+      "id": "news_kick",
+      "label": "Kicker",
+      "default": "The Cartel Journal"
+    },
+    {
+      "type": "text",
+      "id": "news_heading",
+      "label": "Heading",
+      "default": "New guides, in your inbox"
+    },
+    {
+      "type": "textarea",
+      "id": "news_text",
+      "label": "Text",
+      "default": "Join the list for fresh technique breakdowns, shade references and studio business tips, no fluff, just the good stuff."
+    },
+    {
+      "type": "text",
+      "id": "news_note",
+      "label": "Note",
+      "default": "One email a month. Unsubscribe anytime."
     }
   ]
 }
