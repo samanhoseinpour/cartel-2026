@@ -30,6 +30,7 @@
         "slide2": {
           "type": "slide",
           "settings": {
+            "video": "shopify://files/videos/2-lash-lift-video.mp4",
             "image_fit": "cover",
             "eyebrow": "Korean lash lift",
             "heading": "Lifts that last",
