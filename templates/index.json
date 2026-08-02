@@ -17,7 +17,7 @@
           "settings": {
             "image_fit": "cover",
             "eyebrow": "New season · 2026",
-            "heading": "Stock your kit like a ",
+            "heading": "Stock your kit like a",
             "heading_accent": "pro.",
             "sub": "Pro-grade adhesives, Korean lash lift, brow lamination and tints, curated for Canadian artists, shipped fast and 100% authentic.",
             "btn1_label": "Shop the collection",
@@ -31,7 +31,7 @@
           "settings": {
             "image_fit": "cover",
             "eyebrow": "Korean lash lift",
-            "heading": "Lifts that last ",
+            "heading": "Lifts that last",
             "heading_accent": "weeks.",
             "sub": "Salon-grade lifting and fixing solutions, silicone rods and shields, everything you need for a clean, long-lasting lift.",
             "btn1_label": "Shop lash lift",
@@ -45,7 +45,7 @@
           "settings": {
             "image_fit": "cover",
             "eyebrow": "Brows & tints",
-            "heading": "Bolder brows, ",
+            "heading": "Bolder brows,",
             "heading_accent": "truer tint.",
             "sub": "Bronsun and Noemi dye gels, henna and lamination, rich, true-to-tone colour that lands right the first time.",
             "btn1_label": "Shop brows & tints",
@@ -59,7 +59,7 @@
           "settings": {
             "image_fit": "contain",
             "eyebrow": "Pro adhesives",
-            "heading": "Retention you can ",
+            "heading": "Retention you can",
             "heading_accent": "trust.",
             "sub": "Fast-grab, low-fume adhesives engineered for Canadian studios, and weeks of flawless, full-set wear.",
             "btn1_label": "Shop adhesives",
@@ -69,20 +69,68 @@
           }
         }
       },
-      "block_order": ["slide1", "slide2", "slide3", "slide4"],
+      "block_order": [
+        "slide1",
+        "slide2",
+        "slide3",
+        "slide4"
+      ],
       "settings": {}
     },
     "marquee": {
       "type": "cartel-marquee",
       "blocks": {
-        "b1": { "type": "brand", "settings": { "name": "Thuya" } },
-        "b2": { "type": "brand", "settings": { "name": "Bronsun" } },
-        "b3": { "type": "brand", "settings": { "name": "Noemi" } },
-        "b4": { "type": "brand", "settings": { "name": "Linger Beauty" } },
-        "b5": { "type": "brand", "settings": { "name": "Cartel" } },
-        "b6": { "type": "brand", "settings": { "name": "Prolong" } }
+        "b1": {
+          "type": "brand",
+          "settings": {
+            "name": "Thuya",
+            "link": ""
+          }
+        },
+        "b2": {
+          "type": "brand",
+          "settings": {
+            "name": "Bronsun",
+            "link": ""
+          }
+        },
+        "b3": {
+          "type": "brand",
+          "settings": {
+            "name": "Noemi",
+            "link": ""
+          }
+        },
+        "b4": {
+          "type": "brand",
+          "settings": {
+            "name": "Linger Beauty",
+            "link": ""
+          }
+        },
+        "b5": {
+          "type": "brand",
+          "settings": {
+            "name": "Cartel",
+            "link": ""
+          }
+        },
+        "b6": {
+          "type": "brand",
+          "settings": {
+            "name": "Prolong",
+            "link": ""
+          }
+        }
       },
-      "block_order": ["b1", "b2", "b3", "b4", "b5", "b6"],
+      "block_order": [
+        "b1",
+        "b2",
+        "b3",
+        "b4",
+        "b5",
+        "b6"
+      ],
       "settings": {
         "kicker": "Brands we carry",
         "note": "Imported from trusted brands in Korea, Europe & Australia."
@@ -97,6 +145,7 @@
         "count": 8,
         "card_style": "product",
         "view_all_label": "",
+        "view_all_link": "",
         "pad_top": 0,
         "pad_bottom": 92
       }
@@ -106,23 +155,46 @@
       "blocks": {
         "t1": {
           "type": "item",
-          "settings": { "icon": "truck", "title": "Free shipping $150+", "sub": "Across Canada" }
+          "settings": {
+            "icon": "truck",
+            "title": "Free shipping $150+",
+            "sub": "Across Canada"
+          }
         },
         "t2": {
           "type": "item",
-          "settings": { "icon": "pin", "title": "Local pick-up", "sub": "West Van + Burnaby" }
+          "settings": {
+            "icon": "pin",
+            "title": "Local pick-up",
+            "sub": "West Van + Burnaby"
+          }
         },
         "t3": {
           "type": "item",
-          "settings": { "icon": "star", "title": "Industry Leading Brands", "sub": "Professional favourites" }
+          "settings": {
+            "icon": "star",
+            "title": "Industry Leading Brands",
+            "sub": "Professional favourites"
+          }
         },
         "t4": {
           "type": "item",
-          "settings": { "icon": "clock", "title": "Fast dispatch", "sub": "Out in 1–2 days" }
+          "settings": {
+            "icon": "clock",
+            "title": "Fast dispatch",
+            "sub": "Out in 1–2 days"
+          }
         }
       },
-      "block_order": ["t1", "t2", "t3", "t4"],
-      "settings": { "pad_bottom": 92 }
+      "block_order": [
+        "t1",
+        "t2",
+        "t3",
+        "t4"
+      ],
+      "settings": {
+        "pad_bottom": 92
+      }
     },
     "kits": {
       "type": "cartel-product-row",
@@ -133,6 +205,7 @@
         "count": 6,
         "card_style": "kit",
         "view_all_label": "",
+        "view_all_link": "",
         "pad_top": 0,
         "pad_bottom": 92
       }
@@ -140,10 +213,42 @@
     "reels": {
       "type": "cartel-reels",
       "blocks": {
-        "r1": { "type": "reel", "settings": { "caption": "Korean lash lift, start to finish", "likes": "1.2k" } },
-        "r2": { "type": "reel", "settings": { "caption": "Brow lamination on a client", "likes": "864" } },
-        "r3": { "type": "reel", "settings": { "caption": "Tinting with Bronsun gel dye", "likes": "2.1k" } },
-        "r4": { "type": "reel", "settings": { "caption": "Adhesive test: 6-week retention", "likes": "978" } },
+        "r1": {
+          "type": "reel",
+          "settings": {
+            "video": "shopify://files/videos/reel-1.mp4",
+            "caption": "Korean lash lift, start to finish",
+            "likes": "1.2k",
+            "link": ""
+          }
+        },
+        "r2": {
+          "type": "reel",
+          "settings": {
+            "video": "shopify://files/videos/reel-2.mp4",
+            "caption": "Brow lamination on a client",
+            "likes": "864",
+            "link": ""
+          }
+        },
+        "r3": {
+          "type": "reel",
+          "settings": {
+            "video": "shopify://files/videos/reel-3.mp4",
+            "caption": "Tinting with Bronsun gel dye",
+            "likes": "2.1k",
+            "link": ""
+          }
+        },
+        "r4": {
+          "type": "reel",
+          "settings": {
+            "video": "shopify://files/videos/reel-4.mp4",
+            "caption": "Adhesive test: 6-week retention",
+            "likes": "978",
+            "link": ""
+          }
+        },
         "rv1": {
           "type": "review",
           "settings": {
@@ -181,7 +286,16 @@
           }
         }
       },
-      "block_order": ["r1", "r2", "r3", "r4", "rv1", "rv2", "rv3", "rv4"],
+      "block_order": [
+        "r1",
+        "r2",
+        "r3",
+        "r4",
+        "rv1",
+        "rv2",
+        "rv3",
+        "rv4"
+      ],
       "settings": {
         "kicker": "@cartellashsupply",
         "title": "Watch Products in Action",
@@ -233,7 +347,12 @@
           }
         }
       },
-      "block_order": ["c1", "c2", "c3", "c4"],
+      "block_order": [
+        "c1",
+        "c2",
+        "c3",
+        "c4"
+      ],
       "settings": {
         "kicker": "Shop by specialty",
         "title": "Supplies for every service",
@@ -287,7 +406,11 @@
           }
         }
       },
-      "block_order": ["g1", "g2", "g3"],
+      "block_order": [
+        "g1",
+        "g2",
+        "g3"
+      ],
       "settings": {
         "kicker": "Free resources",
         "title": "Free guides & tutorials",
@@ -314,12 +437,37 @@
     "beforeafter": {
       "type": "cartel-beforeafter",
       "blocks": {
-        "p1": { "type": "pair", "settings": { "label": "Korean lash lift" } },
-        "p2": { "type": "pair", "settings": { "label": "Lash extensions" } },
-        "p3": { "type": "pair", "settings": { "label": "Brow lamination" } },
-        "p4": { "type": "pair", "settings": { "label": "Lash & brow tint" } }
+        "p1": {
+          "type": "pair",
+          "settings": {
+            "label": "Korean lash lift"
+          }
+        },
+        "p2": {
+          "type": "pair",
+          "settings": {
+            "label": "Lash extensions"
+          }
+        },
+        "p3": {
+          "type": "pair",
+          "settings": {
+            "label": "Brow lamination"
+          }
+        },
+        "p4": {
+          "type": "pair",
+          "settings": {
+            "label": "Lash & brow tint"
+          }
+        }
       },
-      "block_order": ["p1", "p2", "p3", "p4"],
+      "block_order": [
+        "p1",
+        "p2",
+        "p3",
+        "p4"
+      ],
       "settings": {
         "kicker": "See the difference",
         "title": "Supplies that show in the results.",
