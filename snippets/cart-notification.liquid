@@ -1,9 +1,15 @@
 {% comment %}
-  Renders cart notification
+  Cartel "added to bag" notification — lane 7C (cart_type: notification).
+  Dawn mechanics preserved: <cart-notification>, #cart-notification with
+  animate/active classes from component-cart-notification.css,
+  #cart-notification-product and #cart-notification-button (both re-rendered
+  from sections after an add), close buttons = button[type="button"].
+  No checkout shortcut here: gated (Thuya, logged-out) carts must land on the
+  cart page, which enforces the login CTA. Skin: assets/cartel-conversion.css.
 
   Accepts:
-  - color_scheme: {String} sets the color scheme of the notification (optional)
-  - desktop_menu_type: {String} passes the desktop menu type which allows us to use the right css class (optional)
+  - color_scheme: {String} (optional)
+  - desktop_menu_type: {String} (optional)
 
   Usage:
   {% render 'cart-notification' %}
@@ -13,42 +19,33 @@
   <div class="cart-notification-wrapper{% if desktop_menu_type != 'drawer' %} page-width{% endif %}">
     <div
       id="cart-notification"
-      class="cart-notification focus-inset{% if color_scheme %} color-{{ color_scheme }} gradient{% endif %}"
+      class="cart-notification focus-inset"
       aria-modal="true"
-      aria-label="{{ 'general.cart.item_added' | t }}"
+      aria-label="Item added to your bag"
       role="dialog"
       tabindex="-1"
     >
-      <div class="cart-notification__header">
-        <h2 class="cart-notification__heading caption-large text-body">
-          {{- 'icon-checkmark.svg' | inline_asset_content -}}
-          {{ 'general.cart.item_added' | t }}
-        </h2>
-        <button
-          type="button"
-          class="cart-notification__close modal__close-button link link--text focus-inset"
-          aria-label="{{ 'accessibility.close' | t }}"
-        >
-          <span class="svg-wrapper">
-            {{- 'icon-close.svg' | inline_asset_content -}}
-          </span>
-        </button>
-      </div>
-      <div id="cart-notification-product" class="cart-notification-product"></div>
-      <div class="cart-notification__links">
-        <a
-          href="{{ routes.cart_url }}"
-          id="cart-notification-button"
-          class="button button--secondary button--full-width"
-        >
-          {{- 'general.cart.view_empty_cart' | t -}}
-        </a>
-        <form action="{{ routes.cart_url }}" method="post" id="cart-notification-form">
-          <button class="button button--primary button--full-width" name="checkout">
-            {{ 'sections.cart.checkout' | t }}
+      <div class="cl cl-notif">
+        <div class="notif-head">
+          <div class="notif-ic">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>
+          </div>
+          <h2 class="notif-h">Added to your bag</h2>
+          <button
+            type="button"
+            class="icbtn cart-notification__close"
+            aria-label="Close"
+          >
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M5.5 5.5l13 13M18.5 5.5l-13 13"></path></svg>
           </button>
-        </form>
-        <button type="button" class="link button-label">{{ 'general.continue_shopping' | t }}</button>
+        </div>
+        <div id="cart-notification-product" class="ci"></div>
+        <div class="notif-links">
+          <a href="{{ routes.cart_url }}" id="cart-notification-button" class="btn btn-fill w100">
+            View my bag
+          </a>
+          <button type="button" class="notif-cont">Continue shopping</button>
+        </div>
       </div>
     </div>
   </div>

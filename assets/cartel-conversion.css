@@ -1,1 +1,147 @@
-/* placeholder — filled by lane 7C */
+/* cartel-conversion.css — the always-on conversion chrome, ported 1:1 from Home.dc.html
+   (.offtab = the fixed right-edge "GET 10% OFF" tab, .pop* = the 10%-off email popup).
+   Scoped under .cl — both snippets must wrap their markup in <div class="cl">. */
+
+.cl .ov{position:fixed;inset:0;z-index:150;background:rgba(40,8,18,.5);backdrop-filter:blur(4px);display:flex;animation:fade .22s ease}
+.cl .ov-r{justify-content:flex-end}
+@keyframes pop{from{transform:translateY(14px) scale(.98);opacity:0}to{transform:none;opacity:1}}
+.cl .pop{width:min(900px,94vw);max-height:92vh;margin:auto;background:var(--cream);display:grid;grid-template-columns:1fr 1fr;overflow:hidden;border-radius:var(--r-lg);position:relative;animation:pop .3s ease}
+.cl .pop-img{position:relative;min-height:440px}
+.cl .pop-b{padding:52px 46px;display:flex;flex-direction:column;justify-content:center;gap:13px}
+.cl .pop-close{position:absolute;top:16px;right:16px;z-index:3;width:40px;height:40px;border-radius:50%;background:rgba(250,246,240,.92);display:flex;align-items:center;justify-content:center;color:var(--bord)}
+.cl .pop-h{font-size:44px;line-height:.98;color:var(--bord);font-weight:800;letter-spacing:-.035em}
+.cl .pop-p{font-size:15px;color:var(--muted);line-height:1.6}
+.cl .pop-form{display:flex;flex-direction:column;gap:11px;margin-top:8px}
+.cl .pop-input{border:1.5px solid var(--line);border-radius:100px;padding:15px 20px;font-size:14px;background:#fff;outline:none}
+.cl .pop-input:focus{border-color:var(--plum)}
+.cl .pop-skip{font-size:12px;color:var(--muted);text-decoration:underline;align-self:center;margin-top:4px}
+.cl .pop-done-ic{width:60px;height:60px;border-radius:50%;background:var(--bronze);color:var(--bord);display:flex;align-items:center;justify-content:center;margin-bottom:6px}
+.cl .offtab{position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:140;background:var(--bord);color:var(--cream);border:1px solid var(--bronze);border-right:0;border-radius:12px 0 0 12px;padding:16px 9px;writing-mode:vertical-rl;font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;box-shadow:-4px 6px 20px rgba(40,8,18,.32);transition:padding .2s ease,background .2s ease}
+.cl .offtab:hover{padding-left:13px;background:var(--plum)}
+@media (max-width:700px){
+  .cl .pop{grid-template-columns:1fr;max-height:94vh;overflow-y:auto}
+  .cl .pop-img{min-height:200px}
+  .cl .pop-b{padding:34px 26px}
+  .cl .pop-h{font-size:36px}
+}
+
+/* ============================================================
+   LANE 7C ADDITIONS (appended — the ported block above stays frozen)
+   1) Cart drawer skin: the design's .drawer/.dw-*/.ci components over
+      Dawn's component-cart-drawer.css mechanics. That file loads AFTER
+      this one, so overrides are deliberately over-specific.
+   2) Cart notification skin (cart_type "notification" — live today).
+   3) Conversion chrome extras.
+   This file loads on every template, which is why the drawer lives here.
+   ============================================================ */
+
+@keyframes slideR{from{transform:translateX(34px);opacity:.5}to{transform:none;opacity:1}}
+
+/* ---- drawer shell (mechanics stay Dawn's: fixed, visibility, translate) ---- */
+.drawer.drawer{background-color:rgba(40,8,18,.5);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+.drawer .drawer__inner.dw{width:min(440px,94vw);max-width:none;padding:0;border:0;background:var(--cream);border-radius:var(--r-lg) 0 0 var(--r-lg);overflow:hidden}
+cart-drawer.is-empty .drawer__inner.dw{display:flex;flex-direction:column;align-items:stretch;padding:0}
+.drawer .drawer__inner.dw .drawer__inner-empty{display:none}
+cart-drawer.is-empty .drawer__inner.dw .drawer__inner-empty{display:flex;flex-direction:column;flex:1;min-height:0;height:auto;padding:0;overflow-y:auto}
+cart-drawer.is-empty .drawer__inner.dw .dw-ship,
+cart-drawer.is-empty .drawer__inner.dw cart-drawer-items,
+cart-drawer.is-empty .drawer__inner.dw .cart-drawer__footer{display:none}
+.drawer .drawer__inner.dw cart-drawer-items{display:flex;flex-direction:column;flex:1;min-height:0}
+
+/* ---- drawer head ---- */
+.cl .dw-head{display:flex;align-items:center;justify-content:space-between;padding:24px 26px;border-bottom:1px solid var(--line)}
+.cl .dw-title{font-size:24px;color:var(--bord);font-weight:800;letter-spacing:-.02em;margin:0}
+.cl .dw-head .drawer__close.drawer__close{position:static;top:auto;right:auto;min-width:42px;min-height:42px;box-shadow:none}
+
+/* ---- free-shipping strip ---- */
+.cl .dw-ship{padding:16px 26px;background:var(--greige)}
+.cl .dw-ship-t{font-size:13px;font-weight:600;color:var(--bord);margin-bottom:9px}
+.cl .dw-ship-t b{color:var(--bronze-d)}
+.cl .dw-bar{height:7px;background:rgba(74,18,36,.13);border-radius:10px;overflow:hidden}
+/* display:block beats base.css div:empty{display:none} — the fill div is empty by design */
+.cl .dw-bar-f{display:block;height:100%;background:var(--bronze);border-radius:10px;transition:width .45s ease}
+
+/* ---- drawer items ---- */
+.cl .dw-form{display:flex;flex-direction:column;flex:1;min-height:0}
+.cl .dw-items{flex:1;min-height:0;overflow-y:auto;padding:0 26px}
+/* .ci.ci doubled on purpose: component-cart-drawer.css ships
+   `.cart-drawer .cart-item{display:grid;…}` at the same specificity and
+   loads later — the bump re-wins the tie inside the drawer. */
+.cl .ci.ci{display:flex;gap:14px;padding:20px 0;border-bottom:1px solid var(--line);position:relative;margin:0;grid-template:none}
+.cl .ci.ci:last-of-type{border-bottom:0}
+.cl .ci-img{width:74px;height:90px;flex:none;border-radius:var(--r-sm);overflow:hidden;background:var(--prodbg)}
+.cl .ci-b{flex:1;display:flex;flex-direction:column;min-width:0}
+.cl .ci-brand{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--bronze-d);font-weight:700}
+.cl .ci-name{display:block;font-size:15px;font-weight:700;color:var(--bord);margin:3px 0;letter-spacing:-.01em;line-height:1.3}
+.cl .ci-var{font-size:12px;color:var(--muted)}
+.cl .ci-bottom{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:auto;padding-top:8px}
+.cl .qty{display:flex;align-items:center;border:1px solid var(--line);border-radius:100px}
+.cl .qbtn{width:30px;height:32px;display:flex;align-items:center;justify-content:center;color:var(--bord);padding:0}
+.cl .qn{min-width:26px;text-align:center;font-size:13px;font-weight:700}
+.cl .qty input.qn{-webkit-appearance:none;appearance:textfield;-moz-appearance:textfield;border:0;background:transparent;padding:0;min-width:26px;width:34px;color:var(--ink)}
+.cl .qty input.qn::-webkit-inner-spin-button,.cl .qty input.qn::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.cl .ci-price{font-size:15px;font-weight:800;color:var(--bord);text-align:right}
+.cl .ci>cart-remove-button{flex:none;align-self:flex-start;margin-top:7px}
+.cl .ci-rm{font-size:11.5px;color:var(--muted);display:inline-flex;gap:5px;align-items:center;align-self:flex-start;padding:0}
+.cl .ci-rm:hover{color:var(--plum)}
+.cl .ci-rm svg{width:13px;height:13px}
+.cl .ci .cartel-gate{gap:0}
+.cl .ci .cartel-gate__label{display:inline-flex;align-items:center;gap:5px;color:var(--plum);font-weight:700;font-size:12px;line-height:1.3;text-align:right}
+.cl .ci .cartel-gate__label svg{width:13px;height:13px;flex:none}
+.cl .ci .loading__spinner{position:absolute;top:22px;right:0;width:16px;height:16px;padding:0}
+.cl .ci .loading__spinner .spinner{width:16px;height:16px}
+.cl .ci .cart-item__error{margin-top:6px}
+.cl .ci .cart-item__error svg{display:none}
+.cl .ci .cart-item__error-text{color:#9e3543;font-size:12px;font-weight:600}
+.cl .dw-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:70px 24px;text-align:center;color:var(--muted)}
+.cl .dw-empty .stitle{font-size:28px;margin-bottom:8px}
+.cl .dw-empty .btn{margin-top:14px}
+.cl .dw-errs{display:none}
+.cl .dw-errs:not(:empty){display:block;padding:8px 26px;color:#9e3543;font-size:12.5px;font-weight:600}
+
+/* ---- drawer footer ---- */
+.cl .dw-foot{padding:24px 26px;border-top:1px solid var(--line)}
+.cl .dw-sub{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.cl .dw-sub-l{font-size:14px;color:var(--bord);font-weight:600}
+.cl .dw-sub-v{font-size:26px;color:var(--bord);font-weight:800;letter-spacing:-.02em}
+.cl .dw-note{font-size:11.5px;color:var(--muted);margin:2px 0 16px}
+.cl .dw-lock{display:flex;gap:9px;align-items:flex-start;background:rgba(124,27,64,.06);border:1px solid rgba(124,27,64,.16);border-radius:var(--r-sm);padding:11px 13px;margin:0 0 14px;font-size:12px;color:var(--bord);font-weight:600;line-height:1.45;text-align:left}
+.cl .dw-lock svg{width:16px;height:16px;color:var(--plum);flex:none;margin-top:1px}
+.cl .dw-cont{display:block;width:100%;text-align:center;margin-top:12px;font-size:13px;font-weight:700;color:var(--bord);padding:8px}
+.cl .dw-cont:hover{color:var(--plum)}
+
+/* ---- cart notification (active cart_type) ---- */
+.cart-notification.cart-notification{background:var(--cream);border:1px solid var(--line);border-width:0 1px 1px;border-radius:0 0 var(--r) var(--r);padding:20px 22px;box-shadow:0 28px 60px rgba(74,18,36,.18);color:var(--ink);font-family:'Hanken Grotesk',system-ui,sans-serif}
+@media screen and (min-width:750px){
+  .cart-notification.cart-notification{border-width:1px;border-radius:var(--r);margin-top:10px}
+}
+.cl .notif-head{display:flex;align-items:center;gap:11px}
+/* Dawn pulls its close button out of the card with negative margins */
+.cart-notification .cart-notification__close.cart-notification__close{margin:0}
+.cl .notif-ic{width:34px;height:34px;border-radius:50%;background:var(--bronze);color:var(--bord);display:flex;align-items:center;justify-content:center;flex:none}
+.cl .notif-ic svg{width:16px;height:16px}
+.cl .notif-h{flex:1;font-size:16px;font-weight:800;color:var(--bord);letter-spacing:-.01em;margin:0}
+#cart-notification-product.ci{border-bottom:0;padding:14px 0 4px}
+.cl .notif-links{display:flex;flex-direction:column;gap:9px;margin-top:12px}
+.cl .notif-cont{font-size:13px;font-weight:700;color:var(--bord);padding:6px;text-align:center;width:100%}
+.cl .notif-cont:hover{color:var(--plum)}
+
+/* ---- conversion chrome extras ---- */
+.cl.cl-fixed{background:transparent}
+.cl .offtab:focus-visible{outline:2px solid var(--bronze);outline-offset:2px}
+.cl .pop-img>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.cl .pop-img-brand{position:absolute;inset:0;background:var(--bord);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--cream)}
+.cl .pop-monogram{font-size:64px;font-weight:900;letter-spacing:-.04em;line-height:1}
+.cl .pop-monogram-sub{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--bronze);font-weight:700}
+.cl .pop-msg-err{color:#9e3543;font-size:12.5px;font-weight:700;margin-top:6px}
+.cl .pop-done-wrap{display:flex;flex-direction:column;align-items:flex-start;gap:13px}
+.cl .pop-done-wrap .btn{margin-top:8px;align-self:flex-start}
+
+/* ---- reduced motion ---- */
+@media (prefers-reduced-motion: reduce){
+  .drawer .drawer__inner.dw{transition:none}
+  .cl .dw-bar-f,.cl .ship-bar-f{transition:none}
+  .cl .ov,.cl .pop,.cl .toast{animation:none}
+  .cl .offtab{transition:none}
+  .cart-notification.cart-notification{transition:none}
+}
