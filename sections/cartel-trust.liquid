@@ -2,7 +2,7 @@
   Cartel trust bar — 1:1 with the approved prototype (.vprops in Home.dc.html).
 {% endcomment %}
 <div class="cl">
-  <div class="wrap vpwrap" style="padding-bottom:{{ section.settings.pad_bottom }}px">
+  <div class="wrap vpwrap" style="--cl-pb:{{ section.settings.pad_bottom }}px">
     <div class="vprops">
       {%- for block in section.blocks -%}
         <div class="vp" {{ block.shopify_attributes }}>
