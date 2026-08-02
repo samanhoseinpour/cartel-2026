@@ -1,0 +1,277 @@
+/* ============================================================
+   Cartel Lash Supply — batch 5: header / mega-menu / footer parity
+   Brings the Dawn shell in line with Home.dc.html 1:1.
+   MUST load AFTER cartel.css (and after cartel-home.css) in the head.
+   Selectors are deliberately over-specific: Dawn's section CSS
+   (component-mega-menu.css, section-footer.css) is injected in the
+   BODY and therefore wins ties against head stylesheets.
+   ============================================================ */
+
+/* ===== 1. Header bar — translucent cream + blur + hairline ===== */
+.header-wrapper {
+  background: rgba(250, 246, 240, 0.82);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(var(--cartel-bord), 0.12);
+}
+
+@media screen and (min-width: 990px) {
+  /* ===== 2. Pill nav — design: 5% wine tint, no border ===== */
+  .header__inline-menu > ul.list-menu--inline {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    padding: 0.5rem;
+    border: 0;
+    border-radius: 100px;
+    background: rgba(var(--cartel-bord), 0.05);
+  }
+  .header__inline-menu .header__menu-item {
+    padding: 0.9rem 1.7rem;
+    border-radius: 100px;
+    font-size: 1.4rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: rgb(var(--cartel-bord));
+    transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .header__inline-menu .header__menu-item:hover {
+    background: rgba(255, 255, 255, 0.7);
+  }
+  /* open state = white pill + plum text (design .nav-a.on), NOT solid wine */
+  .header__inline-menu details[open] > .header__menu-item {
+    background: #fff;
+    color: rgb(var(--cartel-plum));
+    box-shadow: 0 2px 10px rgba(var(--cartel-bord), 0.12);
+  }
+  .header__inline-menu details[open] > .header__menu-item .icon-caret {
+    transform: rotate(180deg);
+  }
+
+  /* ===== 3. Mega menu — floating card, not a full-bleed band ===== */
+  .header__inline-menu .mega-menu__content {
+    left: 0;
+    right: 0;
+    width: 100%;
+    padding: 1.4rem 4rem 0 !important; /* the 14px gap lives INSIDE the panel so hover never breaks */
+    background: none !important;
+    background-color: transparent !important;
+    border: 0 !important;
+    border-radius: 0;
+    box-shadow: none !important;
+  }
+  .header__inline-menu .mega-menu__list.page-width {
+    max-width: 112rem;
+    width: auto;
+    margin: 0 auto;
+    padding: 3rem;
+    background: rgb(var(--cartel-cream));
+    border: 1px solid rgba(var(--cartel-bord), 0.12);
+    border-radius: 24px;
+    box-shadow: 0 28px 60px rgba(var(--cartel-bord), 0.16);
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2.8rem;
+  }
+  .header__inline-menu .mega-menu__list > li {
+    margin: 0;
+    list-style: none;
+  }
+  /* column heading — sentence case, 17px, wine, tight (design .megacol-h) */
+  .header__inline-menu .mega-menu__link--level-2 {
+    display: block;
+    margin: 0 0 1.5rem;
+    padding: 0;
+    font-size: 1.7rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    text-transform: none;
+    color: rgb(var(--cartel-bord));
+  }
+  .header__inline-menu .mega-menu__list > li > ul {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+  }
+  .header__inline-menu .mega-menu__list > li > ul .mega-menu__link {
+    display: block;
+    width: fit-content;
+    padding: 0;
+    font-size: 1.4rem;
+    font-weight: 400;
+    color: rgb(var(--cartel-ink));
+    transition: color 0.15s ease, transform 0.15s ease;
+  }
+  .header__inline-menu .mega-menu__list > li > ul .mega-menu__link:hover {
+    color: rgb(var(--cartel-plum));
+    transform: translateX(3px);
+    text-decoration: none;
+  }
+
+  /* ===== 4. Single-level dropdown (About) — compact popup card ===== */
+  /* --cl-pop-x is set by cartel-nav.js so the card centres under its own pill */
+  .header__inline-menu .mega-menu__list--condensed.page-width {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    width: 21.4rem;
+    max-width: 21.4rem;
+    padding: 1rem;
+    border-radius: 16px;
+    margin: 0 0 0 var(--cl-pop-x, 50%);
+    transform: translateX(-50%);
+  }
+  .header__inline-menu .mega-menu__list--condensed .mega-menu__link--level-2 {
+    margin: 0;
+    padding: 1.2rem 1.4rem;
+    border-radius: 12px;
+    font-size: 1.4rem;
+    font-weight: 500;
+    letter-spacing: 0;
+    color: rgb(var(--cartel-bord));
+    transition: background 0.15s ease;
+  }
+  .header__inline-menu .mega-menu__list--condensed .mega-menu__link--level-2:hover {
+    background: rgb(var(--cartel-greige));
+    color: rgb(var(--cartel-bord));
+    text-decoration: none;
+  }
+}
+
+/* ===== 5. Footer — type scale + 3-across perks (design .ft-*) ===== */
+.footer .page-width {
+  max-width: 128rem;
+}
+.footer .footer-block__heading {
+  font-size: 1.2rem !important;
+  letter-spacing: 0.14em;
+  margin-bottom: 1.7rem;
+}
+.footer .footer-block__brand-info .rte {
+  font-size: 1.35rem;
+  line-height: 1.65;
+  color: rgba(var(--cartel-cream), 0.66);
+  max-width: 27rem;
+}
+.footer .footer-block__details-content .link {
+  font-size: 1.4rem;
+  color: rgba(var(--cartel-cream), 0.74);
+}
+.footer .footer-block__details-content .link:hover {
+  color: rgb(var(--cartel-cream));
+}
+.footer .footer-block__details-content > li {
+  padding-bottom: 1.2rem;
+}
+/* socials — 42px circles, bronze fill on hover */
+.footer .footer__list-social.list-social {
+  gap: 1rem;
+  margin-top: 2.2rem;
+}
+.footer .list-social__link {
+  width: 4.2rem;
+  height: 4.2rem;
+  border-color: rgba(var(--cartel-cream), 0.28);
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+.footer .list-social__link:hover {
+  background: rgb(var(--cartel-bronze));
+  color: rgb(var(--cartel-bord));
+  border-color: rgb(var(--cartel-bronze));
+  transform: translateY(-2px);
+}
+/* get in touch */
+.footer .footer-contact__row {
+  font-size: 1.35rem;
+  color: rgba(var(--cartel-cream), 0.82);
+}
+/* perks — ONE row of three, compact (design .ft-pickup / .ftp) */
+.footer .footer__perks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3.4rem;
+  margin-top: 4.8rem;
+  padding: 3rem 0;
+  border-top: 1px solid rgba(var(--cartel-cream), 0.14);
+  border-bottom: 1px solid rgba(var(--cartel-cream), 0.14);
+}
+.footer .footer-perk {
+  flex: 1 1 26rem;
+  max-width: 34rem;
+  gap: 1.2rem;
+}
+.footer .footer-perk__icon svg {
+  width: 2.2rem;
+  height: 2.2rem;
+}
+.footer .footer-perk__heading {
+  margin-bottom: 0.3rem;
+  font-size: 1.3rem;
+}
+.footer .footer-perk__text {
+  font-size: 1.25rem;
+  line-height: 1.55;
+  color: rgba(var(--cartel-cream), 0.62);
+}
+@media screen and (max-width: 749px) {
+  .footer .footer__perks {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+}
+/* bottom bar */
+.footer .footer__content-bottom {
+  border-top: 0; /* the perks band already draws the divider */
+}
+.footer .footer__copyright.caption {
+  font-size: 1.2rem;
+  opacity: 1;
+  color: rgba(var(--cartel-cream), 0.55);
+}
+.footer .list-payment {
+  gap: 0.7rem;
+}
+.footer .list-payment__item {
+  padding: 0;
+}
+.footer .list-payment__item svg {
+  height: 2.6rem;
+  width: auto;
+  border-radius: 5px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* The design mock shows Visa / Mastercard / Amex / Apple Pay / G Pay / PayPal /
+   Shop Pay. Which badges actually render is driven by Settings → Payments, not
+   by the theme. Uncomment to force-hide the two the mock doesn't show: */
+/*
+.footer .list-payment__item:has(svg[aria-labelledby*='diners']),
+.footer .list-payment__item:has(svg[aria-labelledby*='discover']) { display: none; }
+*/
+
+/* ===== 6. Documented fixes on top of the batch-5 bundle ===== */
+/* Dawn underlines nav labels on hover and while open (base.css
+   .header__menu-item:hover span / details[open] > .header__menu-item) and
+   underlines + recolours mega links on hover (component-mega-menu.css
+   .mega-menu__link:hover — body-injected, so it needs outranking, not just
+   later order). The design's pills and column headings never underline. */
+@media screen and (min-width: 990px) {
+  .header__inline-menu .header__menu-item span,
+  .header__inline-menu .header__menu-item:hover span,
+  .header__inline-menu details[open] > .header__menu-item,
+  .header__inline-menu details[open]:hover > .header__menu-item {
+    text-decoration: none;
+  }
+  .header__inline-menu .mega-menu__list .mega-menu__link--level-2:hover {
+    color: rgb(var(--cartel-bord));
+    text-decoration: none;
+  }
+}
+
+/* icon-map-pin.svg / icon-truck.svg paths carry no fill attribute, so they
+   paint default black instead of the bronze cartel.css intends; icon-account
+   already uses fill="currentColor". Route them all through currentColor. */
+.footer .footer-perk__icon svg {
+  color: rgb(var(--cartel-bronze));
+  fill: currentColor;
+}
