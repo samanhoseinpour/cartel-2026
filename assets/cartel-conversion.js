@@ -1,1 +1,121 @@
-/* placeholder — filled by lane 7C */
+/* cartel-conversion.js — lane 7C conversion chrome (offer tab + email popup).
+   Loads on every template. Auto-opens the popup once per visitor after ~12s
+   or on exit intent (localStorage "cl_popup" remembers dismissal), never on
+   /cart and never in the theme editor. The offer tab reopens it any time.
+   Esc / backdrop close, focus trapped while open. Checkout pages are
+   Shopify-hosted, so no theme JS runs there. */
+(() => {
+  'use strict';
+
+  const KEY = 'cl_popup';
+  const ov = document.getElementById('cl-popup-ov');
+  const tab = document.getElementById('cl-offtab');
+  if (!ov && !tab) return;
+
+  const dismissed = () => {
+    try {
+      return !!window.localStorage.getItem(KEY);
+    } catch (e) {
+      return true; // storage unavailable → never auto-nag
+    }
+  };
+  const mark = () => {
+    try {
+      window.localStorage.setItem(KEY, '1');
+    } catch (e) {
+      /* noop */
+    }
+  };
+
+  let lastFocus = null;
+  let autoTimer = null;
+  const designMode = !!(window.Shopify && window.Shopify.designMode);
+  const onCartPage = !!document.querySelector('main[data-template="cart"]');
+
+  const isOpen = () => !!ov && !ov.hidden;
+
+  function cancelAuto() {
+    if (autoTimer) {
+      window.clearTimeout(autoTimer);
+      autoTimer = null;
+    }
+    document.removeEventListener('mouseout', onExitIntent);
+  }
+
+  function open() {
+    if (!ov || isOpen()) return;
+    cancelAuto();
+    lastFocus = document.activeElement;
+    ov.hidden = false;
+    document.body.classList.add('overflow-hidden');
+    const first = ov.querySelector('.pop-input') || ov.querySelector('[data-popup-close]');
+    if (first) first.focus();
+  }
+
+  function close() {
+    if (!ov || !isOpen()) return;
+    ov.hidden = true;
+    document.body.classList.remove('overflow-hidden');
+    mark();
+    if (lastFocus && typeof lastFocus.focus === 'function') lastFocus.focus();
+  }
+
+  function onExitIntent(e) {
+    if (e.clientY <= 0 && !e.relatedTarget) open();
+  }
+
+  function trapTab(e) {
+    const focusables = ov.querySelectorAll(
+      'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    );
+    if (!focusables.length) return;
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    } else if (!ov.contains(document.activeElement)) {
+      e.preventDefault();
+      first.focus();
+    }
+  }
+
+  if (tab) tab.addEventListener('click', open);
+
+  if (ov) {
+    ov.addEventListener('click', (e) => {
+      if (e.target === ov) {
+        close();
+        return;
+      }
+      const target = e.target instanceof Element ? e.target : null;
+      if (target && target.closest('[data-popup-close]')) close();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (!isOpen()) return;
+      if (e.key === 'Escape') {
+        close();
+        return;
+      }
+      if (e.key === 'Tab') trapTab(e);
+    });
+
+    // A just-submitted signup (success or validation error) reopens once so
+    // the visitor sees the outcome, then stays quiet.
+    const submitted = ov.querySelector('[data-popup-posted]') || ov.querySelector('[data-popup-error]');
+    if (submitted) {
+      if (ov.querySelector('[data-popup-posted]')) mark();
+      if (!designMode) window.setTimeout(open, 400);
+      return;
+    }
+
+    if (!designMode && !onCartPage && !dismissed()) {
+      autoTimer = window.setTimeout(open, 12000);
+      document.addEventListener('mouseout', onExitIntent);
+    }
+  }
+})();
