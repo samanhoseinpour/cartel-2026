@@ -49,10 +49,8 @@
             {%- endif -%}
             {%- if block.settings.heading != blank -%}
               <h1 class="h-hero">
-                {{- block.settings.heading -}}
-                {%- if block.settings.heading_accent != blank -%}
-                  <span class="hero-accent">{{ block.settings.heading_accent }}</span>
-                {%- endif -%}
+                {{- block.settings.heading | strip -}}
+                {%- if block.settings.heading_accent != blank %} <span class="hero-accent">{{ block.settings.heading_accent }}</span>{% endif -%}
               </h1>
             {%- endif -%}
             {%- if block.settings.sub != blank -%}<p class="hero-sub">{{ block.settings.sub }}</p>{%- endif -%}
