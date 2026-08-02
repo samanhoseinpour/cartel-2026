@@ -15,6 +15,7 @@
         "slide1": {
           "type": "slide",
           "settings": {
+            "image": "shopify://shop_images/1-lash-application.webp",
             "image_fit": "cover",
             "eyebrow": "New season · 2026",
             "heading": "Stock your kit like a",
@@ -43,6 +44,7 @@
         "slide3": {
           "type": "slide",
           "settings": {
+            "image": "shopify://shop_images/3-brow-before-after.webp",
             "image_fit": "cover",
             "eyebrow": "Brows & tints",
             "heading": "Bolder brows,",
@@ -57,6 +59,7 @@
         "slide4": {
           "type": "slide",
           "settings": {
+            "image": "shopify://shop_images/4-linger-adhesive-packshot.webp",
             "image_fit": "contain",
             "eyebrow": "Pro adhesives",
             "heading": "Retention you can",
