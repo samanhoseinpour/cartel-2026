@@ -285,6 +285,49 @@
     {{ 'cartel-shell.css' | asset_url | stylesheet_tag }}
     <script src="{{ 'cartel-nav.js' | asset_url }}" defer="defer"></script>
     <script src="{{ 'cartel-home.js' | asset_url }}" defer="defer"></script>
+    {%- comment -%}
+      Cartel — per-template stylesheets/scripts (batch 7).
+      One file per template family so six build lanes can work in parallel without
+      touching this file again. Every asset referenced here exists as a placeholder.
+    {%- endcomment -%}
+    {{ 'cartel-conversion.css' | asset_url | stylesheet_tag }}
+    <script src="{{ 'cartel-conversion.js' | asset_url }}" defer="defer"></script>
+    {%- case request.page_type -%}
+      {%- when 'collection' -%}
+        {{ 'cartel-plp.css' | asset_url | stylesheet_tag }}
+        {%- if collection.template_suffix == 'brand' -%}
+          {{ 'cartel-brand.css' | asset_url | stylesheet_tag }}
+        {%- endif -%}
+        <script src="{{ 'cartel-plp.js' | asset_url }}" defer="defer"></script>
+      {%- when 'list-collections' -%}
+        {{ 'cartel-brands.css' | asset_url | stylesheet_tag }}
+      {%- when 'product' -%}
+        {{ 'cartel-pdp.css' | asset_url | stylesheet_tag }}
+        <script src="{{ 'cartel-pdp.js' | asset_url }}" defer="defer"></script>
+      {%- when 'cart' -%}
+        {{ 'cartel-cart.css' | asset_url | stylesheet_tag }}
+        <script src="{{ 'cartel-cart.js' | asset_url }}" defer="defer"></script>
+      {%- when 'page' -%}
+        {%- liquid
+          assign cl_sfx = page.template_suffix | default: 'default'
+          assign cl_known = 'about,contact,faq,resources,policy,default' | split: ','
+          unless cl_known contains cl_sfx
+            assign cl_sfx = 'default'
+          endunless
+          assign cl_page_css = 'cartel-page-' | append: cl_sfx | append: '.css'
+        -%}
+        {{ cl_page_css | asset_url | stylesheet_tag }}
+        <script src="{{ 'cartel-pages.js' | asset_url }}" defer="defer"></script>
+      {%- when 'blog', 'article' -%}
+        {{ 'cartel-blog.css' | asset_url | stylesheet_tag }}
+        <script src="{{ 'cartel-blog.js' | asset_url }}" defer="defer"></script>
+      {%- when 'search' -%}
+        {{ 'cartel-search.css' | asset_url | stylesheet_tag }}
+      {%- when '404' -%}
+        {{ 'cartel-404.css' | asset_url | stylesheet_tag }}
+      {%- when 'customers/login', 'customers/register', 'customers/account', 'customers/addresses', 'customers/order', 'customers/reset_password', 'customers/activate_account' -%}
+        {{ 'cartel-account.css' | asset_url | stylesheet_tag }}
+    {%- endcase -%}
     <link rel="stylesheet" href="{{ 'component-cart-items.css' | asset_url }}" media="print" onload="this.media='all'">
 
     {%- if settings.cart_type == 'drawer' -%}
@@ -407,5 +450,8 @@
     {%- if settings.cart_type == 'drawer' -%}
       <script src="{{ 'cart-drawer.js' | asset_url }}" defer="defer"></script>
     {%- endif -%}
+
+    {% render 'cartel-offer-tab' %}
+    {% render 'cartel-email-popup' %}
   </body>
 </html>
