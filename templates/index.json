@@ -369,6 +369,7 @@
     "about": {
       "type": "cartel-about-band",
       "settings": {
+        "image": "shopify://shop_images/founder-training-studio.webp",
         "kicker": "About us",
         "title": "Made by lash artists, for lash artists.",
         "body": "Cartel Lash began on the lash bed, years of doing extensions, lifts and tints, and never quite trusting the supplies on the shelf. So we built the shop we always wanted: pro-grade products we use ourselves, stocked in Canada.",
