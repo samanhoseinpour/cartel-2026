@@ -42,20 +42,47 @@
   endif
 -%}
 
+{%- liquid
+  # Cartel: badge over the main image — mirrors cartel-card's tag logic.
+  # The Save badge is suppressed for gated (Thuya, logged-out) visitors: no price info leaks.
+  assign cl_gal_tag = ''
+  assign cl_gal_gated = false
+  if product.vendor == 'Thuya' and customer == nil
+    assign cl_gal_gated = true
+  endif
+  if product.compare_at_price > product.price and cl_gal_gated == false
+    assign cl_gal_saved = product.compare_at_price | minus: product.price | money_without_trailing_zeros
+    assign cl_gal_tag = 'Save ' | append: cl_gal_saved
+  elsif product.tags contains 'best-seller' or product.tags contains 'Best seller'
+    assign cl_gal_tag = 'Best seller'
+  elsif product.tags contains 'new' or product.tags contains 'New'
+    assign cl_gal_tag = 'New'
+  endif
+
+  # Cartel: gallery--rail flags that the thumbnail rail renders (same condition as the
+  # thumbnails block below) so the CSS can reserve the 80px rail column deterministically.
+  assign cl_has_rail = false
+  if limit == null or limit > 1
+    if media_count > 1 and section.settings.gallery_layout contains 'thumbnail' or section.settings.mobile_thumbnails == 'show' and media_count > 1
+      assign cl_has_rail = true
+    endif
+  endif
+-%}
 <media-gallery
   id="MediaGallery-{{ section.id }}"
   role="region"
-  {% if section.settings.enable_sticky_info %}
-    class="product__column-sticky"
-  {% endif %}
+  class="gallery{% if cl_has_rail %} gallery--rail{% endif %}{% if section.settings.enable_sticky_info %} product__column-sticky{% endif %}"
   aria-label="{{ 'products.product.media.gallery_viewer' | t }}"
   data-desktop-layout="{{ section.settings.gallery_layout }}"
 >
   <div id="GalleryStatus-{{ section.id }}" class="visually-hidden" role="status"></div>
-  <slider-component id="GalleryViewer-{{ section.id }}" class="slider-mobile-gutter">
+  <slider-component id="GalleryViewer-{{ section.id }}" class="slider-mobile-gutter gal-main">
     <a class="skip-to-content-link button visually-hidden quick-add-hidden" href="#ProductInfo-{{ section.id }}">
       {{ 'accessibility.skip_to_product_info' | t }}
     </a>
+    {%- if cl_gal_tag != blank -%}
+      <span class="gal-tag">{{ cl_gal_tag }}</span>
+    {%- endif -%}
     <ul
       id="Slider-Gallery-{{ section.id }}"
       class="product__media-list contains-media grid grid--peek list-unstyled slider slider--mobile"
@@ -183,7 +210,7 @@
   -%}
     <slider-component
       id="GalleryThumbnails-{{ section.id }}"
-      class="thumbnail-slider slider-mobile-gutter quick-add-hidden{% unless section.settings.gallery_layout contains 'thumbnail' %} medium-hide large-up-hide{% endunless %}{% if section.settings.mobile_thumbnails != 'show' %} small-hide{% endif %}{% if media_count <= 3 %} thumbnail-slider--no-slide{% endif %}"
+      class="thumbnail-slider gal-rail slider-mobile-gutter quick-add-hidden{% unless section.settings.gallery_layout contains 'thumbnail' %} medium-hide large-up-hide{% endunless %}{% if section.settings.mobile_thumbnails != 'show' %} small-hide{% endif %}{% if media_count <= 3 %} thumbnail-slider--no-slide{% endif %}"
     >
       <button
         type="button"
