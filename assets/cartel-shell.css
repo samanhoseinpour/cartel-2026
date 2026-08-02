@@ -675,3 +675,42 @@
    byte-identical to master, with no overriding rule anywhere — the "vanished
    div" could not be reproduced against the live theme. §9c kept regardless:
    the ::before scrim is immune to markup-side regressions. */
+
+/* ============================================================
+   10. BATCH 6.3 — footer gutter: perks band + mobile
+   ============================================================ */
+
+/* 10a. THE PERKS BAND HANGS OUTSIDE THE GUTTER.
+   §6 sets `.footer .footer__perks { padding: 30px 0 }` — a SHORTHAND on a
+   .page-width element, so it overwrites .page-width's own `padding: 0 40px`
+   (0,2,0 beats 0,1,0) and zeroes the horizontal gutter. The band's pin /
+   person / truck icons therefore sit 40px left of the hairline above them
+   and of every column in the footer. Same trap as the borders in §9a:
+   never let a shorthand touch a .page-width element's padding. */
+.footer .footer__perks {
+  padding-left: 40px;
+  padding-right: 40px;
+}
+
+/* 10b. MOBILE GUTTER (the 4px hairline nit).
+   The design's mobile footer gutter is 24px (.ft-in{padding:52px 24px 26px}).
+   §6 set that on .footer__content-top only, so on phones the columns sat at
+   24px while .footer__perks and .footer__content-bottom-wrapper — both plain
+   .page-width elements — stayed at 20px, and §9's hairlines were inset 20px
+   against 24px columns. Move the gutter to the whole footer and match the
+   hairline insets to it. */
+@media screen and (max-width: 749px) {
+  .footer .page-width {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+  .footer .footer__perks {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+  .footer .footer__content-top::after,
+  .footer .footer__perks::after {
+    left: 24px;
+    right: 24px;
+  }
+}
