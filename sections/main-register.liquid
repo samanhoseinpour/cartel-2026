@@ -1,166 +1,210 @@
-{{ 'customer.css' | asset_url | stylesheet_tag }}
+{%- comment -%}
+  Cartel Lash — register (lane 7D). Auth split layout from Account.dc.html.
+  Dawn's create_customer contract kept; the design's single "Full name"
+  field maps to customer[first_name]/[last_name] hidden inputs, split on
+  the last space at submit. Newsletter opt-in posts
+  customer[accepts_marketing]. No credential upload, no approval step —
+  the account is free and instant.
+  The brand panel is duplicated from main-login.liquid on purpose:
+  parallel lanes, no shared snippet.
+{%- endcomment -%}
 
-{%- style -%}
-  .section-{{ section.id }}-padding {
-    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
-    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
-  }
+<div class="cl">
+  <div class="page-width">{% render 'cartel-breadcrumbs', extra_label: 'Account' %}</div>
+  <section class="page-width acctpage">
+    <div class="authgrid">
+      <div class="authbrand">
+        <div class="ab-glow"></div>
+        <div class="ab-glow2"></div>
+        <span class="ab-ghost" aria-hidden="true">C</span>
+        <div class="ab-top">
+          {%- if settings.logo != blank -%}
+            {{ settings.logo | image_url: width: 300 | image_tag: class: 'ab-logo', alt: shop.name, loading: 'lazy' }}
+          {%- endif -%}
+          <span class="ab-kick">Create your account</span>
+          <h2 class="ab-h">Unlock Thuya pro pricing.</h2>
+          <p class="ab-p">
+            Create a free account to reveal pricing on Thuya professional products — plus order history, saved
+            addresses and faster checkout. It takes a minute.
+          </p>
+          <a class="btn btn-ghost-l ab-cta" href="{{ routes.account_login_url }}">Sign in instead</a>
+        </div>
+        <div class="ab-benefits">
+          <div class="abf">
+            <span class="abf-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"></path><circle cx="12" cy="12" r="3"></circle></svg></span>
+            <div>
+              <div class="abf-t">See Thuya professional pricing</div>
+              <div class="abf-s">Thuya products show their price the moment you&rsquo;re signed in.</div>
+            </div>
+          </div>
+          <div class="abf">
+            <span class="abf-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 3l8 4v10l-8 4-8-4V7z"></path><path d="M4 7l8 4 8-4M12 11v10"></path></svg></span>
+            <div>
+              <div class="abf-t">Order history &amp; tracking</div>
+              <div class="abf-s">Every order in one place, from processing to delivered.</div>
+            </div>
+          </div>
+          <div class="abf">
+            <span class="abf-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 21s-6.5-5.3-6.5-10A6.5 6.5 0 0 1 18.5 11c0 4.7-6.5 10-6.5 10z"></path><circle cx="12" cy="11" r="2.4"></circle></svg></span>
+            <div>
+              <div class="abf-t">Saved addresses</div>
+              <div class="abf-s">Keep your studio and home addresses ready for one-tap delivery.</div>
+            </div>
+          </div>
+          <div class="abf">
+            <span class="abf-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M4 12a8 8 0 1 1 2.4 5.7"></path><path d="M4 20v-4.5h4.5"></path></svg></span>
+            <div>
+              <div class="abf-t">Faster checkout</div>
+              <div class="abf-s">Save your details and reorder your essentials in a tap.</div>
+            </div>
+          </div>
+        </div>
+        <div class="ab-foot">
+          <span class="ab-stars" aria-hidden="true">★★★★★</span>
+          <span class="ab-foot-t"><b>4.9</b> · loved by 2,000+ Canadian artists</span>
+        </div>
+      </div>
 
-  @media screen and (min-width: 750px) {
-    .section-{{ section.id }}-padding {
-      padding-top: {{ section.settings.padding_top }}px;
-      padding-bottom: {{ section.settings.padding_bottom }}px;
-    }
-  }
-{%- endstyle -%}
+      <div class="authform">
+        <nav class="authtabs" aria-label="Sign in or create account">
+          <a class="atab" href="{{ routes.account_login_url }}">Sign in</a>
+          <a class="atab on" href="{{ routes.account_register_url }}" aria-current="page">Create account</a>
+        </nav>
 
-<div class="customer register section-{{ section.id }}-padding">
-  <h1>
-    {{ 'customer.register.title' | t }}
-  </h1>
-  {%- form 'create_customer', novalidate: 'novalidate' -%}
-    {%- if form.errors -%}
-      <h2 class="form__message" tabindex="-1" autofocus>
-        <span class="svg-wrapper">
-          {{- 'icon-error.svg' | inline_asset_content -}}
-        </span>
-        {{ 'templates.contact.form.error_heading' | t }}
-      </h2>
-      <ul>
-        {%- for field in form.errors -%}
-          <li>
-            {%- if field == 'form' -%}
-              {{ form.errors.messages[field] }}
-            {%- else -%}
-              <a href="#RegisterForm-{{ field }}">
-                {{ form.errors.translated_fields[field] | capitalize }}
-                {{ form.errors.messages[field] }}
-              </a>
-            {%- endif -%}
-          </li>
-        {%- endfor -%}
-      </ul>
-    {%- endif -%}
-    <div class="field">
-      <input
-        type="text"
-        name="customer[first_name]"
-        id="RegisterForm-FirstName"
-        {% if form.first_name %}
-          value="{{ form.first_name }}"
-        {% endif %}
-        autocomplete="given-name"
-        placeholder="{{ 'customer.register.first_name' | t }}"
-      >
-      <label for="RegisterForm-FirstName">
-        {{ 'customer.register.first_name' | t }}
-      </label>
+        <h1 class="af-h">Create your account.</h1>
+        <p class="af-sub">It only takes a minute — sign up to see Thuya pricing, check out faster and track your orders.</p>
+
+        {%- form 'create_customer', novalidate: 'novalidate', class: 'form', id: 'CartelRegisterForm' -%}
+          {%- assign full_name = form.first_name | append: ' ' | append: form.last_name | strip -%}
+          {%- if form.errors -%}
+            <div class="form-alert" role="alert" tabindex="-1" autofocus>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7.5v5M12 16h.01"></path></svg>
+              <div class="form-alert-b">
+                {%- if form.errors.messages.form != blank and form.errors.size == 1 -%}
+                  {{ form.errors.messages.form }}
+                  {%- if form.errors.messages.form contains 'customer' or form.errors.messages.form contains 'account' -%}
+                    <br><a href="{{ routes.account_login_url }}">Sign in instead</a>
+                  {%- endif -%}
+                {%- else -%}
+                  <b>Let&rsquo;s fix a couple of things:</b>
+                  <ul>
+                    {%- for field in form.errors -%}
+                      <li>
+                        {%- if field == 'form' -%}
+                          {{ form.errors.messages[field] }}
+                        {%- else -%}
+                          {{ form.errors.translated_fields[field] | capitalize }} {{ form.errors.messages[field] }}.
+                        {%- endif -%}
+                      </li>
+                    {%- endfor -%}
+                  </ul>
+                {%- endif -%}
+              </div>
+            </div>
+          {%- endif -%}
+          <div class="field">
+            <label class="field-l" for="RegisterFullName">Full name</label>
+            <input
+              class="inp"
+              type="text"
+              id="RegisterFullName"
+              autocomplete="name"
+              placeholder="Priya Mehta"
+              value="{{ full_name }}"
+            >
+            <input type="hidden" name="customer[first_name]" id="RegisterFirstName" value="{{ form.first_name }}">
+            <input type="hidden" name="customer[last_name]" id="RegisterLastName" value="{{ form.last_name }}">
+          </div>
+          <div class="field">
+            <label class="field-l" for="RegisterEmail">Email</label>
+            <input
+              class="inp{% if form.errors contains 'email' %} inp-err{% endif %}"
+              type="email"
+              name="customer[email]"
+              id="RegisterEmail"
+              value="{{ form.email }}"
+              spellcheck="false"
+              autocapitalize="off"
+              autocomplete="email"
+              aria-required="true"
+              placeholder="you@studio.com"
+              {% if form.errors contains 'email' %}
+                aria-invalid="true"
+              {% endif %}
+            >
+          </div>
+          <div class="field">
+            <label class="field-l" for="RegisterPassword">Password</label>
+            <div class="pwwrap">
+              <input
+                class="inp{% if form.errors contains 'password' %} inp-err{% endif %}"
+                type="password"
+                name="customer[password]"
+                id="RegisterPassword"
+                autocomplete="new-password"
+                aria-required="true"
+                placeholder="Create a password"
+                {% if form.errors contains 'password' %}
+                  aria-invalid="true"
+                {% endif %}
+              >
+              <button type="button" class="pwtoggle" aria-label="Show password" aria-pressed="false">
+                <svg class="pw-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                <svg class="pw-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M3 3l18 18"></path><path d="M10.6 10.7a3 3 0 0 0 4.1 4.2"></path><path d="M9.8 5.2A9.4 9.4 0 0 1 12 5c6.5 0 10 7 10 7a16.8 16.8 0 0 1-3.3 4M6.1 6.2A16.6 16.6 0 0 0 2 12s3.5 7 10 7a9.3 9.3 0 0 0 3-.5"></path></svg>
+              </button>
+            </div>
+            <span class="field-hint">At least 8 characters.</span>
+          </div>
+          <label class="checkrow">
+            <input type="checkbox" name="customer[accepts_marketing]" value="true">
+            <span class="cbx" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M5 12.5l4 4L19 7"></path></svg></span>
+            <span class="checkrow-l">Email me restock alerts and the occasional offer — no spam.</span>
+          </label>
+          <button class="btn btn-fill w100 af-submit" type="submit">Create my account</button>
+          <p class="af-fine">
+            By creating an account you agree to our
+            {%- if shop.terms_of_service.body != blank %} <a href="{{ shop.terms_of_service.url }}">Terms</a>{% else %} Terms{% endif %} and
+            {%- if shop.privacy_policy.body != blank %} <a href="{{ shop.privacy_policy.url }}">Privacy Policy</a>{% else %} Privacy Policy{% endif %}.
+          </p>
+        {%- endform -%}
+        <p class="af-alt af-alt-gap">Already have an account? <a href="{{ routes.account_login_url }}">Log in</a></p>
+      </div>
     </div>
-    <div class="field">
-      <input
-        type="text"
-        name="customer[last_name]"
-        id="RegisterForm-LastName"
-        {% if form.last_name %}
-          value="{{ form.last_name }}"
-        {% endif %}
-        autocomplete="family-name"
-        placeholder="{{ 'customer.register.last_name' | t }}"
-      >
-      <label for="RegisterForm-LastName">
-        {{ 'customer.register.last_name' | t }}
-      </label>
-    </div>
-    <div class="field">
-      <input
-        type="email"
-        name="customer[email]"
-        id="RegisterForm-email"
-        {% if form.email %}
-          value="{{ form.email }}"
-        {% endif %}
-        spellcheck="false"
-        autocapitalize="off"
-        autocomplete="email"
-        aria-required="true"
-        {% if form.errors contains 'email' %}
-          aria-invalid="true"
-          aria-describedby="RegisterForm-email-error"
-        {% endif %}
-        placeholder="{{ 'customer.register.email' | t }}"
-      >
-      <label for="RegisterForm-email">
-        {{ 'customer.register.email' | t }}
-      </label>
-    </div>
-    {%- if form.errors contains 'email' -%}
-      <span id="RegisterForm-email-error" class="form__message">
-        <span class="svg-wrapper">
-          {{- 'icon-error.svg' | inline_asset_content -}}
-        </span>
-        {{ form.errors.translated_fields.email | capitalize }}
-        {{ form.errors.messages.email }}.
-      </span>
-    {%- endif -%}
-    <div class="field">
-      <input
-        type="password"
-        name="customer[password]"
-        id="RegisterForm-password"
-        aria-required="true"
-        {% if form.errors contains 'password' %}
-          aria-invalid="true"
-          aria-describedby="RegisterForm-password-error"
-        {% endif %}
-        placeholder="{{ 'customer.register.password' | t }}"
-      >
-      <label for="RegisterForm-password">
-        {{ 'customer.register.password' | t }}
-      </label>
-    </div>
-    {%- if form.errors contains 'password' -%}
-      <span id="RegisterForm-password-error" class="form__message">
-        <span class="svg-wrapper">
-          {{- 'icon-error.svg' | inline_asset_content -}}
-        </span>
-        {{ form.errors.translated_fields.password | capitalize }}
-        {{ form.errors.messages.password }}.
-      </span>
-    {%- endif -%}
-    <button>
-      {{ 'customer.register.submit' | t }}
-    </button>
-  {%- endform -%}
+  </section>
 </div>
+
+<script>
+  (function () {
+    document.querySelectorAll('.cl .pwtoggle').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var input = btn.closest('.pwwrap').querySelector('input');
+        var show = input.type === 'password';
+        input.type = show ? 'text' : 'password';
+        btn.classList.toggle('showing', show);
+        btn.setAttribute('aria-pressed', show ? 'true' : 'false');
+        btn.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+      });
+    });
+
+    var form = document.getElementById('CartelRegisterForm');
+    if (!form) return;
+    var full = document.getElementById('RegisterFullName');
+    var first = document.getElementById('RegisterFirstName');
+    var last = document.getElementById('RegisterLastName');
+    var sync = function () {
+      var v = (full.value || '').trim().replace(/\s+/g, ' ');
+      var i = v.lastIndexOf(' ');
+      first.value = i > 0 ? v.slice(0, i) : v;
+      last.value = i > 0 ? v.slice(i + 1) : '';
+    };
+    full.addEventListener('change', sync);
+    form.addEventListener('submit', sync);
+  })();
+</script>
 
 {% schema %}
 {
   "name": "t:sections.main-register.name",
-  "settings": [
-    {
-      "type": "header",
-      "content": "t:sections.all.padding.section_padding_heading"
-    },
-    {
-      "type": "range",
-      "id": "padding_top",
-      "min": 0,
-      "max": 100,
-      "step": 4,
-      "unit": "px",
-      "label": "t:sections.all.padding.padding_top",
-      "default": 36
-    },
-    {
-      "type": "range",
-      "id": "padding_bottom",
-      "min": 0,
-      "max": 100,
-      "step": 4,
-      "unit": "px",
-      "label": "t:sections.all.padding.padding_bottom",
-      "default": 36
-    }
-  ]
+  "settings": []
 }
 {% endschema %}

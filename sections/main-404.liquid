@@ -1,23 +1,87 @@
-<style type="text/css">
-  .template-404 .title + * {
-    margin-top: 1rem;
-  }
+{%- comment -%}
+  Cartel Lash — 404 (lane 7D). No prototype: built from the shell
+  vocabulary — cream page, .kick eyebrow, .stitle, one line of copy, a
+  search field posting to /search and editable collection chips. Kept
+  useful, not clever: the live site's retired URLs get 301s in admin.
+{%- endcomment -%}
 
-  @media screen and (min-width: 750px) {
-    .template-404 .title + * {
-      margin-top: 2rem;
-    }
-  }
-</style>
-
-<div class="template-404 page-width page-margin center">
-  <p>
-    {{ 'templates.404.subtext' | t }}
-  </p>
-  <h1 class="title">
-    {{ 'templates.404.title' | t }}
-  </h1>
-  <a href="{{ routes.all_products_collection_url }}" class="button">
-    {{ 'general.continue_shopping' | t }}
-  </a>
+<div class="cl">
+  <section class="page-width">
+    <div class="p404">
+      <span class="kick">404</span>
+      <h1 class="stitle">{{ section.settings.heading | default: 'That page has been discontinued.' }}</h1>
+      {%- if section.settings.copy != blank -%}
+        <p class="lead">{{ section.settings.copy }}</p>
+      {%- endif -%}
+      <form class="s404-form" action="{{ routes.search_url }}" method="get" role="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.3-4.3"></path></svg>
+        <input
+          class="s404-input"
+          type="search"
+          name="q"
+          placeholder="Search products, brands, categories"
+          aria-label="Search the shop"
+        >
+        <button class="btn btn-fill s404-go" type="submit">
+          <span>Search</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"></path></svg>
+        </button>
+      </form>
+      {%- if section.blocks.size > 0 -%}
+        <div class="s404-chips">
+          {%- for block in section.blocks -%}
+            {%- if block.settings.label != blank -%}
+              <a
+                class="btn btn-out btn-sm"
+                href="{{ block.settings.link | default: routes.all_products_collection_url }}"
+                {{ block.shopify_attributes }}
+              >
+                {{- block.settings.label -}}
+              </a>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    </div>
+  </section>
 </div>
+
+{% schema %}
+{
+  "name": "404",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Headline",
+      "default": "That page has been discontinued."
+    },
+    {
+      "type": "text",
+      "id": "copy",
+      "label": "Copy",
+      "default": "The link may have retired with an old range, or the address was mistyped. Search the shop or jump back in below."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "chip",
+      "name": "Link chip",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "default": "Shop all"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 6
+}
+{% endschema %}
