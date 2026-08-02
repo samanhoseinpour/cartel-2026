@@ -492,14 +492,6 @@
   }
 }
 
-/* The design mock shows Visa / Mastercard / Amex / Apple Pay / G Pay / PayPal /
-   Shop Pay. Which badges actually render is driven by Settings → Payments, not
-   by the theme. Uncomment to force-hide the two the mock doesn't show: */
-/*
-.footer .list-payment__item:has(svg[aria-labelledby*='diners']),
-.footer .list-payment__item:has(svg[aria-labelledby*='discover']) { display: none; }
-*/
-
 /* ============================================================
    7. HOMEPAGE FIXES (.cl scope — this file loads after cartel-home.css)
    ============================================================ */
@@ -587,3 +579,99 @@
     padding-right: 40px;
   }
 }
+
+/* ============================================================
+   9. BATCH 6.2 — footer hairline inset, payment alignment, hero scrim
+   ============================================================ */
+
+/* 9a. FOOTER HAIRLINES ran 40px wider than the columns on both sides.
+   The design puts the gutter on .ft-in and the borders on .ft-top /
+   .ft-pickup, so the rules sit INSIDE the 40px gutter, flush with the
+   logo and the © line. Dawn hangs the same rules on .page-width
+   elements — whose 40px padding is inside the border box — so each one
+   overhung the content it was supposed to bracket. Redraw them inset. */
+.footer .footer__content-top,
+.footer .footer__perks {
+  position: relative;
+  border-bottom: 0;
+}
+.footer .footer__content-top::after,
+.footer .footer__perks::after {
+  content: '';
+  position: absolute;
+  left: 40px;
+  right: 40px;
+  bottom: 0;
+  height: 1px;
+  background: rgba(var(--cartel-cream), 0.14);
+  pointer-events: none;
+}
+@media screen and (max-width: 749px) {
+  .footer .footer__content-top::after,
+  .footer .footer__perks::after {
+    left: 20px;
+    right: 20px;
+  }
+}
+
+/* 9b. PAYMENT BADGES sat mid-row. Design .ft-bottom is a space-between
+   row: © hard left, badges hard right. Dawn gives every .footer__column
+   width:100% and centres .footer__payment inside it, so the badges
+   floated in the middle of the leftover space. The empty localization
+   column (no country/language selector enabled) is hidden so it can't
+   eat a flex slot. */
+.footer .footer__content-bottom-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 18px;
+}
+.footer .footer__content-bottom-wrapper > .footer__column {
+  width: auto;
+}
+.footer .footer__localization:not(:has(*)) {
+  display: none;
+}
+.footer .footer__payment {
+  margin: 0;
+  justify-content: flex-end;
+}
+.footer .footer__payment .list-payment {
+  margin: 0;
+  justify-content: flex-end;
+}
+
+/* 9c. HERO SCRIM, permanently. The 96deg dark→clear gradient has now
+   gone missing on two consecutive uploads even though the .hero-ov div
+   is in cartel-hero.liquid (line 45) and the rule is declared in BOTH
+   cartel-home.css and §7 of this file. Without it the cream headline
+   sits on the light packshot slide and is unreadable. Stop depending on
+   the div: paint the gradient on .hero-slide::before, which cannot go
+   missing, and blank the div so the two can never stack.
+   (This file is demonstrably reaching the browser — the batch 6 nav
+   caret fix is visible on the running theme — so the pseudo-element
+   lands even if whatever ate .hero-ov happens again.) */
+.cl .hero-slide::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    96deg,
+    rgba(28, 6, 13, 0.9) 0%,
+    rgba(28, 6, 13, 0.64) 32%,
+    rgba(28, 6, 13, 0.22) 62%,
+    rgba(28, 6, 13, 0.03) 100%
+  );
+}
+.cl .hero-slide > .hero-ov {
+  background: none;
+}
+
+/* §9 install note (2026-08-02): at install time the served page already had
+   all four .hero-ov divs and both gradient rules (cartel-home.css:64 + §7c),
+   byte-identical to master, with no overriding rule anywhere — the "vanished
+   div" could not be reproduced against the live theme. §9c kept regardless:
+   the ::before scrim is immune to markup-side regressions. */
