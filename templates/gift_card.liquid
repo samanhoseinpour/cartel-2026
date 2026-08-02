@@ -103,6 +103,72 @@
     {%- endunless -%}
 
     {{ 'template-giftcard.css' | asset_url | stylesheet_tag }}
+
+    {% render 'cartel-fonts' %}
+    {% style %}
+      /* Cartel skin (lane 7D) — light restyle over template-giftcard.css.
+         Standalone layout ({% raw %}layout none{% endraw %}), so the brand values are
+         restated here from the .cl token palette. */
+      body.gift-card {
+        background: #faf6f0;
+        color: #3a2226;
+        font-family: 'Hanken Grotesk', system-ui, sans-serif;
+      }
+      .gift-card h1,
+      .gift-card h2 {
+        color: #4a1224;
+        font-family: 'Hanken Grotesk', system-ui, sans-serif;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+      }
+      .gift-card__price h1 {
+        font-weight: 900;
+        letter-spacing: -0.04em;
+      }
+      .gift-card__text {
+        color: #917277;
+      }
+      .gift-card__image {
+        border-radius: 24px;
+        box-shadow: 0 28px 60px rgba(74, 18, 36, 0.16);
+      }
+      .gift-card__number {
+        background: #ece2d4;
+        color: #4a1224;
+        border: 1px solid rgba(74, 18, 36, 0.12);
+        border-radius: 100px;
+        padding: 1.2rem 2.4rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+      }
+      .gift-card__qr-code img,
+      .gift-card__qr-code canvas {
+        border-radius: 12px;
+        border: 1px solid rgba(74, 18, 36, 0.12);
+        background: #fff;
+        padding: 6px;
+      }
+      .gift-card .button {
+        --color-button: 74, 18, 36;
+        --color-button-text: 250, 246, 240;
+        border-radius: 100px;
+        font-family: 'Hanken Grotesk', system-ui, sans-serif;
+        font-weight: 700;
+        letter-spacing: 0.01em;
+      }
+      .gift-card .button::after {
+        border-radius: 100px;
+      }
+      .gift-card .button--secondary {
+        --color-secondary-button-label: 74, 18, 36;
+      }
+      .gift-card .badge--expired {
+        background: #7c1b40;
+        color: #faf6f0;
+        border: 0;
+        border-radius: 100px;
+      }
+    {% endstyle %}
   </head>
 
   <body class="gradient gift-card">

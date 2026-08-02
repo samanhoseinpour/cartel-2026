@@ -1,183 +1,216 @@
-{{ 'customer.css' | asset_url | stylesheet_tag }}
+{%- comment -%}
+  Cartel Lash — account dashboard (lane 7D), from Account.dc.html logged-in view.
+  Real data only: orders_count / last_order / addresses_count. The mock's
+  wishlist and store-credit tiles are omitted (no wishlist app, no credit
+  app) — see REPORT.md. .probadge renders only for customers tagged
+  thuya / pro. The rail is duplicated across main-account /
+  main-addresses / main-order on purpose: parallel lanes, no shared snippet.
+{%- endcomment -%}
 
-{%- style -%}
-  .section-{{ section.id }}-padding {
-    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
-    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
-  }
+{%- liquid
+  assign is_pro = false
+  for tag in customer.tags
+    assign tag_d = tag | downcase
+    if tag_d == 'thuya' or tag_d == 'pro'
+      assign is_pro = true
+    endif
+  endfor
+-%}
 
-  @media screen and (min-width: 750px) {
-    .section-{{ section.id }}-padding {
-      padding-top: {{ section.settings.padding_top }}px;
-      padding-bottom: {{ section.settings.padding_bottom }}px;
-    }
-  }
-{%- endstyle -%}
-
-<div class="customer account section-{{ section.id }}-padding">
-  <div>
-    <h1 class="customer__title">{{ 'customer.account.title' | t }}</h1>
-    <a href="{{ routes.account_logout_url }}">
-      <span class="svg-wrapper">
-        {{- 'icon-account.svg' | inline_asset_content -}}
-      </span>
-      {{ 'customer.log_out' | t }}
-    </a>
-  </div>
-
-  <div>
-    <div>
-      <h2>{{ 'customer.orders.title' | t }}</h2>
-
-      {% paginate customer.orders by 20 %}
-        {%- if customer.orders.size > 0 -%}
-          <table role="table" class="order-history">
-            <caption class="visually-hidden">
-              {{ 'customer.orders.title' | t }}
-            </caption>
-            <thead role="rowgroup">
-              <tr role="row">
-                <th id="ColumnOrder" scope="col" role="columnheader">{{ 'customer.orders.order_number' | t }}</th>
-                <th id="ColumnDate" scope="col" role="columnheader">{{ 'customer.orders.date' | t }}</th>
-                <th id="ColumnPayment" scope="col" role="columnheader">{{ 'customer.orders.payment_status' | t }}</th>
-                <th id="ColumnFulfillment" scope="col" role="columnheader">
-                  {{ 'customer.orders.fulfillment_status' | t }}
-                </th>
-                <th id="ColumnTotal" scope="col" role="columnheader">{{ 'customer.orders.total' | t }}</th>
-              </tr>
-            </thead>
-            <tbody role="rowgroup">
-              {%- for order in customer.orders -%}
-                <tr role="row">
-                  <td
-                    id="RowOrder"
-                    role="cell"
-                    headers="ColumnOrder"
-                    data-label="{{ 'customer.orders.order_number' | t }}"
-                  >
-                    <a
-                      href="{{ order.customer_url }}"
-                      aria-label="{{ 'customer.orders.order_number_link' | t: number: order.name }}"
-                    >
-                      {{ order.name }}
-                    </a>
-                  </td>
-                  <td headers="RowOrder ColumnDate" role="cell" data-label="{{ 'customer.orders.date' | t }}">
-                    {{ order.created_at | time_tag: format: 'date' }}
-                  </td>
-                  <td
-                    headers="RowOrder ColumnPayment"
-                    role="cell"
-                    data-label="{{ 'customer.orders.payment_status' | t }}"
-                  >
-                    {{ order.financial_status_label }}
-                  </td>
-                  <td
-                    headers="RowOrder ColumnFulfillment"
-                    role="cell"
-                    data-label="{{ 'customer.orders.fulfillment_status' | t }}"
-                  >
-                    {{ order.fulfillment_status_label }}
-                  </td>
-                  <td headers="RowOrder ColumnTotal" role="cell" data-label="{{ 'customer.orders.total' | t }}">
-                    {{ order.total_net_amount | money_with_currency }}
-                  </td>
-                </tr>
-              {%- endfor -%}
-            </tbody>
-          </table>
-        {%- else -%}
-          <p>{{ 'customer.orders.none' | t }}</p>
-        {%- endif -%}
-
-        {%- if paginate.pages > 1 -%}
-          {%- if paginate.parts.size > 0 -%}
-            <nav class="pagination" role="navigation" aria-label="{{ 'general.pagination.label' | t }}">
-              <ul role="list">
-                {%- if paginate.previous -%}
-                  <li>
-                    <a href="{{ paginate.previous.url }}" aria-label="{{ 'general.pagination.previous' | t }}">
-                      <span class="svg-wrapper">
-                        {{- 'icon-caret.svg' | inline_asset_content -}}
-                      </span>
-                    </a>
-                  </li>
-                {%- endif -%}
-
-                {%- for part in paginate.parts -%}
-                  <li>
-                    {%- if part.is_link -%}
-                      <a href="{{ part.url }}" aria-label="{{ 'general.pagination.page' | t: number: part.title }}">
-                        {{- part.title -}}
-                      </a>
-                    {%- else -%}
-                      {%- if part.title == paginate.current_page -%}
-                        <span aria-current="page" aria-label="{{ 'general.pagination.page' | t: number: part.title }}">
-                          {{- part.title -}}
-                        </span>
-                      {%- else -%}
-                        <span>{{ part.title }}</span>
-                      {%- endif -%}
-                    {%- endif -%}
-                  </li>
-                {%- endfor -%}
-
-                {%- if paginate.next -%}
-                  <li>
-                    <a href="{{ paginate.next.url }}" aria-label="{{ 'general.pagination.next' | t }}">
-                      <span class="svg-wrapper">
-                        {{- 'icon-caret.svg' | inline_asset_content -}}
-                      </span>
-                    </a>
-                  </li>
-                {%- endif -%}
-              </ul>
-            </nav>
+<div class="cl">
+  <div class="page-width">{% render 'cartel-breadcrumbs', extra_label: 'Account' %}</div>
+  <section class="page-width acctpage">
+    <div class="dash-top">
+      <div>
+        <h1 class="dash-hi">
+          {%- if customer.first_name != blank -%}
+            Hi, {{ customer.first_name }} 👋
+          {%- else -%}
+            Hi there 👋
           {%- endif -%}
+        </h1>
+        <p class="dash-sub">You&rsquo;re signed in — Thuya professional pricing is visible across the store.</p>
+      </div>
+      <div class="dash-top-r">
+        {%- if is_pro -%}
+          <span class="probadge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M8.5 12.5l2.4 2.4 4.6-5"></path></svg>
+            Thuya pro
+          </span>
         {%- endif -%}
-      {% endpaginate %}
+        <a class="btn btn-out btn-sm" href="{{ routes.account_logout_url }}">Sign out</a>
+      </div>
     </div>
 
-    <div>
-      <h2>{{ 'customer.account.details' | t }}</h2>
-
-      {{ customer.default_address | format_address }}
-
-      <a href="{{ routes.account_addresses_url }}">
-        {{ 'customer.account.view_addresses' | t }} ({{ customer.addresses_count }})
+    <div class="statgrid">
+      <a class="stat" href="#orders">
+        <span class="stat-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 3l8 4v10l-8 4-8-4V7z"></path><path d="M4 7l8 4 8-4M12 11v10"></path></svg></span>
+        <span class="stat-n">{{ customer.orders_count }}</span>
+        <span class="stat-l">Order{% if customer.orders_count != 1 %}s{% endif %} placed</span>
+        <span class="stat-go">View orders<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"></path></svg></span>
+      </a>
+      {%- if customer.last_order -%}
+        <a class="stat" href="{{ customer.last_order.customer_url }}">
+          <span class="stat-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3.5" y="5" width="17" height="16" rx="2.5"></rect><path d="M3.5 10h17M8 3v4M16 3v4"></path></svg></span>
+          <span class="stat-n">{{ customer.last_order.created_at | date: '%b %-d, %Y' }}</span>
+          <span class="stat-l">Last order</span>
+          <span class="stat-go">View order<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"></path></svg></span>
+        </a>
+      {%- else -%}
+        <a class="stat" href="{{ routes.all_products_collection_url }}">
+          <span class="stat-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3.5" y="5" width="17" height="16" rx="2.5"></rect><path d="M3.5 10h17M8 3v4M16 3v4"></path></svg></span>
+        <span class="stat-n">—</span>
+          <span class="stat-l">Last order</span>
+          <span class="stat-go">Start shopping<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"></path></svg></span>
+        </a>
+      {%- endif -%}
+      <a class="stat" href="{{ routes.account_addresses_url }}">
+        <span class="stat-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 21s-6.5-5.3-6.5-10A6.5 6.5 0 0 1 18.5 11c0 4.7-6.5 10-6.5 10z"></path><circle cx="12" cy="11" r="2.4"></circle></svg></span>
+        <span class="stat-n">{{ customer.addresses_count }}</span>
+        <span class="stat-l">Saved address{% if customer.addresses_count != 1 %}es{% endif %}</span>
+        <span class="stat-go">Manage addresses<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"></path></svg></span>
       </a>
     </div>
-  </div>
+
+    <div class="dashbody">
+      <nav class="acctrail" aria-label="Account">
+        <a class="arow on" href="{{ routes.account_url }}" aria-current="page">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 3l8 4v10l-8 4-8-4V7z"></path><path d="M4 7l8 4 8-4"></path></svg>
+          Orders
+        </a>
+        <a class="arow" href="{{ routes.account_addresses_url }}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 21s-6.5-5.3-6.5-10A6.5 6.5 0 0 1 18.5 11c0 4.7-6.5 10-6.5 10z"></path><circle cx="12" cy="11" r="2.4"></circle></svg>
+          Addresses
+        </a>
+        <a class="arow" href="#account-details">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 20.5c0-4 3.5-6.5 7.5-6.5s7.5 2.5 7.5 6.5"></path></svg>
+          Account details
+        </a>
+        <span class="arow-sp"></span>
+        <a class="arow danger" href="{{ routes.account_logout_url }}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M15 12H4M9 7l-5 5 5 5"></path><path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4"></path></svg>
+          Log out
+        </a>
+      </nav>
+
+      <div class="panel">
+        <div class="pcard" id="orders">
+          <div class="pcard-h">
+            <span class="pcard-t">Orders</span>
+            {%- if customer.orders_count > 0 -%}
+              <span class="pcard-link">{{ customer.orders_count }}</span>
+            {%- endif -%}
+          </div>
+          <div class="pcard-b">
+            {%- paginate customer.orders by 20 -%}
+              {%- for order in customer.orders -%}
+                <div class="ord{% if forloop.first %} first{% endif %}">
+                  <div class="ord-img">
+                    {%- assign li_image = order.line_items.first.image -%}
+                    {%- if li_image -%}
+                      {{ li_image | image_url: width: 112 | image_tag: loading: 'lazy', alt: order.name }}
+                    {%- else -%}
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 3l8 4v10l-8 4-8-4V7z"></path><path d="M4 7l8 4 8-4"></path></svg>
+                    {%- endif -%}
+                  </div>
+                  <div class="ord-m">
+                    <a class="ord-id" href="{{ order.customer_url }}">{{ order.name }}</a>
+                    <div class="ord-meta">
+                      {{ order.created_at | date: '%b %-d, %Y' }} ·
+                      {{ order.item_count }} item{% if order.item_count != 1 %}s{% endif %}
+                    </div>
+                  </div>
+                  {%- if order.cancelled -%}
+                    <span class="ord-status st-proc">Cancelled</span>
+                  {%- elsif order.fulfillment_status == 'fulfilled' -%}
+                    <span class="ord-status st-deliv">{{ order.fulfillment_status_label }}</span>
+                  {%- elsif order.fulfillment_status == 'partial' -%}
+                    <span class="ord-status st-transit">{{ order.fulfillment_status_label }}</span>
+                  {%- else -%}
+                    <span class="ord-status st-proc">{{ order.fulfillment_status_label }}</span>
+                  {%- endif -%}
+                  <span class="ord-total">{{ order.total_net_amount | money }}</span>
+                  <a class="ord-act" href="{{ order.customer_url }}">View</a>
+                </div>
+              {%- else -%}
+                <div class="ord-empty">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M12 3l8 4v10l-8 4-8-4V7z"></path><path d="M4 7l8 4 8-4M12 11v10"></path></svg>
+                  <span class="ord-empty-t">No orders yet</span>
+                  <span class="ord-empty-s">Your Thuya pricing is already unlocked — your first order will show up here.</span>
+                  <a class="btn btn-fill" href="{{ routes.all_products_collection_url }}">Start shopping</a>
+                </div>
+              {%- endfor -%}
+
+              {%- if paginate.pages > 1 -%}
+                <nav class="pgn" role="navigation" aria-label="Orders pagination">
+                  {%- if paginate.previous -%}
+                    <a href="{{ paginate.previous.url }}" aria-label="Previous page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg></a>
+                  {%- endif -%}
+                  {%- for part in paginate.parts -%}
+                    {%- if part.is_link -%}
+                      <a href="{{ part.url }}" aria-label="Page {{ part.title }}">{{ part.title }}</a>
+                    {%- elsif part.title == paginate.current_page -%}
+                      <span class="pgn-cur" aria-current="page">{{ part.title }}</span>
+                    {%- else -%}
+                      <span>{{ part.title }}</span>
+                    {%- endif -%}
+                  {%- endfor -%}
+                  {%- if paginate.next -%}
+                    <a href="{{ paginate.next.url }}" aria-label="Next page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg></a>
+                  {%- endif -%}
+                </nav>
+              {%- endif -%}
+            {%- endpaginate -%}
+          </div>
+        </div>
+
+        <div class="inforow">
+          <div class="pcard">
+            <div class="pcard-h">
+              <span class="pcard-t">Default address</span>
+              <a class="pcard-link" href="{{ routes.account_addresses_url }}">Manage</a>
+            </div>
+            <div class="pcard-b">
+              {%- if customer.default_address -%}
+                <div class="addr-line">{{ customer.default_address | format_address }}</div>
+              {%- else -%}
+                <div class="addr-line">
+                  <p>No address saved yet — add one for faster checkout.</p>
+                </div>
+              {%- endif -%}
+            </div>
+          </div>
+          <div class="pcard" id="account-details">
+            <div class="pcard-h">
+              <span class="pcard-t">Account details</span>
+            </div>
+            <div class="pcard-b">
+              <div class="credstat">
+                <span class="cred-ic neutral"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 20.5c0-4 3.5-6.5 7.5-6.5s7.5 2.5 7.5 6.5"></path></svg></span>
+                <div>
+                  <div class="cred-t">{{ customer.name | default: customer.email }}</div>
+                  <div class="cred-s">
+                    {{ customer.email }}
+                    {%- if customer.phone != blank %} · {{ customer.phone }}{% endif %}
+                  </div>
+                </div>
+              </div>
+              <div class="pillrow">
+                {%- if is_pro -%}<span class="minipill">Thuya pro</span>{%- endif -%}
+                {%- if customer.accepts_marketing -%}<span class="minipill">Newsletter on</span>{%- endif -%}
+                <span class="minipill">Member since {{ customer.created_at | date: '%Y' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 </div>
 
 {% schema %}
 {
   "name": "t:sections.main-account.name",
-  "settings": [
-    {
-      "type": "header",
-      "content": "t:sections.all.padding.section_padding_heading"
-    },
-    {
-      "type": "range",
-      "id": "padding_top",
-      "min": 0,
-      "max": 100,
-      "step": 4,
-      "unit": "px",
-      "label": "t:sections.all.padding.padding_top",
-      "default": 36
-    },
-    {
-      "type": "range",
-      "id": "padding_bottom",
-      "min": 0,
-      "max": 100,
-      "step": 4,
-      "unit": "px",
-      "label": "t:sections.all.padding.padding_bottom",
-      "default": 36
-    }
-  ]
+  "settings": []
 }
 {% endschema %}

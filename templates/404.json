@@ -11,7 +11,46 @@
   "sections": {
     "main": {
       "type": "main-404",
-      "settings": {}
+      "blocks": {
+        "chip-shop-all": {
+          "type": "chip",
+          "settings": {
+            "label": "Shop all",
+            "link": "/collections/all"
+          }
+        },
+        "chip-lash-lift": {
+          "type": "chip",
+          "settings": {
+            "label": "Lash lift",
+            "link": "/collections/lash-lift"
+          }
+        },
+        "chip-brows": {
+          "type": "chip",
+          "settings": {
+            "label": "Brows",
+            "link": "/collections/brows"
+          }
+        },
+        "chip-brands": {
+          "type": "chip",
+          "settings": {
+            "label": "Brands",
+            "link": "/collections"
+          }
+        }
+      },
+      "block_order": [
+        "chip-shop-all",
+        "chip-lash-lift",
+        "chip-brows",
+        "chip-brands"
+      ],
+      "settings": {
+        "heading": "That page has been discontinued.",
+        "copy": "The link may have retired with an old range, or the address was mistyped. Search the shop or jump back in below."
+      }
     }
   },
   "order": [
