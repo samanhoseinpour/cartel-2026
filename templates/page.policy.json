@@ -1,0 +1,47 @@
+{
+  "sections": {
+    "policy": {
+      "type": "cartel-policy-body",
+      "settings": {
+        "updated": "August 2026",
+        "intro": "The plain-English version of how we ship, what happens if something isn't right, and how we look after your information."
+      },
+      "blocks": {
+        "x-shipping": {
+          "type": "cross",
+          "settings": {
+            "title": "Shipping policy",
+            "text": "Free over $150, ships from BC in 1–2 business days, local pick-up.",
+            "url": "/pages/shipping-policy"
+          }
+        },
+        "x-returns": {
+          "type": "cross",
+          "settings": {
+            "title": "Returns & exchanges",
+            "text": "30 days, unopened products, no drama — here's how it works.",
+            "url": "/pages/return-policy"
+          }
+        },
+        "x-privacy": {
+          "type": "cross",
+          "settings": {
+            "title": "Privacy policy",
+            "text": "What we collect, why, and how we keep your details safe.",
+            "url": "/pages/privacy-policy"
+          }
+        },
+        "x-terms": {
+          "type": "cross",
+          "settings": {
+            "title": "Terms & conditions",
+            "text": "The ground rules for using the shop and our content.",
+            "url": "/pages/terms-of-service"
+          }
+        }
+      },
+      "block_order": ["x-shipping", "x-returns", "x-privacy", "x-terms"]
+    }
+  },
+  "order": ["policy"]
+}

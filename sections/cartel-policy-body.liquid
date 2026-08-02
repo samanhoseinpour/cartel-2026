@@ -1,0 +1,280 @@
+{% comment %}
+  Cartel policy body — 1:1 with Policies.dc.html. One template serves the four
+  designed policy pages (/pages/shipping-policy, returns, privacy, terms).
+  Left rail: sibling-policy nav (link list, falls back to the "More policies"
+  blocks), an "On this page" TOC built by cartel-pages.js from the rendered h2s,
+  and a help card. Right: header + dark "short version" chips + numbered
+  sections — from "Policy section" blocks, or from page.content when there are
+  none (the client pastes the real copy; h2s become the numbered sections).
+  NOTE: Shopify's own legal policies (Settings → Legal) cannot take a theme
+  template — keep their text in sync with these pages (see REPORT.md).
+{% endcomment %}
+{%- liquid
+  assign sec_count = 0
+  assign chip_count = 0
+  assign cross_count = 0
+  for block in section.blocks
+    if block.type == 'psection'
+      assign sec_count = sec_count | plus: 1
+    elsif block.type == 'chip'
+      assign chip_count = chip_count | plus: 1
+    elsif block.type == 'cross'
+      assign cross_count = cross_count | plus: 1
+    endif
+  endfor
+-%}
+<div class="cl">
+  {%- if section.settings.show_breadcrumbs -%}
+    <section class="wrap">{% render 'cartel-breadcrumbs' %}</section>
+  {%- endif -%}
+
+  <section class="wrap pol-wrap" style="--cl-pt:{{ section.settings.pad_top }}px;--cl-pb:{{ section.settings.pad_bottom }}px">
+    <div class="pol-layout">
+      <aside class="pol-rail">
+        <div class="pol-railcard">
+          <div class="pol-rail-h">{{ section.settings.rail_label }}</div>
+          <nav class="pol-nav" aria-label="Policies">
+            {%- if section.settings.nav_menu != blank -%}
+              {%- for link in section.settings.nav_menu.links -%}
+                <a class="pol-navlink{% if link.active %} on{% endif %}" href="{{ link.url }}"{% if link.active %} aria-current="page"{% endif %}>
+                  <span>{{ link.title }}</span>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"></path></svg>
+                </a>
+              {%- endfor -%}
+            {%- else -%}
+              {%- for block in section.blocks -%}
+                {%- if block.type == 'cross' -%}
+                  {%- assign is_current = false -%}
+                  {%- if block.settings.url == page.url -%}{%- assign is_current = true -%}{%- endif -%}
+                  <a class="pol-navlink{% if is_current %} on{% endif %}" href="{{ block.settings.url }}"{% if is_current %} aria-current="page"{% endif %}>
+                    <span>{{ block.settings.title }}</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"></path></svg>
+                  </a>
+                {%- endif -%}
+              {%- endfor -%}
+            {%- endif -%}
+          </nav>
+        </div>
+        <div class="pol-railcard pol-toc" data-pol-toc-card hidden>
+          <div class="pol-rail-h">{{ section.settings.toc_label }}</div>
+          <nav class="pol-toclist" data-pol-toc aria-label="On this page"></nav>
+        </div>
+        {%- if section.settings.help_title != blank -%}
+          <div class="pol-help">
+            <div class="pol-help-t">{{ section.settings.help_title }}</div>
+            <p class="pol-help-p">{{ section.settings.help_text }}</p>
+            {%- if section.settings.help_btn_label != blank -%}
+              <a class="btn btn-fill btn-sm w100" href="{{ section.settings.help_btn_link | default: '/pages/contact' }}">{{ section.settings.help_btn_label }}</a>
+            {%- endif -%}
+            {%- if section.settings.help_link_label != blank -%}
+              <a class="pol-help-link" href="{{ section.settings.help_link | default: '/pages/faq' }}">{{ section.settings.help_link_label }}</a>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+      </aside>
+
+      <div class="pol-main">
+        <div class="pol-head">
+          {%- if section.settings.eyebrow != blank -%}<span class="kick">{{ section.settings.eyebrow }}</span>{%- endif -%}
+          <h1 class="pol-h1">{{ section.settings.heading | default: page.title }}</h1>
+          <div class="pol-meta">
+            {%- if section.settings.updated != blank -%}
+              <span class="pol-updated">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 8v4.4l3 2"></path></svg>
+                Last updated {{ section.settings.updated }}
+              </span>
+              <span class="pol-dot"></span>
+            {%- endif -%}
+            <span data-pol-count>{% if sec_count > 0 %}{{ sec_count }} sections{% endif %}</span>
+          </div>
+          {%- if section.settings.intro != blank -%}<p class="pol-intro">{{ section.settings.intro }}</p>{%- endif -%}
+        </div>
+
+        {%- if chip_count > 0 -%}
+          <div class="pol-summary">
+            <div class="pol-summary-h">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>
+              {{- section.settings.summary_label -}}
+            </div>
+            <div class="pol-summary-chips">
+              {%- for block in section.blocks -%}
+                {%- if block.type == 'chip' -%}
+                  <span class="pol-chip" {{ block.shopify_attributes }}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>
+                    {{- block.settings.text -}}
+                  </span>
+                {%- endif -%}
+              {%- endfor -%}
+            </div>
+          </div>
+        {%- endif -%}
+
+        {%- if sec_count > 0 -%}
+          <div class="pol-body" data-pol-body="blocks">
+            {%- assign sec_i = 0 -%}
+            {%- for block in section.blocks -%}
+              {%- if block.type == 'psection' -%}
+                {%- assign sec_i = sec_i | plus: 1 -%}
+                <div class="pol-sec" id="policy-sec-{{ sec_i }}" {{ block.shopify_attributes }}>
+                  <div class="pol-sec-h">
+                    <span class="pol-sec-n">{{ sec_i }}</span>
+                    <h2 class="pol-sec-t">{{ block.settings.heading }}</h2>
+                  </div>
+                  {{ block.settings.body }}
+                </div>
+              {%- endif -%}
+            {%- endfor -%}
+          </div>
+        {%- else -%}
+          <div class="pol-body" data-pol-body="content">
+            {{ page.content }}
+          </div>
+        {%- endif -%}
+
+        {%- if section.settings.show_foot -%}
+          <div class="pol-foot">
+            <p>
+              This <b>{{ section.settings.heading | default: page.title }}</b>
+              {%- if section.settings.updated != blank %} is effective as of <b>{{ section.settings.updated }}</b>{%- endif -%}
+              . {{ section.settings.foot_text }}
+            </p>
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+  </section>
+
+  {%- if cross_count > 0 -%}
+    <section class="wrap">
+      <div class="pol-cross">
+        <div class="pol-cross-h">{{ section.settings.cross_label }}</div>
+        <div class="pol-cross-grid">
+          {%- assign cross_i = 0 -%}
+          {%- for block in section.blocks -%}
+            {%- if block.type == 'cross' -%}
+              {%- unless block.settings.url == page.url -%}
+                {%- assign cross_i = cross_i | plus: 1 -%}
+                <a class="pol-cross-card" href="{{ block.settings.url }}" {{ block.shopify_attributes }}>
+                  <span class="pol-cross-num">{{ cross_i | prepend: '0' | slice: -2, 2 }}</span>
+                  <span class="pol-cross-t">{{ block.settings.title }}</span>
+                  <span class="pol-cross-s">{{ block.settings.text }}</span>
+                  <span class="pol-cross-go">
+                    {{- section.settings.cross_cta | default: 'Read policy' -}}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"></path></svg>
+                  </span>
+                </a>
+              {%- endunless -%}
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+      </div>
+    </section>
+  {%- endif -%}
+
+  {%- if section.settings.cta_heading != blank -%}
+    <section class="sec wrap" style="--cl-pt:{{ section.settings.cta_pad_top }}px;--cl-pb:{{ section.settings.cta_pad_bottom }}px">
+      <div class="pol-cta">
+        <div class="pol-cta-glow"></div>
+        <div class="pol-cta-l">
+          {%- if section.settings.cta_pill != blank -%}<span class="pol-cta-pill">{{ section.settings.cta_pill }}</span>{%- endif -%}
+          <h2 class="pol-cta-h">{{ section.settings.cta_heading }}</h2>
+          {%- if section.settings.cta_text != blank -%}<p class="pol-cta-p">{{ section.settings.cta_text }}</p>{%- endif -%}
+        </div>
+        <div class="pol-cta-r">
+          {%- if section.settings.cta_btn1_label != blank -%}
+            <a class="btn btn-fill" href="{{ section.settings.cta_btn1_link | default: '/pages/contact' }}">
+              {{- section.settings.cta_btn1_label -}}
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"></path></svg>
+            </a>
+          {%- endif -%}
+          {%- if section.settings.cta_btn2_label != blank -%}
+            <a class="btn btn-out" href="{{ section.settings.cta_btn2_link | default: '/pages/faq' }}">{{ section.settings.cta_btn2_label }}</a>
+          {%- endif -%}
+        </div>
+      </div>
+    </section>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "Cartel policy body",
+  "tag": "section",
+  "class": "cartel-section",
+  "settings": [
+    { "type": "checkbox", "id": "show_breadcrumbs", "label": "Show breadcrumbs", "default": true },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Legal & policies" },
+    { "type": "text", "id": "heading", "label": "Heading", "info": "Leave blank to use the page title." },
+    { "type": "text", "id": "updated", "label": "Last updated", "default": "August 2026" },
+    { "type": "textarea", "id": "intro", "label": "Intro paragraph", "default": "The plain-English version of how we ship, what happens if something isn't right, and how we look after your information." },
+    { "type": "header", "content": "Left rail" },
+    { "type": "text", "id": "rail_label", "label": "Rail heading", "default": "Policies" },
+    { "type": "link_list", "id": "nav_menu", "label": "Policies menu", "info": "A menu of the four policy pages. Leave unset to build the rail from the \"More policies\" blocks." },
+    { "type": "text", "id": "toc_label", "label": "TOC heading", "default": "On this page" },
+    { "type": "text", "id": "help_title", "label": "Help card title", "default": "Still have questions?" },
+    { "type": "textarea", "id": "help_text", "label": "Help card text", "default": "Our team is here to help and usually replies within one business day." },
+    { "type": "text", "id": "help_btn_label", "label": "Help button label", "default": "Contact us" },
+    { "type": "url", "id": "help_btn_link", "label": "Help button link" },
+    { "type": "text", "id": "help_link_label", "label": "Help text-link label", "default": "Read the FAQ" },
+    { "type": "url", "id": "help_link", "label": "Help text-link" },
+    { "type": "header", "content": "Short version" },
+    { "type": "text", "id": "summary_label", "label": "Label", "default": "The short version" },
+    { "type": "header", "content": "Footer line" },
+    { "type": "checkbox", "id": "show_foot", "label": "Show effective-date line", "default": true },
+    { "type": "inline_richtext", "id": "foot_text", "label": "Footer text", "default": "If anything here is unclear, <a href=\"/pages/contact\">get in touch</a>, we're always happy to walk you through it." },
+    { "type": "header", "content": "More policies" },
+    { "type": "text", "id": "cross_label", "label": "Label", "default": "More policies" },
+    { "type": "text", "id": "cross_cta", "label": "Card link label", "default": "Read policy" },
+    { "type": "header", "content": "Help band" },
+    { "type": "text", "id": "cta_pill", "label": "Pill", "default": "Here to help" },
+    { "type": "text", "id": "cta_heading", "label": "Heading", "default": "Still need a hand?" },
+    { "type": "textarea", "id": "cta_text", "label": "Text", "default": "Whether it's a shipping question or a product swap, our Canadian team has your back, usually within one business day." },
+    { "type": "text", "id": "cta_btn1_label", "label": "Primary button label", "default": "Contact the team" },
+    { "type": "url", "id": "cta_btn1_link", "label": "Primary button link" },
+    { "type": "text", "id": "cta_btn2_label", "label": "Secondary button label", "default": "Browse the FAQ" },
+    { "type": "url", "id": "cta_btn2_link", "label": "Secondary button link" },
+    { "type": "range", "id": "cta_pad_top", "min": 0, "max": 120, "step": 2, "unit": "px", "label": "Band padding top", "default": 24 },
+    { "type": "range", "id": "cta_pad_bottom", "min": 0, "max": 120, "step": 2, "unit": "px", "label": "Band padding bottom", "default": 90 },
+    { "type": "header", "content": "Section spacing" },
+    { "type": "range", "id": "pad_top", "min": 0, "max": 120, "step": 2, "unit": "px", "label": "Padding top", "default": 6 },
+    { "type": "range", "id": "pad_bottom", "min": 0, "max": 120, "step": 2, "unit": "px", "label": "Padding bottom", "default": 30 }
+  ],
+  "blocks": [
+    {
+      "type": "chip",
+      "name": "Short-version chip",
+      "settings": [
+        { "type": "text", "id": "text", "label": "Text", "default": "Free shipping over $150" }
+      ]
+    },
+    {
+      "type": "psection",
+      "name": "Policy section",
+      "settings": [
+        { "type": "text", "id": "heading", "label": "Heading", "default": "Processing times" },
+        { "type": "richtext", "id": "body", "label": "Body", "default": "<p>Orders are picked, packed and shipped from BC within 1–2 business days.</p>" }
+      ]
+    },
+    {
+      "type": "cross",
+      "name": "More-policies card",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Title", "default": "Returns & exchanges" },
+        { "type": "textarea", "id": "text", "label": "Description", "default": "30 days, unopened products, easy process." },
+        { "type": "url", "id": "url", "label": "Link" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Cartel policy body",
+      "blocks": [
+        { "type": "chip" },
+        { "type": "chip", "settings": { "text": "Ships from BC in 1–2 business days" } },
+        { "type": "psection" },
+        { "type": "cross" }
+      ]
+    }
+  ]
+}
+{% endschema %}
