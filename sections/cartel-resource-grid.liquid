@@ -1,0 +1,291 @@
+{% comment %}
+  Cartel free resources — 1:1 with Free Resources.dc.html: intro + featured
+  download (.fr-feat), category filter chips (.fr-fchip, client-side in
+  cartel-pages.js), the .fr-grid of download cards (blocks), and the newsletter
+  band (.fr-news) reusing the homepage customer-form + "newsletter" tag pattern.
+  Card "File link" can point at a Shopify file (Content → Files) or any URL.
+{% endcomment %}
+{%- liquid
+  assign cat_string = '||'
+  assign card_count = 0
+  for block in section.blocks
+    if block.type == 'resource'
+      assign card_count = card_count | plus: 1
+      assign c = block.settings.category | strip | default: 'Guides'
+      if c == blank
+        assign c = 'Guides'
+      endif
+      assign probe = '||' | append: c | append: '||'
+      unless cat_string contains probe
+        assign cat_string = cat_string | append: c | append: '||'
+      endunless
+    endif
+  endfor
+  assign cats = cat_string | remove_first: '||' | split: '||'
+-%}
+<div class="cl">
+  {%- if section.settings.show_breadcrumbs -%}
+    <section class="wrap">{% render 'cartel-breadcrumbs' %}</section>
+  {%- endif -%}
+
+  <section class="wrap">
+    <div class="fr-hero">
+      <div class="fr-intro">
+        {%- if section.settings.eyebrow != blank -%}<span class="kick">{{ section.settings.eyebrow }}</span>{%- endif -%}
+        <h1 class="fr-h1">{{ section.settings.heading | default: page.title }}</h1>
+        {%- if section.settings.lead != blank -%}<p class="fr-sub">{{ section.settings.lead }}</p>{%- endif -%}
+      </div>
+      {%- if section.settings.show_featured -%}
+        <div class="fr-feat">
+          <div class="fr-feat-cover">
+            {%- if section.settings.feat_image -%}
+              {{ section.settings.feat_image | image_url: width: 1200 | image_tag: widths: '600,900,1200', loading: 'eager', alt: section.settings.feat_heading }}
+            {%- endif -%}
+            <div class="fr-feat-grad"></div>
+            {%- if section.settings.feat_tag != blank -%}
+              <span class="fr-feat-tag">
+                <svg viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden="true"><path d="M12 3l2.3 5 5.2.5-4 3.6 1.2 5.4L12 20l-4.9 2.9 1.2-5.4-4-3.6 5.2-.5z"></path></svg>
+                {{- section.settings.feat_tag -}}
+              </span>
+            {%- endif -%}
+          </div>
+          <div class="fr-feat-b">
+            {%- if section.settings.feat_kick != blank -%}<span class="fr-feat-kick">{{ section.settings.feat_kick }}</span>{%- endif -%}
+            <h2 class="fr-feat-h">{{ section.settings.feat_heading }}</h2>
+            {%- if section.settings.feat_text != blank -%}<p class="fr-feat-p">{{ section.settings.feat_text }}</p>{%- endif -%}
+            {%- if section.settings.feat_li_1 != blank or section.settings.feat_li_2 != blank or section.settings.feat_li_3 != blank -%}
+              <div class="fr-feat-list">
+                {%- for i in (1..3) -%}
+                  {%- liquid
+                    assign li_key = 'feat_li_' | append: i
+                    assign li = section.settings[li_key]
+                  -%}
+                  {%- if li != blank -%}
+                    <div class="fr-feat-li">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12.5l4 4 9.5-10"></path></svg>
+                      {{- li -}}
+                    </div>
+                  {%- endif -%}
+                {%- endfor -%}
+              </div>
+            {%- endif -%}
+            {%- if section.settings.feat_meta != blank -%}
+              <div class="fr-feat-meta">
+                {%- assign meta_bits = section.settings.feat_meta | split: '·' -%}
+                {%- for bit in meta_bits -%}
+                  <span>{{ bit | strip }}</span>
+                  {%- unless forloop.last -%}<span class="fr-feat-dot"></span>{%- endunless -%}
+                {%- endfor -%}
+              </div>
+            {%- endif -%}
+            <div class="fr-feat-cta">
+              {%- if section.settings.feat_btn_label != blank and section.settings.feat_file != blank -%}
+                <a class="btn btn-bronze" href="{{ section.settings.feat_file }}" target="_blank" rel="noopener">
+                  <svg class="ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 4v10M8 11l4 3 4-3"></path><path d="M5 18.5h14"></path></svg>
+                  {{- section.settings.feat_btn_label -}}
+                </a>
+              {%- endif -%}
+              {%- if section.settings.feat_btn2_label != blank and section.settings.feat_btn2_link != blank -%}
+                <a class="btn btn-out" href="{{ section.settings.feat_btn2_link }}" target="_blank" rel="noopener">{{ section.settings.feat_btn2_label }}</a>
+              {%- endif -%}
+            </div>
+          </div>
+        </div>
+      {%- endif -%}
+    </div>
+  </section>
+
+  <section class="wrap fr-lib" id="fr-library" style="--cl-pt:{{ section.settings.lib_pad_top }}px;--cl-pb:{{ section.settings.lib_pad_bottom }}px">
+    <div class="fr-lib-head">
+      <div class="fr-lib-h">
+        {%- if section.settings.lib_kick != blank -%}<span class="kick">{{ section.settings.lib_kick }}</span>{%- endif -%}
+        {%- if section.settings.lib_heading != blank -%}<h2 class="stitle">{{ section.settings.lib_heading }}</h2>{%- endif -%}
+      </div>
+      <span class="fr-lib-count" data-fr-count>{{ card_count }} resources</span>
+    </div>
+    {%- if cats.size > 1 -%}
+      <div class="fr-filter" data-fr-filter>
+        <button type="button" class="fr-fchip on" data-fr-chip="__all__" aria-pressed="true">
+          {{- section.settings.all_label | default: 'All' -}}
+          <span class="fr-fchip-n">{{ card_count }}</span>
+        </button>
+        {%- for cat in cats -%}
+          {%- if cat == blank -%}{%- continue -%}{%- endif -%}
+          {%- liquid
+            assign cat_count = 0
+            for block in section.blocks
+              if block.type == 'resource'
+                assign bc = block.settings.category | strip | default: 'Guides'
+                if bc == blank
+                  assign bc = 'Guides'
+                endif
+                if bc == cat
+                  assign cat_count = cat_count | plus: 1
+                endif
+              endif
+            endfor
+          -%}
+          <button type="button" class="fr-fchip" data-fr-chip="{{ cat | escape }}" aria-pressed="false">
+            {{- cat -}}
+            <span class="fr-fchip-n">{{ cat_count }}</span>
+          </button>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+    <div class="fr-grid">
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'resource' -%}
+          {%- liquid
+            assign bc = block.settings.category | strip | default: 'Guides'
+            if bc == blank
+              assign bc = 'Guides'
+            endif
+          -%}
+          <div class="fr-card" data-fr-card data-category="{{ bc | escape }}" {{ block.shopify_attributes }}>
+            <div class="fr-cover">
+              {%- if block.settings.badge != blank -%}<span class="fr-badge">{{ block.settings.badge }}</span>{%- endif -%}
+              {%- if block.settings.is_video -%}
+                <div class="fr-play">
+                  <svg viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"></path></svg>
+                </div>
+              {%- endif -%}
+              {%- if block.settings.image -%}
+                {{ block.settings.image | image_url: width: 900 | image_tag: widths: '420,640,900', loading: 'lazy', alt: block.settings.title }}
+              {%- endif -%}
+            </div>
+            <div class="fr-card-b">
+              {%- if block.settings.type_label != blank -%}<span class="fr-card-type">{{ block.settings.type_label }}</span>{%- endif -%}
+              <h3 class="fr-card-t">{{ block.settings.title }}</h3>
+              {%- if block.settings.text != blank -%}<p class="fr-card-s">{{ block.settings.text }}</p>{%- endif -%}
+              {%- if block.settings.meta != blank -%}
+                <div class="fr-card-meta">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M7 3.5h7l3.5 3.5V20a.5.5 0 0 1-.5.5H7a.5.5 0 0 1-.5-.5V4a.5.5 0 0 1 .5-.5z"></path><path d="M14 3.5V7h3.5"></path></svg>
+                  {{- block.settings.meta -}}
+                </div>
+              {%- endif -%}
+              {%- if block.settings.file != blank -%}
+                <a class="fr-dl" href="{{ block.settings.file }}" target="_blank" rel="noopener">
+                  {%- if block.settings.is_video -%}
+                    <svg viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"></path></svg>
+                  {%- else -%}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 4v10M8 11l4 3 4-3"></path><path d="M5 18.5h14"></path></svg>
+                  {%- endif -%}
+                  {{- block.settings.btn_label | default: 'Download' -}}
+                </a>
+              {%- endif -%}
+            </div>
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+  </section>
+
+  {%- if section.settings.show_news -%}
+    <section class="sec wrap" style="--cl-pt:{{ section.settings.news_pad_top }}px;--cl-pb:{{ section.settings.news_pad_bottom }}px">
+      <div class="fr-news">
+        <div class="fr-news-glow"></div>
+        <div class="fr-news-l">
+          {%- if section.settings.news_kick != blank -%}<span class="kick">{{ section.settings.news_kick }}</span>{%- endif -%}
+          <h2 class="fr-news-h">{{ section.settings.news_heading }}</h2>
+          {%- if section.settings.news_text != blank -%}<p class="fr-news-p">{{ section.settings.news_text }}</p>{%- endif -%}
+        </div>
+        <div class="fr-news-r">
+          {%- form 'customer', id: 'CartelResourcesNews' -%}
+            {%- if form.posted_successfully? -%}
+              <div class="fr-news-done">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12.5l4 4 9.5-10"></path></svg>
+                {{- section.settings.news_success -}}
+              </div>
+            {%- else -%}
+              <input type="hidden" name="contact[tags]" value="newsletter">
+              <div class="fr-newsform">
+                <input class="fr-nf-input" type="email" name="contact[email]" placeholder="{{ section.settings.news_placeholder }}" autocomplete="email" required aria-label="Email address">
+                <button class="fr-nf-btn" type="submit">{{ section.settings.news_btn_label }}</button>
+              </div>
+              {%- if form.errors -%}
+                <div class="fr-news-fine">{{ form.errors.messages['email'] }}</div>
+              {%- endif -%}
+              {%- if section.settings.news_fine != blank -%}
+                <div class="fr-news-fine">{{ section.settings.news_fine }}</div>
+              {%- endif -%}
+            {%- endif -%}
+          {%- endform -%}
+        </div>
+      </div>
+    </section>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "Cartel resource library",
+  "tag": "section",
+  "class": "cartel-section",
+  "settings": [
+    { "type": "checkbox", "id": "show_breadcrumbs", "label": "Show breadcrumbs", "default": true },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Free resources" },
+    { "type": "inline_richtext", "id": "heading", "label": "Heading", "default": "The Cartel <em>pro library.</em>" },
+    { "type": "textarea", "id": "lead", "label": "Lead paragraph", "default": "Guides, charts, printables and tutorials we built for working lash & brow artists, free to download, no strings. Steal our protocols, print them for your trolley, and get back to the chair." },
+    { "type": "header", "content": "Featured resource" },
+    { "type": "checkbox", "id": "show_featured", "label": "Show featured resource", "default": true },
+    { "type": "image_picker", "id": "feat_image", "label": "Cover image" },
+    { "type": "text", "id": "feat_tag", "label": "Corner tag", "default": "Flagship guide" },
+    { "type": "text", "id": "feat_kick", "label": "Eyebrow", "default": "Featured download" },
+    { "type": "text", "id": "feat_heading", "label": "Heading", "default": "The Lash Lift Playbook" },
+    { "type": "textarea", "id": "feat_text", "label": "Text", "default": "Our complete, no-fluff lash lift handbook, consultation to aftercare, with the rod-size and timing charts pros actually use." },
+    { "type": "text", "id": "feat_li_1", "label": "Check line 1", "default": "Rod & shield selection by eye shape" },
+    { "type": "text", "id": "feat_li_2", "label": "Check line 2", "default": "Processing times for every hair type" },
+    { "type": "text", "id": "feat_li_3", "label": "Check line 3", "default": "Troubleshooting & client aftercare" },
+    { "type": "text", "id": "feat_meta", "label": "Meta line (· separated)", "default": "PDF · 24 pages · Free" },
+    { "type": "text", "id": "feat_btn_label", "label": "Download button label", "default": "Download the playbook" },
+    { "type": "url", "id": "feat_file", "label": "File link", "info": "Upload the file under Content → Files, then paste its link here (or use any external URL)." },
+    { "type": "text", "id": "feat_btn2_label", "label": "Secondary button label" },
+    { "type": "url", "id": "feat_btn2_link", "label": "Secondary button link" },
+    { "type": "header", "content": "Library" },
+    { "type": "text", "id": "lib_kick", "label": "Eyebrow", "default": "The library" },
+    { "type": "text", "id": "lib_heading", "label": "Heading", "default": "Everything, free to download" },
+    { "type": "text", "id": "all_label", "label": "\"All\" chip label", "default": "All" },
+    { "type": "range", "id": "lib_pad_top", "min": 0, "max": 120, "step": 2, "unit": "px", "label": "Padding top", "default": 78 },
+    { "type": "range", "id": "lib_pad_bottom", "min": 0, "max": 120, "step": 2, "unit": "px", "label": "Padding bottom", "default": 8 },
+    { "type": "header", "content": "Newsletter band" },
+    { "type": "checkbox", "id": "show_news", "label": "Show newsletter band", "default": true },
+    { "type": "text", "id": "news_kick", "label": "Eyebrow", "default": "Stay stocked" },
+    { "type": "text", "id": "news_heading", "label": "Heading", "default": "Get new resources first." },
+    { "type": "textarea", "id": "news_text", "label": "Text", "default": "New guides, charts and templates land every month. Join the list and we'll send them straight to your inbox, plus the occasional pro tip." },
+    { "type": "text", "id": "news_placeholder", "label": "Input placeholder", "default": "Your email address" },
+    { "type": "text", "id": "news_btn_label", "label": "Button label", "default": "Notify me" },
+    { "type": "text", "id": "news_fine", "label": "Fine print", "default": "Resource drops & pro tips. Unsubscribe anytime." },
+    { "type": "text", "id": "news_success", "label": "Success message", "default": "You're on the list, new resources incoming." },
+    { "type": "range", "id": "news_pad_top", "min": 0, "max": 120, "step": 2, "unit": "px", "label": "Padding top", "default": 0 },
+    { "type": "range", "id": "news_pad_bottom", "min": 0, "max": 120, "step": 2, "unit": "px", "label": "Padding bottom", "default": 90 }
+  ],
+  "blocks": [
+    {
+      "type": "resource",
+      "name": "Resource card",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Title", "default": "Lash Lift Rod Sizing Chart" },
+        { "type": "text", "id": "category", "label": "Category", "default": "Charts", "info": "Cards with the same category share a filter chip." },
+        { "type": "text", "id": "type_label", "label": "Type label", "default": "Printable chart" },
+        { "type": "text", "id": "badge", "label": "Cover badge", "default": "Free" },
+        { "type": "textarea", "id": "text", "label": "Description", "default": "Match every client to the right rod in seconds — natural, lifted or doll-eye." },
+        { "type": "text", "id": "meta", "label": "Meta line", "default": "PDF · 1 page" },
+        { "type": "image_picker", "id": "image", "label": "Thumbnail (16:11)" },
+        { "type": "url", "id": "file", "label": "File link", "info": "Upload under Content → Files and paste the link, or use an external URL." },
+        { "type": "text", "id": "btn_label", "label": "Button label", "default": "Download" },
+        { "type": "checkbox", "id": "is_video", "label": "Video resource", "default": false }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Cartel resource library",
+      "blocks": [
+        { "type": "resource" },
+        { "type": "resource", "settings": { "title": "Adhesive Troubleshooting Guide", "category": "Guides", "type_label": "PDF guide", "text": "Humidity, temperature, dip size — fix poor retention at the source with our go-to checklist.", "meta": "PDF · 6 pages" } },
+        { "type": "resource", "settings": { "title": "Client Consultation Form", "category": "Templates", "type_label": "Template", "text": "Patch tests, contraindications and consent, ready to print or adapt for your studio.", "meta": "PDF · 2 pages" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

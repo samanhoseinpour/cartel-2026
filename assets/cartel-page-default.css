@@ -1,1 +1,24 @@
-/* placeholder — filled by lane 7E */
+/* cartel-page-default.css — lane 7E. Plain content pages (no template suffix).
+   Tokens + shared classes (.wrap/.kick/.stitle/.btn…) come from cartel-home.css;
+   this file only styles the rich-text column of the default page template. */
+.cl .crumb{display:flex;align-items:center;gap:9px;font-size:12.5px;font-weight:600;color:var(--muted);padding-top:26px}
+.cl .crumb-a:hover{color:var(--plum)}
+.cl .crumb-cur{color:var(--bord);font-weight:700}
+.cl .crumb-sep{opacity:.45}
+.cl .page-plain .stitle{margin-top:14px}
+.cl .page-rte{margin-top:26px;font-size:16px;line-height:1.75;color:var(--ink);max-width:820px}
+.cl .page-rte h2{font-size:24px;font-weight:800;letter-spacing:-.025em;color:var(--bord);line-height:1.15;margin:28px 0 12px}
+.cl .page-rte h3{font-size:19px;font-weight:800;letter-spacing:-.02em;color:var(--bord);margin:22px 0 10px}
+.cl .page-rte p{margin:0 0 14px}
+.cl .page-rte p:last-child{margin-bottom:0}
+.cl .page-rte b,.cl .page-rte strong{color:var(--bord);font-weight:700}
+.cl .page-rte a{color:var(--plum);font-weight:700;text-decoration:underline}
+.cl .page-rte ul{margin:2px 0 16px;display:flex;flex-direction:column;gap:8px;list-style:none}
+.cl .page-rte ul li{position:relative;padding-left:24px}
+.cl .page-rte ul li::before{content:"";position:absolute;left:5px;top:11px;width:6px;height:6px;border-radius:50%;background:var(--bronze-d)}
+.cl .page-rte ol{margin:2px 0 16px;padding-left:22px;display:flex;flex-direction:column;gap:8px}
+.cl .page-rte img{border-radius:var(--r-sm);margin:6px 0}
+.cl .page-rte blockquote{border-left:3px solid var(--bronze);padding:4px 0 4px 18px;margin:18px 0;font-size:18px;font-weight:600;color:var(--bord)}
+@media (max-width:760px){
+  .cl .page-rte{font-size:15px}
+}

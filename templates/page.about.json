@@ -1,0 +1,25 @@
+{
+  "sections": {
+    "hero": {
+      "type": "cartel-page-hero",
+      "settings": {
+        "style": "about",
+        "show_breadcrumbs": true
+      }
+    },
+    "story": {
+      "type": "cartel-story",
+      "blocks": {
+        "story": { "type": "story", "settings": {} },
+        "values": { "type": "values", "settings": {} },
+        "compare": { "type": "compare", "settings": {} },
+        "brands": { "type": "brands", "settings": {} },
+        "locations": { "type": "locations", "settings": {} },
+        "instagram": { "type": "instagram", "settings": { "url": "https://www.instagram.com/cartel.lash/" } },
+        "cta": { "type": "cta", "settings": {} }
+      },
+      "block_order": ["story", "values", "compare", "brands", "locations", "instagram", "cta"]
+    }
+  },
+  "order": ["hero", "story"]
+}

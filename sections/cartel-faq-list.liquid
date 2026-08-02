@@ -1,0 +1,156 @@
+{% comment %}
+  Cartel FAQ list — 1:1 with FAQ.dc.html. Questions are blocks (category /
+  question / rich-text answer); the category rail + counts are derived from the
+  blocks, grouped in first-appearance order. Accordions are native <details>
+  (keyboard accessible, no [hidden]-on-svg tricks — chevron rotates via [open]).
+  Live search + category filtering live in cartel-pages.js (data-faq-* hooks);
+  the search input itself sits in the page hero (style: FAQ).
+{% endcomment %}
+{%- liquid
+  assign cat_string = '||'
+  assign total_count = 0
+  for block in section.blocks
+    if block.type == 'question'
+      assign total_count = total_count | plus: 1
+      assign c = block.settings.category | strip | default: 'General'
+      if c == blank
+        assign c = 'General'
+      endif
+      assign probe = '||' | append: c | append: '||'
+      unless cat_string contains probe
+        assign cat_string = cat_string | append: c | append: '||'
+      endunless
+    endif
+  endfor
+  assign cats = cat_string | remove_first: '||' | split: '||'
+-%}
+<div class="cl">
+  <section class="wrap faqpage" style="--cl-pt:{{ section.settings.pad_top }}px;--cl-pb:{{ section.settings.pad_bottom }}px">
+    <div class="faqgrid" data-faq>
+      <aside class="faqnav">
+        <span class="faqnav-h">{{ section.settings.nav_label }}</span>
+        <button type="button" class="faqnav-b on" data-faq-nav="__all__" aria-pressed="true">
+          {{- section.settings.all_label | default: 'All questions' -}}
+          <span class="faqnav-c">{{ total_count }}</span>
+        </button>
+        {%- for cat in cats -%}
+          {%- if cat == blank -%}{%- continue -%}{%- endif -%}
+          {%- liquid
+            assign cat_count = 0
+            for block in section.blocks
+              if block.type == 'question'
+                assign bc = block.settings.category | strip | default: 'General'
+                if bc == blank
+                  assign bc = 'General'
+                endif
+                if bc == cat
+                  assign cat_count = cat_count | plus: 1
+                endif
+              endif
+            endfor
+          -%}
+          <button type="button" class="faqnav-b" data-faq-nav="{{ cat | escape }}" aria-pressed="false">
+            {{- cat -}}
+            <span class="faqnav-c">{{ cat_count }}</span>
+          </button>
+        {%- endfor -%}
+      </aside>
+      <div class="faqgroups">
+        {%- for cat in cats -%}
+          {%- if cat == blank -%}{%- continue -%}{%- endif -%}
+          <div class="faqgroup" data-faq-group="{{ cat | escape }}">
+            <div class="faqgroup-h">{{ cat }}</div>
+            <div class="qalist">
+              {%- for block in section.blocks -%}
+                {%- if block.type == 'question' -%}
+                  {%- liquid
+                    assign bc = block.settings.category | strip | default: 'General'
+                    if bc == blank
+                      assign bc = 'General'
+                    endif
+                  -%}
+                  {%- if bc == cat -%}
+                    <details class="qa" data-faq-item {{ block.shopify_attributes }}>
+                      <summary class="qa-q">
+                        <span>{{ block.settings.question }}</span>
+                        <svg class="qa-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><path d="M6 9.5l6 6 6-6"></path></svg>
+                      </summary>
+                      <div class="qa-a">{{ block.settings.answer }}</div>
+                    </details>
+                  {%- endif -%}
+                {%- endif -%}
+              {%- endfor -%}
+            </div>
+          </div>
+        {%- endfor -%}
+        <div class="faqempty" data-faq-empty hidden>
+          <div class="faqempty-t">{{ section.settings.empty_title }}</div>
+          <p class="faqempty-p">{{ section.settings.empty_text }}</p>
+        </div>
+      </div>
+    </div>
+
+    {%- if section.settings.cta_heading != blank -%}
+      <div class="faqcta">
+        <div>
+          {%- if section.settings.cta_kick != blank -%}<span class="kick">{{ section.settings.cta_kick }}</span>{%- endif -%}
+          <h2 class="faqcta-h">{{ section.settings.cta_heading }}</h2>
+          {%- if section.settings.cta_text != blank -%}<p class="faqcta-p">{{ section.settings.cta_text }}</p>{%- endif -%}
+        </div>
+        <div class="faqcta-actions">
+          {%- if section.settings.cta_btn1_label != blank -%}
+            <a class="btn btn-bronze" href="{{ section.settings.cta_btn1_link | default: '/pages/contact' }}">{{ section.settings.cta_btn1_label }}</a>
+          {%- endif -%}
+          {%- if section.settings.cta_btn2_label != blank -%}
+            <a class="btn btn-out" href="{{ section.settings.cta_btn2_link | default: '/pages/contact' }}">{{ section.settings.cta_btn2_label }}</a>
+          {%- endif -%}
+        </div>
+      </div>
+    {%- endif -%}
+  </section>
+</div>
+
+{% schema %}
+{
+  "name": "Cartel FAQ list",
+  "tag": "section",
+  "class": "cartel-section",
+  "settings": [
+    { "type": "text", "id": "nav_label", "label": "Rail label", "default": "Browse by topic" },
+    { "type": "text", "id": "all_label", "label": "\"All\" button label", "default": "All questions" },
+    { "type": "text", "id": "empty_title", "label": "No-results title", "default": "No matching questions" },
+    { "type": "textarea", "id": "empty_text", "label": "No-results text", "default": "Try a different search, or reach out and we'll help you directly." },
+    { "type": "header", "content": "Help band" },
+    { "type": "text", "id": "cta_kick", "label": "Eyebrow", "default": "Still need help?" },
+    { "type": "text", "id": "cta_heading", "label": "Heading", "default": "Talk to the Cartel team" },
+    { "type": "textarea", "id": "cta_text", "label": "Text", "default": "Real humans, usually replying within one business day, Monday to Friday. We're here for orders, product advice and trade accounts." },
+    { "type": "text", "id": "cta_btn1_label", "label": "Primary button label", "default": "Contact us" },
+    { "type": "url", "id": "cta_btn1_link", "label": "Primary button link" },
+    { "type": "text", "id": "cta_btn2_label", "label": "Secondary button label", "default": "Email the studio" },
+    { "type": "url", "id": "cta_btn2_link", "label": "Secondary button link" },
+    { "type": "range", "id": "pad_top", "min": 0, "max": 120, "step": 2, "unit": "px", "label": "Padding top", "default": 40 },
+    { "type": "range", "id": "pad_bottom", "min": 0, "max": 120, "step": 2, "unit": "px", "label": "Padding bottom", "default": 92 }
+  ],
+  "blocks": [
+    {
+      "type": "question",
+      "name": "Question",
+      "settings": [
+        { "type": "text", "id": "category", "label": "Category", "default": "Ordering", "info": "Questions with the same category are grouped; the rail is built from these." },
+        { "type": "text", "id": "question", "label": "Question", "default": "How do I place an order?" },
+        { "type": "richtext", "id": "answer", "label": "Answer", "default": "<p>Browse the shop, add to your bag and check out — create a free account first to see pricing on professional products.</p>" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Cartel FAQ list",
+      "blocks": [
+        { "type": "question" },
+        { "type": "question", "settings": { "category": "Shipping & pick-up", "question": "How fast is shipping?", "answer": "<p>Orders ship from BC within 1–2 business days. Shipping is free across Canada over $150, flat-rate under that — or choose free local pick-up in West Vancouver or Burnaby.</p>" } },
+        { "type": "question", "settings": { "category": "Returns", "question": "What is your return policy?", "answer": "<p>Unopened, unused products can be returned within 30 days of delivery. See the returns policy page for the full details and how to start a return.</p>" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

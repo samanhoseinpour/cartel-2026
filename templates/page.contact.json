@@ -1,34 +1,88 @@
-/*
- * ------------------------------------------------------------
- * IMPORTANT: The contents of this file are auto-generated.
- *
- * This file may be updated by the Shopify admin theme editor
- * or related systems. Please exercise caution as any changes
- * made to this file may be overwritten.
- * ------------------------------------------------------------
- */
 {
   "sections": {
-    "main": {
-      "type": "main-page",
-      "settings": {
-        "padding_top": 36,
-        "padding_bottom": 36
-      }
-    },
-    "form": {
+    "contact": {
       "type": "contact-form",
-      "settings": {
-        "heading": "",
-        "heading_size": "h1",
-        "color_scheme": "background-1",
-        "padding_top": 36,
-        "padding_bottom": 36
-      }
+      "blocks": {
+        "ch-email": {
+          "type": "channel",
+          "settings": {
+            "style": "email",
+            "title": "Email us"
+          }
+        },
+        "ch-ig": {
+          "type": "channel",
+          "settings": {
+            "style": "instagram",
+            "title": "Slide into the DMs",
+            "text": "@cartel.lash",
+            "url": "https://www.instagram.com/cartel.lash/"
+          }
+        },
+        "t1": { "type": "topic", "settings": { "label": "Order help" } },
+        "t2": { "type": "topic", "settings": { "label": "Product question" } },
+        "t3": { "type": "topic", "settings": { "label": "Wholesale & trade" } },
+        "t4": { "type": "topic", "settings": { "label": "Training" } },
+        "t5": { "type": "topic", "settings": { "label": "Something else" } }
+      },
+      "block_order": ["ch-email", "ch-ig", "t1", "t2", "t3", "t4", "t5"]
+    },
+    "cards": {
+      "type": "cartel-contact-cards",
+      "blocks": {
+        "help-faq": {
+          "type": "help",
+          "settings": {
+            "icon": "box",
+            "title": "Orders & shipping",
+            "text": "Delivery times, tracking, free shipping over $150 and local pick-up, most answers live in the FAQ.",
+            "cta_label": "Browse the FAQ",
+            "url": "/pages/faq"
+          }
+        },
+        "help-wholesale": {
+          "type": "help",
+          "settings": {
+            "icon": "store",
+            "title": "Wholesale & trade",
+            "text": "Stocking Cartel in your studio or salon, or want pro pricing on Thuya? Tell us about your business.",
+            "cta_label": "Email the team",
+            "url": "mailto:info@cartellash.ca"
+          }
+        },
+        "help-advice": {
+          "type": "help",
+          "settings": {
+            "icon": "chat",
+            "title": "Product advice",
+            "text": "Not sure which dye, lift system or adhesive is right for you? We'll point you to the one we trust.",
+            "cta_label": "Shop by brand",
+            "url": "/collections"
+          }
+        },
+        "loc-wv": {
+          "type": "location",
+          "settings": {
+            "pin": "West Vancouver",
+            "title": "West Vancouver pick-up",
+            "place": "West Vancouver, BC",
+            "how": "By appointment, arranged once your order is ready",
+            "note": "Choose “Local pick-up” at checkout and we'll email the exact address and a time to collect."
+          }
+        },
+        "loc-bby": {
+          "type": "location",
+          "settings": {
+            "pin": "Burnaby",
+            "title": "Burnaby pick-up",
+            "place": "Burnaby, BC",
+            "how": "By appointment, arranged once your order is ready",
+            "note": "Choose “Local pick-up” at checkout and we'll email the exact address and a time to collect."
+          }
+        }
+      },
+      "block_order": ["help-faq", "help-wholesale", "help-advice", "loc-wv", "loc-bby"]
     }
   },
-  "order": [
-    "main",
-    "form"
-  ]
+  "order": ["contact", "cards"]
 }
