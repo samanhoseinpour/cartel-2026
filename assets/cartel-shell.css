@@ -572,3 +572,18 @@
   width: 15px;
   height: 15px;
 }
+
+/* ============================================================
+   8. INSTALL FIXES (batch 6, appended during install)
+   ============================================================ */
+
+/* base.css takes the ≥990px header gutter back with
+   `.header:not(.drawer-menu).page-width` (0,3,0) — section 0's plain
+   `.page-width` (0,1,0) loses, leaving the logo/nav/icons 10px further
+   in than every band below. Re-pin the design's 40px gutter above it. */
+@media screen and (min-width: 990px) {
+  .header-wrapper .header:not(.drawer-menu).page-width {
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+}
