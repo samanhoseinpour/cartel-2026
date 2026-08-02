@@ -1,6 +1,6 @@
 <product-info
   id="MainProduct-{{ section.id }}"
-  class="section-{{ section.id }}-padding gradient color-{{ section.settings.color_scheme }}"
+  class="cl section-{{ section.id }}-padding gradient color-{{ section.settings.color_scheme }}"
   data-section="{{ section.id }}"
   data-product-id="{{ product.id }}"
   data-update-url="true"
@@ -75,14 +75,15 @@
   {% assign variant_images = product.images | where: 'attached_to_variant?', true | map: 'src' %}
   <product-component view-event-payload="{{ product | standard_event_data: 'view', context: 'page' | escape }}">
     <div class="page-width">
-      <div class="product product--{{ section.settings.media_size }} product--{{ section.settings.media_position }} product--{{ section.settings.gallery_layout }} product--mobile-{{ section.settings.mobile_thumbnails }} grid grid--1-col {% if product.media.size > 0 %}grid--2-col-tablet{% else %}product--no-media{% endif %}">
-        <div class="grid__item product__media-wrapper">
+      {% render 'cartel-breadcrumbs' %}
+      <div class="product phero product--{{ section.settings.media_position }} product--{{ section.settings.gallery_layout }} product--mobile-{{ section.settings.mobile_thumbnails }}{% if product.media.size == 0 %} product--no-media{% endif %}">
+        <div class="product__media-wrapper">
           {% render 'product-media-gallery', variant_images: variant_images %}
         </div>
-        <div class="product__info-wrapper grid__item{% if settings.page_width > 1400 and section.settings.media_size == "small" %} product__info-wrapper--extra-padding{% endif %}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
+        <div class="product__info-wrapper{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
           <section
             id="ProductInfo-{{ section.id }}"
-            class="product__info-container{% if section.settings.enable_sticky_info %} product__column-sticky{% endif %}"
+            class="product__info-container pinfo{% if section.settings.enable_sticky_info %} product__column-sticky{% endif %}"
           >
             {%- assign product_form_id = 'product-form-' | append: section.id -%}
             {%- liquid
@@ -98,15 +99,26 @@
                 {%- when '@app' -%}
                   {% render block %}
                 {%- when 'text' -%}
-                  <p
-                    class="product__text inline-richtext{% if block.settings.text_style == 'uppercase' %} caption-with-letter-spacing{% elsif block.settings.text_style == 'subtitle' %} subtitle{% endif %}"
-                    {{ block.shopify_attributes }}
-                  >
-                    {{- block.settings.text -}}
-                  </p>
+                  {%- if product.vendor != blank and block.settings.text == product.vendor -%}
+                    {%- comment -%} Cartel: vendor kicker links to the brand-filtered catalogue {%- endcomment -%}
+                    <a
+                      class="p-brand"
+                      href="{{ routes.all_products_collection_url }}?filter.p.vendor={{ product.vendor | url_param_escape }}"
+                      {{ block.shopify_attributes }}
+                    >
+                      {{- product.vendor -}}
+                    </a>
+                  {%- else -%}
+                    <p
+                      class="product__text inline-richtext{% if block.settings.text_style == 'uppercase' %} caption-with-letter-spacing{% elsif block.settings.text_style == 'subtitle' %} subtitle{% endif %}"
+                      {{ block.shopify_attributes }}
+                    >
+                      {{- block.settings.text -}}
+                    </p>
+                  {%- endif -%}
                 {%- when 'title' -%}
                   <div class="product__title" {{ block.shopify_attributes }}>
-                    <h1>{{ product.title | escape }}</h1>
+                    <h1 class="p-title">{{ product.title | escape }}</h1>
                     <a href="{{ product.url }}" class="product__title">
                       <h2 class="h1">
                         {{ product.title | escape }}
@@ -118,8 +130,9 @@
                     {%- render 'price',
                       product: product,
                       use_variant: true,
-                      show_badges: true,
-                      price_class: 'price--large'
+                      show_badges: false,
+                      price_class: 'price--large',
+                      cartel_pdp: true
                     -%}
                   </div>
                   {%- if product.quantity_price_breaks_configured? and cartel_gated == false -%}
@@ -128,7 +141,7 @@
                     </div>
                   {%- endif -%}
                   {%- if cart.taxes_included or cart.duties_included or shop.shipping_policy.body != blank -%}
-                    <div class="product__tax caption rte">
+                    <div class="product__tax p-tax caption rte">
                       {%- if cart.duties_included and cart.taxes_included -%}
                         {{ 'products.product.duties_and_taxes_included' | t }}
                       {%- elsif cart.taxes_included -%}
@@ -149,54 +162,29 @@
                     {%- endform -%}
                   </div>
                 {%- when 'inventory' -%}
+                  {%- comment -%}
+                    Cartel: availability line (.p-stock). Keeps Dawn's #Inventory-{{ section.id }}
+                    contract so product-info.js re-renders it on variant change.
+                  {%- endcomment -%}
                   <p
-                    class="product__inventory{% if block.settings.text_style == 'uppercase' %} caption-with-letter-spacing{% elsif block.settings.text_style == 'subtitle' %} subtitle{% endif %}{% if product.selected_or_first_available_variant.inventory_management != 'shopify' %} visibility-hidden{% endif %}"
+                    class="product__inventory p-stock"
                     {{ block.shopify_attributes }}
                     id="Inventory-{{ section.id }}"
                     role="status"
                   >
-                    {%- if product.selected_or_first_available_variant.inventory_management == 'shopify' -%}
-                      {%- if product.selected_or_first_available_variant.inventory_quantity > 0 -%}
-                        {%- if product.selected_or_first_available_variant.inventory_quantity
-                            <= block.settings.inventory_threshold
-                        -%}
-                          <span class="svg-wrapper" style="color: rgb(238, 148, 65)">
-                            {{- 'icon-inventory-status.svg' | inline_asset_content -}}
-                          </span>
-                          {%- if block.settings.show_inventory_quantity -%}
-                            {{-
-                              'products.product.inventory_low_stock_show_count'
-                              | t: quantity: product.selected_or_first_available_variant.inventory_quantity
-                            -}}
-                          {%- else -%}
-                            {{- 'products.product.inventory_low_stock' | t -}}
-                          {%- endif -%}
-                        {%- else -%}
-                          <span class="svg-wrapper" style="color: rgb(62, 214, 96)">
-                            {{- 'icon-inventory-status.svg' | inline_asset_content -}}
-                          </span>
-                          {%- if block.settings.show_inventory_quantity -%}
-                            {{-
-                              'products.product.inventory_in_stock_show_count'
-                              | t: quantity: product.selected_or_first_available_variant.inventory_quantity
-                            -}}
-                          {%- else -%}
-                            {{- 'products.product.inventory_in_stock' | t -}}
-                          {%- endif -%}
-                        {%- endif -%}
-                      {%- else -%}
-                        {%- if product.selected_or_first_available_variant.inventory_policy == 'continue' -%}
-                          <span class="svg-wrapper" style="color: rgb(62, 214, 96)">
-                            {{- 'icon-inventory-status.svg' | inline_asset_content -}}
-                          </span>
-                          {{- 'products.product.inventory_out_of_stock_continue_selling' | t -}}
-                        {%- else -%}
-                          <span class="svg-wrapper" style="color: rgb(200, 200, 200)">
-                            {{- 'icon-inventory-status.svg' | inline_asset_content -}}
-                          </span>
-                          {{- 'products.product.inventory_out_of_stock' | t -}}
-                        {%- endif -%}
-                      {%- endif -%}
+                    {%- liquid
+                      assign cl_variant = product.selected_or_first_available_variant
+                      assign cl_low_stock = false
+                      if cl_variant.inventory_management == 'shopify' and cl_variant.inventory_quantity > 0 and cl_variant.inventory_quantity <= block.settings.inventory_threshold
+                        assign cl_low_stock = true
+                      endif
+                    -%}
+                    {%- if cl_variant.available and cl_low_stock -%}
+                      <span class="stockdot"></span>Low stock &middot; order soon, dispatched within 48 hrs
+                    {%- elsif cl_variant.available -%}
+                      <span class="stockdot"></span>In stock &middot; ready to ship, dispatched within 48 hrs
+                    {%- else -%}
+                      <span class="stockdot out"></span>Out of stock, currently unavailable
                     {%- endif -%}
                   </p>
                 {%- when 'description' -%}
@@ -237,6 +225,13 @@
                   </div>
                 {%- when 'quantity_selector' -%}
                   {%- if cartel_gated == false -%}
+                  {%- comment -%}
+                    Cartel: the stepper is captured here and emitted inside the .p-buy row by the
+                    buy_buttons block (order quantity_selector before buy_buttons in the template
+                    JSON). Volume pricing is captured separately and re-emitted full-width under
+                    the row — it syncs by id (#Volume-…), not by position.
+                  {%- endcomment -%}
+                  {%- capture cartel_qty_html -%}
                   <div
                     id="Quantity-Form-{{ section.id }}"
                     class="product-form__input product-form__quantity{% if settings.inputs_shadow_vertical_offset != 0 and settings.inputs_shadow_vertical_offset < 0 %} product-form__quantity-top{% endif %}"
@@ -419,6 +414,9 @@
                         </span>
                       {%- endif -%}
                     </div>
+                  </div>
+                  {%- endcapture -%}
+                  {%- capture cartel_volume_html -%}
                     {%- if product.quantity_price_breaks_configured? -%}
                       <volume-pricing class="parent-display" id="Volume-{{ section.id }}">
                         {%- if product.selected_or_first_available_variant.quantity_price_breaks.size > 0 -%}
@@ -462,7 +460,7 @@
                         {%- endif -%}
                       </volume-pricing>
                     {%- endif -%}
-                  </div>
+                  {%- endcapture -%}
                   {%- endif -%}
                 {%- when 'popup' -%}
                   <modal-opener
@@ -501,19 +499,28 @@
                     product_form_id: product_form_id
                   %}
                 {%- when 'buy_buttons' -%}
-                  {%- render 'buy-buttons',
-                    block: block,
-                    product: product,
-                    product_form_id: product_form_id,
-                    section_id: section.id,
-                    show_pickup_availability: true
-                  -%}
+                  <div class="p-buy" data-cl-sticky-watch>
+                    {{ cartel_qty_html }}
+                    {%- render 'buy-buttons',
+                      block: block,
+                      product: product,
+                      product_form_id: product_form_id,
+                      section_id: section.id,
+                      show_pickup_availability: false
+                    -%}
+                  </div>
+                  {{ cartel_volume_html }}
                 {%- when 'rating' -%}
                   {%- if product.metafields.reviews.rating.value != blank -%}
-                    <div class="rating-wrapper">
+                    <div class="rating-wrapper p-rating">
                       {% liquid
+                        # Cartel: the store's reviews.rating metafield is a plain number, not
+                        # Shopify's structured rating type — support both shapes.
+                        assign cl_rating_value = product.metafields.reviews.rating.value
+                        assign cl_rating = cl_rating_value.rating | default: cl_rating_value | times: 1.0
+                        assign cl_rating_max = cl_rating_value.scale_max | default: 5 | times: 1.0
                         assign rating_decimal = 0
-                        assign decimal = product.metafields.reviews.rating.value.rating | modulo: 1
+                        assign decimal = cl_rating | modulo: 1
                         if decimal >= 0.3 and decimal <= 0.7
                           assign rating_decimal = 0.5
                         elsif decimal > 0.7
@@ -523,22 +530,20 @@
                       <div
                         class="rating"
                         role="img"
-                        aria-label="{{ 'accessibility.star_reviews_info' | t: rating_value: product.metafields.reviews.rating.value, rating_max: product.metafields.reviews.rating.value.scale_max }}"
+                        aria-label="{{ 'accessibility.star_reviews_info' | t: rating_value: cl_rating, rating_max: cl_rating_max }}"
                       >
                         <span
                           aria-hidden="true"
                           class="rating-star"
-                          style="--rating: {{ product.metafields.reviews.rating.value.rating | floor }}; --rating-max: {{ product.metafields.reviews.rating.value.scale_max }}; --rating-decimal: {{ rating_decimal }};"
+                          style="--rating: {{ cl_rating | floor }}; --rating-max: {{ cl_rating_max }}; --rating-decimal: {{ rating_decimal }};"
                         ></span>
                       </div>
-                      <p class="rating-text caption">
+                      <p class="rating-count p-rating-n">
                         <span aria-hidden="true">
-                          {{- product.metafields.reviews.rating.value }} /
-                          {{ product.metafields.reviews.rating.value.scale_max -}}
+                          <b>{{ product.metafields.reviews.rating.value }}</b>
+                          &middot; {{ product.metafields.reviews.rating_count }} review
+                          {%- if product.metafields.reviews.rating_count != 1 -%}s{%- endif -%}
                         </span>
-                      </p>
-                      <p class="rating-count caption">
-                        <span aria-hidden="true">({{ product.metafields.reviews.rating_count }})</span>
                         <span class="visually-hidden">
                           {{- product.metafields.reviews.rating_count }}
                           {{ 'accessibility.total_reviews' | t -}}
@@ -699,12 +704,194 @@
                   {% render 'icon-with-text', block: block %}
               {%- endcase -%}
             {%- endfor -%}
+
+            {%- comment -%} Cartel: pickup card (dynamic, styled as .p-pickup) + static perks {%- endcomment -%}
+            {%- render 'buy-buttons',
+              product: product,
+              product_form_id: product_form_id,
+              section_id: section.id,
+              show_pickup_availability: true,
+              pickup_only: true
+            -%}
+            <div class="p-perks">
+              <div class="perk"><b>FREE shipping</b> in Canada over $150</div>
+              <div class="perk"><b>Local pick-up</b> West Vancouver + Burnaby</div>
+              <div class="perk"><b>100% authentic</b> pro stock, direct from the brands</div>
+            </div>
+
+            {%- comment -%}
+              Cartel accordions — each renders only when its source has content.
+              details[name] gives native one-open-at-a-time behaviour where supported.
+            {%- endcomment -%}
+            {%- liquid
+              assign cl_acc_benefits = product.metafields.custom.benefits.value
+              assign cl_acc_ing = product.metafields.custom.ingredients.value
+              assign cl_acc_ing_label = product.metafields.custom.ingredients_label.value | default: 'Ingredients'
+              assign cl_acc_howto = product.metafields.custom.how_to_use.value
+            -%}
+            <div class="accwrap">
+              {%- if product.description != blank -%}
+                <details class="acc" name="cl-acc-{{ section.id }}" open>
+                  <summary class="acc-h">
+                    Description
+                    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><path d="M6 9.5l6 6 6-6"></path></svg>
+                  </summary>
+                  <div class="acc-b rte">{{ product.description }}</div>
+                </details>
+              {%- endif -%}
+              {%- if cl_acc_benefits.size > 0 -%}
+                <details class="acc" name="cl-acc-{{ section.id }}">
+                  <summary class="acc-h">
+                    Key benefits
+                    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><path d="M6 9.5l6 6 6-6"></path></svg>
+                  </summary>
+                  <div class="acc-b">
+                    <ul>
+                      {%- for cl_benefit in cl_acc_benefits -%}
+                        <li>{{ cl_benefit }}</li>
+                      {%- endfor -%}
+                    </ul>
+                  </div>
+                </details>
+              {%- endif -%}
+              {%- if cl_acc_ing != blank -%}
+                <details class="acc" name="cl-acc-{{ section.id }}">
+                  <summary class="acc-h">
+                    {{ cl_acc_ing_label }}
+                    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><path d="M6 9.5l6 6 6-6"></path></svg>
+                  </summary>
+                  <div class="acc-b acc-ing">{{ cl_acc_ing | newline_to_br }}</div>
+                </details>
+              {%- endif -%}
+              {%- if cl_acc_howto != blank -%}
+                <details class="acc" name="cl-acc-{{ section.id }}">
+                  <summary class="acc-h">
+                    How to use
+                    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><path d="M6 9.5l6 6 6-6"></path></svg>
+                  </summary>
+                  <div class="acc-b">
+                    <ul>
+                      {%- assign cl_howto_steps = cl_acc_howto | newline_to_br | split: '<br' -%}
+                      {%- for cl_step in cl_howto_steps -%}
+                        {%- assign cl_step_text = cl_step | remove_first: '/>' | remove_first: '>' | strip_html | strip -%}
+                        {%- if cl_step_text != blank -%}
+                          <li>{{ cl_step_text }}</li>
+                        {%- endif -%}
+                      {%- endfor -%}
+                    </ul>
+                  </div>
+                </details>
+              {%- endif -%}
+              <details class="acc" name="cl-acc-{{ section.id }}">
+                <summary class="acc-h">
+                  Shipping &amp; returns
+                  <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><path d="M6 9.5l6 6 6-6"></path></svg>
+                </summary>
+                <div class="acc-b">
+                  Dispatched within 48 hours from Vancouver. Free shipping on Canadian orders over
+                  $150, flat-rate otherwise. Local pick-up in West Vancouver and Burnaby. Unopened
+                  trays can be returned within 30 days.
+                </div>
+              </details>
+            </div>
             <a href="{{ product.url }}" class="link product__view-details animate-arrow">
               {{ 'products.product.view_full_details' | t }}
               {{- 'icon-arrow.svg' | inline_asset_content -}}
             </a>
           </section>
         </div>
+      </div>
+
+      {%- comment -%}
+        Cartel rich sections — render only when the metafields exist so a plain product
+        keeps the honest "essentials" PDP (deliberate split in the design).
+      {%- endcomment -%}
+      {%- liquid
+        assign cl_features = product.metafields.custom.features.value
+        assign cl_feature_image = product.metafields.custom.feature_image.value
+        assign cl_feat_title = product.metafields.custom.features_title.value
+        if cl_feat_title == blank
+          assign cl_feat_title = 'The ' | append: product.vendor | append: ' standard.'
+        endif
+        assign cl_cmp_before = product.metafields.custom.before_image.value
+        assign cl_cmp_after = product.metafields.custom.after_image.value
+        assign cl_cmp_title = product.metafields.custom.compare_title.value | default: 'Before &amp; after.'
+      -%}
+      {%- if cl_features.size > 0 -%}
+        <div class="sec">
+          <div class="pfeat{% if cl_feature_image == blank %} pfeat--noimg{% endif %}">
+            {%- if cl_feature_image != blank -%}
+              <div class="pfeat-img">
+                {{ cl_feature_image | image_url: width: 1400 | image_tag: loading: 'lazy', class: 'pfeat-photo', alt: cl_feat_title }}
+              </div>
+            {%- endif -%}
+            <div class="pfeat-txt">
+              <span class="kick">Why pros choose it</span>
+              <h2 class="stitle">{{ cl_feat_title }}</h2>
+              <div class="pfeat-list">
+                {%- for cl_ft in cl_features -%}
+                  {%- liquid
+                    assign cl_ft_lead = cl_ft | split: '. ' | first
+                    assign cl_ft_rest = cl_ft | remove_first: cl_ft_lead | remove_first: '. ' | strip
+                  -%}
+                  <div class="pfl">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 13l4 4L19 7"></path></svg>
+                    <div><b>{{ cl_ft_lead }}{% if cl_ft_rest != blank %}.{% endif %}</b> {{ cl_ft_rest }}</div>
+                  </div>
+                {%- endfor -%}
+              </div>
+            </div>
+          </div>
+        </div>
+      {%- endif -%}
+      {%- if cl_cmp_before != blank and cl_cmp_after != blank -%}
+        <div class="sec">
+          <div class="sec-head">
+            <div class="sh-l">
+              <span class="kick">See the difference</span>
+              <h2 class="stitle">{{ cl_cmp_title }}</h2>
+            </div>
+          </div>
+          <div class="cmp" id="CartelCmp-{{ section.id }}">
+            <div class="cmp-layer">
+              {{ cl_cmp_after | image_url: width: 1600 | image_tag: loading: 'lazy', class: 'cmp-photo', alt: 'After' }}
+              <span class="cmp-tag cmp-tagr">After</span>
+            </div>
+            <div class="cmp-layer cmp-before">
+              {{ cl_cmp_before | image_url: width: 1600 | image_tag: loading: 'lazy', class: 'cmp-photo', alt: 'Before' }}
+              <span class="cmp-tag cmp-tagl">Before</span>
+            </div>
+            <div class="cmp-handle">
+              <div class="cmp-grip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9.5 7l-5 5 5 5M14.5 7l5 5-5 5"></path></svg>
+              </div>
+            </div>
+            <input class="cmp-range" type="range" min="0" max="100" value="50" aria-label="Drag to compare before and after">
+          </div>
+          <p class="cmp-hint">Move your cursor across the photo to reveal the before &amp; after.</p>
+        </div>
+      {%- endif -%}
+
+      {%- comment -%}
+        Cartel sticky mobile buy bar (<750px) — cartel-pdp.js shows it once the .p-buy row
+        scrolls out of view and mirrors the real submit button's disabled state / label.
+      {%- endcomment -%}
+      <div class="pdp-sticky" id="CartelSticky-{{ section.id }}" aria-hidden="true">
+        {%- if cartel_gated -%}
+          <a class="btn btn-fill btn-lg w100" href="{{ routes.account_login_url }}">Log in to view pricing</a>
+        {%- elsif product.price == 0 and product.selected_or_first_available_variant.available -%}
+          <a class="btn btn-fill btn-lg w100" href="{{ pages.contact.url | default: '/pages/contact' }}">Enquire about pricing</a>
+        {%- else -%}
+          <button
+            type="submit"
+            name="add"
+            form="{{ product_form_id }}"
+            class="btn btn-fill btn-lg w100 pdp-sticky__add"
+            data-main-button="ProductSubmitButton-{{ section.id }}"
+          >
+            <span>Add to bag</span>
+          </button>
+        {%- endif -%}
       </div>
 
       {% render 'product-media-modal', variant_images: variant_images %}

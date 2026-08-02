@@ -15,6 +15,33 @@
 {%- if product.vendor == 'Thuya' and customer == nil -%}
   {%- comment -%} Cartel: Thuya pricing is login-gated for guests {%- endcomment -%}
   {%- render 'cartel-gate-cta' -%}
+{%- elsif cartel_pdp -%}
+  {%- comment -%}
+    Cartel PDP price row (.p-price-row) — opt-in via cartel_pdp so every other caller
+    (cards, quick-add, featured product) keeps Dawn's markup. price == 0 never prints
+    $0.00: it renders "Price on request" + an enquiry link instead.
+  {%- endcomment -%}
+  {%- liquid
+    assign cl_t = product.selected_or_first_available_variant
+  -%}
+  {%- if cl_t.price == 0 -%}
+    <div class="p-price-row">
+      <span class="p-price">Price on request</span>
+    </div>
+    <a class="p-tax p-enquire" href="{{ pages.contact.url | default: '/pages/contact' }}">Enquire about pricing</a>
+  {%- else -%}
+    <div class="p-price-row">
+      <span class="p-price">{{ cl_t.price | money }}</span>
+      {%- if cl_t.compare_at_price > cl_t.price -%}
+        <span class="p-compare">{{ cl_t.compare_at_price | money }}</span>
+        {%- assign cl_save = cl_t.compare_at_price | minus: cl_t.price -%}
+        <span class="p-save">Save {{ cl_save | money_without_trailing_zeros }}</span>
+      {%- endif -%}
+    </div>
+    {%- if cl_t.unit_price_measurement -%}
+      {% render 'unit-price', price: cl_t.unit_price, measurement: cl_t.unit_price_measurement %}
+    {%- endif -%}
+  {%- endif -%}
 {%- else -%}
 {%- liquid
   if use_variant
