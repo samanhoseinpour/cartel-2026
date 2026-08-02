@@ -1,0 +1,289 @@
+{% comment %}
+  Cartel brand page bands — batch 7A, 1:1 with Brand.dc.html.
+  One section, two modes (a JSON template can't split one section around the
+  product grid, and this lane only owns this section file):
+    - "hero"  : breadcrumbs + .btabs brand switcher + .bhead themed panel
+                (logo lockup or wordmark, tagline, Thuya gate note) + .bchip row
+    - "story" : .bwhy "why pros choose" band + .bcross cross-brand CTA
+  collection.brand.json runs: hero → main-collection-product-grid → story.
+
+  Collection metafields:
+    custom.brand_logo (file)  — logo lockup, falls back to the wordmark
+    custom.tagline (text)     — .bhead-tag, falls back to the description text
+    custom.theme_key (text)   — bronsun|noemi|thuya|linger|cartel|prolong panel themes
+    custom.gated (boolean)    — trade-line note (fallback: title is "Thuya")
+{% endcomment %}
+{%- liquid
+  assign tk = collection.metafields.custom.theme_key.value | downcase | strip
+  assign theme_class = ''
+  case tk
+    when 'bronsun', 'noemi', 'thuya', 'linger', 'cartel', 'prolong'
+      assign theme_class = tk
+  endcase
+
+  assign gated_mf = collection.metafields.custom.gated
+  assign gated = false
+  if gated_mf != blank
+    assign gated = gated_mf.value
+  elsif collection.title == 'Thuya'
+    assign gated = true
+  endif
+-%}
+
+{%- if section.settings.mode == 'hero' -%}
+  {%- liquid
+    assign logo = collection.metafields.custom.brand_logo.value
+    assign tagline = collection.metafields.custom.tagline.value
+    if tagline == blank
+      assign tagline = collection.description | strip_html | truncate: 180
+    endif
+
+    assign tab_count = 0
+    assign chip_count = 0
+    for block in section.blocks
+      if block.type == 'tab' or block.type == 'tab_soon'
+        assign tab_count = tab_count | plus: 1
+      elsif block.type == 'chip'
+        assign chip_count = chip_count | plus: 1
+      endif
+    endfor
+  -%}
+  <div class="cl">
+    <section class="wrap">{% render 'cartel-breadcrumbs' %}</section>
+
+    {%- if tab_count > 0 -%}
+      <section class="wrap btabs-wrap">
+        <div class="btabs">
+          <span class="btabs-l">{{ section.settings.tabs_label | escape }}</span>
+          <div class="btabs-pills">
+            {%- for block in section.blocks -%}
+              {%- case block.type -%}
+                {%- when 'tab' -%}
+                  {%- liquid
+                    assign tab_c = block.settings.collection
+                    assign tab_label = block.settings.label | default: tab_c.title
+                  -%}
+                  {%- if tab_c != blank -%}
+                    <a
+                      class="btab{% if tab_c.handle == collection.handle %} on{% endif %}"
+                      href="{{ tab_c.url }}"
+                      {{ block.shopify_attributes }}
+                    >{{ tab_label | escape }}</a>
+                  {%- endif -%}
+                {%- when 'tab_soon' -%}
+                  <span class="btab btab-soon" {{ block.shopify_attributes }}>{{ block.settings.label | escape }}</span>
+              {%- endcase -%}
+            {%- endfor -%}
+          </div>
+        </div>
+      </section>
+    {%- endif -%}
+
+    <section class="wrap">
+      <div class="bhead {{ theme_class }}">
+        {%- if logo -%}
+          <h1 class="bhead-lockup">
+            {{ logo | image_url: width: 640 | image_tag: class: 'bhead-logo', alt: collection.title }}
+          </h1>
+        {%- else -%}
+          <h1 class="bhead-name">{{ collection.title | escape }}</h1>
+        {%- endif -%}
+        {%- if tagline != blank -%}
+          <p class="bhead-tag">{{ tagline | escape }}</p>
+        {%- endif -%}
+        {%- if gated and customer == nil -%}
+          <span class="bhead-gate">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="1.6"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>
+            Trade line, log in to unlock pricing
+          </span>
+        {%- endif -%}
+      </div>
+    </section>
+
+    {%- if chip_count > 0 -%}
+      <section class="wrap bsubnav-wrap">
+        <div class="bsubnav">
+          {%- for block in section.blocks -%}
+            {%- if block.type == 'chip' -%}
+              <a
+                class="bchip{% if block.settings.link == collection.url %} on{% endif %}"
+                href="{{ block.settings.link }}"
+                {{ block.shopify_attributes }}
+              >{{ block.settings.label | escape }}</a>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+      </section>
+    {%- endif -%}
+  </div>
+
+{%- else -%}
+
+  {%- liquid
+    assign heading = section.settings.why_heading
+    if heading == blank
+      assign heading = 'Why pros choose ' | append: collection.title
+    endif
+  -%}
+  <div class="cl">
+    <section class="wrap bpage">
+      <div class="bwhy {{ theme_class }}">
+        <div class="bwhy-l">
+          <span class="bkick">{{ section.settings.why_kick | escape }}</span>
+          <h2 class="bwhy-h">{{ heading | escape }}</h2>
+          <div class="bwhy-points">
+            {%- for block in section.blocks -%}
+              {%- if block.type == 'point' -%}
+                <div class="bwhy-pt" {{ block.shopify_attributes }}>
+                  <div class="bwhy-dot"></div>
+                  <div>
+                    <div class="bwhy-t">{{ block.settings.title | escape }}</div>
+                    <div class="bwhy-s">{{ block.settings.text | escape }}</div>
+                  </div>
+                </div>
+              {%- endif -%}
+            {%- endfor -%}
+          </div>
+        </div>
+        <div class="bwhy-r">
+          {%- if section.settings.why_image -%}
+            {{ section.settings.why_image | image_url: width: 900 | image_tag: class: 'bwhy-img', widths: '450,675,900', alt: heading }}
+          {%- else -%}
+            <div class="bwhy-ph bcard-ph">
+              {%- if settings.logo -%}
+                {{ settings.logo | image_url: width: 280 | image_tag: class: 'bcard-ph-logo', alt: shop.name }}
+              {%- endif -%}
+              <span class="bcard-ph-l">Photos coming soon</span>
+            </div>
+          {%- endif -%}
+        </div>
+      </div>
+
+      {%- if section.settings.cross_heading != blank -%}
+        <div class="bcross">
+          <div>
+            <span class="bkick">{{ section.settings.cross_kick | escape }}</span>
+            <div class="bcross-h">{{ section.settings.cross_heading | escape }}</div>
+          </div>
+          {%- if section.settings.cross_link != blank -%}
+            <a class="btn btn-out" href="{{ section.settings.cross_link }}">{{ section.settings.cross_label | escape }}</a>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+    </section>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Cartel brand bands",
+  "settings": [
+    {
+      "type": "select",
+      "id": "mode",
+      "label": "Band",
+      "default": "hero",
+      "options": [
+        { "value": "hero", "label": "Hero (tabs, panel, category chips)" },
+        { "value": "story", "label": "Story (why-pros band, cross-brand CTA)" }
+      ]
+    },
+    { "type": "header", "content": "Hero band" },
+    {
+      "type": "text",
+      "id": "tabs_label",
+      "label": "Brand tabs label",
+      "default": "Shop by brand"
+    },
+    { "type": "header", "content": "Story band" },
+    {
+      "type": "text",
+      "id": "why_kick",
+      "label": "Why-band eyebrow",
+      "default": "The line"
+    },
+    {
+      "type": "text",
+      "id": "why_heading",
+      "label": "Why-band heading",
+      "info": "Blank = “Why pros choose [collection title]”."
+    },
+    {
+      "type": "image_picker",
+      "id": "why_image",
+      "label": "Why-band image"
+    },
+    {
+      "type": "text",
+      "id": "cross_kick",
+      "label": "Cross-brand eyebrow",
+      "default": "Keep exploring"
+    },
+    {
+      "type": "text",
+      "id": "cross_heading",
+      "label": "Cross-brand heading",
+      "info": "Blank hides the cross-brand band."
+    },
+    {
+      "type": "text",
+      "id": "cross_label",
+      "label": "Cross-brand button label",
+      "default": "View the line"
+    },
+    {
+      "type": "url",
+      "id": "cross_link",
+      "label": "Cross-brand button link"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "tab",
+      "name": "Hero: brand tab",
+      "settings": [
+        { "type": "collection", "id": "collection", "label": "Brand collection" },
+        { "type": "text", "id": "label", "label": "Label", "info": "Blank = collection title." }
+      ]
+    },
+    {
+      "type": "tab_soon",
+      "name": "Hero: coming-soon tab",
+      "settings": [
+        { "type": "text", "id": "label", "label": "Label", "default": "More soon" }
+      ]
+    },
+    {
+      "type": "chip",
+      "name": "Hero: category chip",
+      "settings": [
+        { "type": "text", "id": "label", "label": "Label" },
+        { "type": "url", "id": "link", "label": "Link" }
+      ]
+    },
+    {
+      "type": "point",
+      "name": "Story: point",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Title", "default": "Point title" },
+        { "type": "textarea", "id": "text", "label": "Text", "default": "A line or two on what makes this brand worth the chair time." }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Cartel brand hero",
+      "settings": { "mode": "hero" }
+    },
+    {
+      "name": "Cartel brand story",
+      "settings": { "mode": "story" },
+      "blocks": [
+        { "type": "point" },
+        { "type": "point" },
+        { "type": "point" }
+      ]
+    }
+  ]
+}
+{% endschema %}
