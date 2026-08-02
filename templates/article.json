@@ -12,35 +12,17 @@
     "main": {
       "type": "main-article",
       "blocks": {
-        "featured_image": {
-          "type": "featured_image",
+        "author": {
+          "type": "author",
           "settings": {
-            "image_height": "adapt"
+            "name": "Joan Wong",
+            "role": "Lash educator & contributor",
+            "bio": "Joan writes the Cartel Lash journal, practical guides on technique, aftercare and the business of lashing, drawn from years on the tools and behind the supply counter."
           }
-        },
-        "title": {
-          "type": "title",
-          "settings": {
-            "blog_show_date": true,
-            "blog_show_author": false
-          }
-        },
-        "share": {
-          "type": "share",
-          "settings": {
-            "share_label": "Share"
-          }
-        },
-        "content": {
-          "type": "content",
-          "settings": {}
         }
       },
       "block_order": [
-        "featured_image",
-        "title",
-        "share",
-        "content"
+        "author"
       ],
       "settings": {}
     }
