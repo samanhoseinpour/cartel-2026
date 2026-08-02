@@ -1,5 +1,5 @@
 /* ============================================================
-   Cartel Lash Supply — homepage behaviours (batch 4)
+   Cartel Lash Supply — homepage behaviours (batch 4 + batch 6 fixes)
    Ports the prototype's interactions: hero slideshow (video-aware),
    carousel arrows, category spotlight, reels (exclusive audio + lightbox),
    before/after slider, scroll reveal.
@@ -42,11 +42,14 @@
     }
     disconnectedCallback() { clearTimeout(this.t); }
     syncPlay() {
+      /* batch 6 — the [hidden] attribute does NOT hide an <svg>. The HTML UA
+         stylesheet that implements [hidden]{display:none} is namespaced to
+         XHTML, so it never matches an element in the SVG namespace: the
+         attribute is set, computed display stays "block", and both icons
+         rendered side by side forever. State now lives in a class on the
+         BUTTON and the swap is plain CSS. */
       if (!this.playBtn) return;
-      var p = this.playBtn.querySelector('[data-icon-pause]');
-      var pl = this.playBtn.querySelector('[data-icon-play]');
-      if (p) p.hidden = this.paused;
-      if (pl) pl.hidden = !this.paused;
+      this.playBtn.classList.toggle('is-paused', this.paused);
       this.playBtn.setAttribute('aria-label', this.paused ? 'Play slideshow' : 'Pause slideshow');
     }
     dur(i) {
@@ -75,7 +78,8 @@
         if (!v) return;
         if (n === i) {
           try { v.currentTime = 0; } catch (e) {}
-          if (!self.paused) { var p = v.play(); if (p && p.catch) p.catch(function () {}); }
+          if (self.paused) { v.pause(); }
+          else { var p = v.play(); if (p && p.catch) p.catch(function () {}); }
         } else { v.pause(); }
       });
       var d = this.dur(i);
@@ -182,13 +186,19 @@
       }
     }
     icons(reel) {
+      /* batch 6 — same [hidden]-on-<svg> bug as the hero; class-driven now. */
       var v = reel.querySelector('video');
       if (!v) return;
-      var set = function (sel, on) { var el = reel.querySelector(sel); if (el) el.hidden = !on; };
-      set('[data-icon-pause]', !v.paused);
-      set('[data-icon-play]', v.paused);
-      set('[data-icon-muted]', v.muted);
-      set('[data-icon-sound]', !v.muted);
+      var play = reel.querySelector('[data-reel-play]');
+      var mute = reel.querySelector('[data-reel-mute]');
+      if (play) {
+        play.classList.toggle('is-paused', v.paused);
+        play.setAttribute('aria-label', v.paused ? 'Play video' : 'Pause video');
+      }
+      if (mute) {
+        mute.classList.toggle('is-unmuted', !v.muted);
+        mute.setAttribute('aria-label', v.muted ? 'Unmute video' : 'Mute video');
+      }
     }
     openBox(reel) {
       var v = reel.querySelector('video');

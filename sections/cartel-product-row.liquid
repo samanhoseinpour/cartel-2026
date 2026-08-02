@@ -12,7 +12,7 @@
 -%}
 <script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
 <cl-carousel class="cl">
-  <section class="sec" style="padding-top:{{ section.settings.pad_top }}px;padding-bottom:{{ section.settings.pad_bottom }}px">
+  <section class="sec" style="--cl-pt:{{ section.settings.pad_top }}px;--cl-pb:{{ section.settings.pad_bottom }}px">
     <div class="wrap sec-head">
       <div class="sh-l">
         {%- if section.settings.kicker != blank -%}

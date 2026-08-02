@@ -4,7 +4,7 @@
   TikTok-style EXCLUSIVE audio: unmuting one reel mutes every other one.
 {% endcomment %}
 <cl-reels class="cl">
-  <section class="sec wrap" style="padding-top:{{ section.settings.pad_top }}px;padding-bottom:{{ section.settings.pad_bottom }}px">
+  <section class="sec wrap" style="--cl-pt:{{ section.settings.pad_top }}px;--cl-pb:{{ section.settings.pad_bottom }}px">
     <div class="sec-head">
       <div class="sh-l">
         {%- if section.settings.kicker != blank -%}
@@ -42,12 +42,12 @@
             {%- if block.settings.video != blank -%}
               <div class="reel-ctls">
                 <button class="reel-ctl" type="button" data-reel-play aria-label="Play or pause">
-                  <svg class="ic-xs" data-icon-pause viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="7" y="5" width="3.4" height="14" rx="1.2"></rect><rect x="13.6" y="5" width="3.4" height="14" rx="1.2"></rect></svg>
-                  <svg class="ic-xs" data-icon-play viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" hidden><path d="M8 5.5l11 6.5-11 6.5z"></path></svg>
+                  <svg data-icon-pause viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1"></rect><rect x="14" y="5" width="4" height="14" rx="1"></rect></svg>
+                  <svg data-icon-play viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"></path></svg>
                 </button>
                 <button class="reel-ctl" type="button" data-reel-mute aria-label="Mute or unmute">
-                  <svg class="ic-xs" data-icon-muted viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 9h3l4-3.5v13L7 15H4z"></path><path d="M15 9.5l5 5m0-5l-5 5" stroke="currentColor" stroke-width="2" fill="none"></path></svg>
-                  <svg class="ic-xs" data-icon-sound viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" hidden><path d="M4 9h3l4-3.5v13L7 15H4z"></path><path d="M15 8.5a5 5 0 0 1 0 7M17.5 6a8.5 8.5 0 0 1 0 12" stroke="currentColor" stroke-width="2" fill="none"></path></svg>
+                  <svg data-icon-muted viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9z" fill="currentColor" stroke="none"></path><path d="M17.5 9.5l4 5M21.5 9.5l-4 5"></path></svg>
+                  <svg data-icon-sound viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9z" fill="currentColor" stroke="none"></path><path d="M17 8.5a4 4 0 0 1 0 7M19.5 6a7 7 0 0 1 0 12"></path></svg>
                 </button>
               </div>
             {%- else -%}

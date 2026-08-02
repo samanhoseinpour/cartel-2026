@@ -4,7 +4,7 @@
   Panels are pre-rendered and stacked; JS toggles [hidden].
 {% endcomment %}
 <cl-spotlight class="cl">
-  <section class="sec wrap" style="padding-top:{{ section.settings.pad_top }}px;padding-bottom:{{ section.settings.pad_bottom }}px">
+  <section class="sec wrap" style="--cl-pt:{{ section.settings.pad_top }}px;--cl-pb:{{ section.settings.pad_bottom }}px">
     <div class="sec-head">
       <div class="sh-l">
         {%- if section.settings.kicker != blank -%}
