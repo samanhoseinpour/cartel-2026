@@ -1,1 +1,258 @@
-/* placeholder — filled by lane 7A */
+/* cartel-plp.css — ported 1:1 from Collection.dc.html, generated 2026-08-02.
+   Selectors scoped under .cl (the Cartel section wrapper). @container -> @media.
+   Omitted: rules already in cartel.css / cartel-home.css / cartel-shell.css, all header /
+   footer / cart-drawer / popup shell rules, and rules whose classes are unused on this page.
+   Do not hand-edit the ported block; append your own rules at the end. */
+
+@keyframes slideR{from{transform:translateX(34px);opacity:.5}to{transform:none;opacity:1}}
+@keyframes slideL{from{transform:translateX(-34px);opacity:.5}to{transform:none;opacity:1}}
+.cl .qty{display:flex;align-items:center;border:1px solid var(--line);border-radius:100px}
+.cl .qbtn{width:30px;height:32px;display:flex;align-items:center;justify-content:center;color:var(--bord)}
+.cl .qn{min-width:26px;text-align:center;font-size:13px;font-weight:700}
+.cl .msheet{width:min(390px,90vw);background:var(--cream);height:100%;display:flex;flex-direction:column;animation:slideL .3s ease;border-radius:0 var(--r-lg) var(--r-lg) 0}
+.cl .ms-head{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--line)}
+.cl .ms-body{flex:1;overflow-y:auto;padding:8px 22px}
+.cl .ms-search{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:100px;padding:12px 16px;margin:14px 0;color:var(--muted)}
+.cl .ms-search input{border:0;background:transparent;outline:none;flex:1;font-size:14px}
+.cl .ms-link{display:flex;align-items:center;justify-content:space-between;width:100%;padding:16px 4px;border-bottom:1px solid var(--line);font-size:17px;font-weight:700;color:var(--bord);text-align:left;letter-spacing:-.01em}
+.cl .ms-sub{display:flex;flex-direction:column;gap:1px;padding:2px 4px 12px}
+.cl .mslink{padding:11px 14px;font-size:14px;color:var(--ink);border-radius:12px}
+.cl .mslink:hover{background:var(--greige)}
+.cl .ms-foot{padding:18px 22px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted);line-height:1.7}
+.cl .chev{width:14px;height:14px;transition:.2s}
+.cl .rot{transform:rotate(180deg)}
+.cl .acctwrap{position:relative;display:inline-flex}
+.cl .acctmenu{position:absolute;right:0;top:54px;width:252px;background:#fff;border:1px solid var(--line);border-radius:var(--r-sm);box-shadow:0 20px 48px rgba(74,18,36,.18);padding:10px;z-index:70;animation:fade .15s}
+.cl .am-row{display:block;width:100%;text-align:left;padding:12px 14px;border-radius:12px;font-size:14px;font-weight:500;color:var(--bord)}
+.cl .am-row:hover{background:var(--greige)}
+.cl .am-strong{font-weight:800}
+.cl .am-note{font-size:11.5px;color:var(--muted);padding:10px 14px 4px;line-height:1.5;border-top:1px solid var(--line);margin-top:6px}
+.cl .cartbtn{position:relative}
+.cl .cbadge{position:absolute;top:2px;right:2px;min-width:18px;height:18px;padding:0 5px;background:var(--bord);color:var(--cream);border-radius:10px;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.cl .megacol-h{display:block;font-size:17px;color:var(--bord);margin-bottom:15px;font-weight:800;letter-spacing:-.02em}
+.cl .mlink{font-size:14px;color:var(--ink);transition:.15s;width:fit-content}
+.cl .mlink:hover{color:var(--plum);transform:translateX(3px)}
+.cl .aboutpop{position:absolute;left:50%;transform:translateX(-50%);top:100%;padding-top:13px;z-index:55;animation:fade .15s}
+.cl .aboutmenu{width:214px;background:var(--cream);border:1px solid var(--line);border-radius:var(--r-sm);box-shadow:0 28px 60px rgba(74,18,36,.16);padding:10px;display:flex;flex-direction:column;gap:2px}
+.cl .annbar{background:var(--bord);color:var(--cream);text-align:center;font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;min-height:40px;display:flex;align-items:center;justify-content:center;padding:0 16px}
+.cl .crumb{display:flex;align-items:center;gap:9px;font-size:12.5px;font-weight:600;color:var(--muted);padding-top:26px}
+.cl .crumb-a:hover{color:var(--plum)}
+.cl .crumb-cur{color:var(--bord);font-weight:700}
+.cl .crumb-sep{opacity:.45}
+.cl .collhead{padding-top:10px;padding-bottom:18px}
+.cl .collhead-row{display:block}
+.cl .collhead-l{display:flex;flex-direction:column;gap:14px;align-items:flex-start}
+.cl .collhead-t{font-size:38px;letter-spacing:-.035em}
+.cl .collhead-p{max-width:480px}
+.cl .plptop{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-top:20px;padding-bottom:16px;border-top:1px solid var(--line);margin-top:14px}
+.cl .plpcount{font-size:14px;font-weight:600;color:var(--muted)}
+.cl .cnum{color:var(--bord);font-weight:800}
+.cl .plptop-r{display:flex;align-items:center;gap:10px}
+.cl .filterbtn{display:none;align-items:center;gap:9px;border:1.5px solid var(--line);border-radius:100px;padding:11px 17px;font-size:13.5px;font-weight:700;color:var(--bord);transition:.15s}
+.cl .filterbtn:hover{border-color:var(--bronze)}
+.cl .fbadge{background:var(--bord);color:var(--cream);font-size:10.5px;font-weight:700;border-radius:10px;min-width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;padding:0 5px}
+.cl .sortwrap{position:relative}
+.cl .sortbtn{display:inline-flex;align-items:center;gap:9px;border:1.5px solid var(--line);border-radius:100px;padding:11px 17px;font-size:13.5px;font-weight:700;color:var(--bord);transition:.15s;white-space:nowrap}
+.cl .sortbtn:hover{border-color:var(--bronze)}
+.cl .sortmenu{position:absolute;right:0;top:52px;width:238px;background:#fff;border:1px solid var(--line);border-radius:var(--r-sm);box-shadow:0 20px 48px rgba(74,18,36,.18);padding:8px;z-index:70;animation:fade .15s}
+.cl .sortopt{display:flex;align-items:center;justify-content:space-between;width:100%;text-align:left;padding:11px 13px;border-radius:11px;font-size:13.5px;font-weight:600;color:var(--bord);transition:.15s}
+.cl .sortopt:hover{background:var(--greige)}
+.cl .sortopt.on{color:var(--plum)}
+.cl .sortopt svg{width:15px;height:15px}
+.cl .activebar{display:flex;flex-wrap:wrap;align-items:center;gap:9px;padding-bottom:18px}
+.cl .fchip{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:100px;padding:7px 9px 7px 14px;font-size:12.5px;font-weight:700;color:var(--bord);transition:.15s}
+.cl .fchip:hover{border-color:var(--bronze)}
+.cl .fchip svg{width:13px;height:13px;opacity:.55}
+.cl .clearall{font-size:12.5px;font-weight:700;color:var(--plum);text-decoration:underline;padding:7px 6px}
+.cl .plpbody{display:grid;grid-template-columns:258px 1fr;gap:44px;align-items:start;padding-bottom:96px}
+.cl .filters{position:sticky;top:96px}
+.cl .fhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:2px}
+.cl .fhead-t{font-size:18px;font-weight:800;color:var(--bord);letter-spacing:-.02em}
+.cl .fhead-clear{font-size:12.5px;font-weight:700;color:var(--plum);text-decoration:underline}
+.cl .fgroup{padding:20px 0;border-top:1px solid var(--line)}
+.cl .fgroup.first{border-top:0;padding-top:14px}
+.cl .fgroup-h{font-size:12px;font-weight:800;color:var(--bord);text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px}
+.cl .fopts{display:flex;flex-direction:column;gap:1px}
+.cl .fopt{display:flex;align-items:center;gap:11px;padding:7px 0;font-size:14px;color:var(--ink);font-weight:500;text-align:left;width:100%}
+.cl .fopt:hover{color:var(--bord)}
+.cl .fbox{width:19px;height:19px;border-radius:6px;border:1.6px solid var(--line);flex:none;display:flex;align-items:center;justify-content:center;color:transparent;transition:.15s}
+.cl .fbox svg{width:13px;height:13px}
+.cl .fbox.on{background:var(--bord);border-color:var(--bord);color:var(--cream)}
+.cl .fopt-c{margin-left:auto;font-size:12px;color:var(--muted);font-weight:600}
+.cl .fpills{display:flex;flex-wrap:wrap;gap:8px}
+.cl .fpill{min-width:42px;padding:9px 13px;border-radius:100px;border:1.5px solid var(--line);font-size:13px;font-weight:700;color:var(--bord);transition:.15s;text-align:center}
+.cl .fpill:hover{border-color:var(--bronze)}
+.cl .fpill.on{background:var(--bord);color:var(--cream);border-color:var(--bord)}
+.cl .fswitch-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.cl .fswitch-l{font-size:14px;font-weight:600;color:var(--ink)}
+.cl .fswitch{width:44px;height:26px;border-radius:100px;background:rgba(74,18,36,.16);position:relative;flex:none;transition:.2s}
+.cl .fswitch-k{position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.22)}
+.cl .fson{background:var(--bord)}
+.cl .fson .fswitch-k{left:21px}
+.cl .plpmain{min-width:0}
+.cl .pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:34px 16px}
+.cl .pgrid .card{min-width:0}
+.cl .card-vid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .35s ease;z-index:1;background:#1a0a12}
+.cl .card:hover .card-vid{opacity:1}
+.cl .card-vidbadge{position:absolute;left:12px;bottom:12px;z-index:2;display:inline-flex;align-items:center;gap:6px;background:rgba(40,8,18,.62);backdrop-filter:blur(5px);color:var(--cream);border-radius:100px;padding:6px 12px;font-size:11px;font-weight:700;transition:opacity .25s ease}
+.cl .card:hover .card-vidbadge{opacity:0}
+.cl .ptag.sale{background:var(--bronze);color:var(--bord)}
+.cl .ptag.out{background:#e3d8c9;color:var(--muted)}
+.cl .priceblock{display:flex;align-items:baseline;gap:8px}
+.cl .pcompare{font-size:14px;color:var(--muted);text-decoration:line-through;font-weight:600}
+.cl .emptywrap{padding:64px 24px;text-align:center;border:1px dashed rgba(74,18,36,.2);border-radius:var(--r-lg);background:#fff}
+.cl .empty-ic{width:54px;height:54px;border-radius:50%;background:var(--greige);color:var(--bord);display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
+.cl .empty-t{font-size:24px;font-weight:800;color:var(--bord);letter-spacing:-.02em;margin-bottom:7px}
+.cl .empty-p{font-size:15px;color:var(--muted);margin-bottom:22px}
+.cl .loadmore{display:flex;flex-direction:column;align-items:center;gap:15px;padding-top:48px}
+.cl .loadmore-meta{font-size:13px;color:var(--muted);font-weight:600}
+.cl .loadbar{width:190px;height:4px;border-radius:4px;background:var(--greige);overflow:hidden}
+.cl .loadbar-f{height:100%;background:var(--bronze);border-radius:4px;transition:width .4s ease}
+.cl .fsheet{width:min(380px,90vw);background:var(--cream);height:100%;display:flex;flex-direction:column;animation:slideL .3s ease;border-radius:0 var(--r-lg) var(--r-lg) 0}
+.cl .fsheet-head{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--line)}
+.cl .fsheet-title{font-size:20px;font-weight:800;color:var(--bord);letter-spacing:-.02em}
+.cl .fsheet-body{flex:1;overflow-y:auto;padding:4px 22px}
+.cl .fsheet-foot{padding:16px 22px;border-top:1px solid var(--line);display:flex;gap:12px}
+.cl .ftlogo{height:34px;margin-bottom:18px}
+.cl .socials{display:flex;gap:10px;margin-top:22px}
+.cl .soc{width:42px;height:42px;border-radius:50%;border:1px solid rgba(250,246,240,.28);display:flex;align-items:center;justify-content:center;color:var(--cream);transition:.2s}
+.cl .soc:hover{background:var(--bronze);color:var(--bord);border-color:var(--bronze);transform:translateY(-2px)}
+.cl .ftcol-h{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--bronze);font-weight:700;margin-bottom:17px}
+.cl .ftcol{display:flex;flex-direction:column;gap:12px}
+.cl .flink{font-size:14px;color:rgba(250,246,240,.74);transition:.15s;width:fit-content}
+.cl .flink:hover{color:var(--cream)}
+.cl .ftp{display:flex;align-items:flex-start;gap:12px;max-width:340px}
+.cl .ftp-ic{color:var(--bronze);width:22px;height:22px;flex:none;margin-top:1px}
+.cl .ftp-t{font-size:13px;font-weight:700;color:var(--cream)}
+.cl .ftp-s{font-size:12.5px;color:rgba(250,246,240,.62);margin-top:3px;line-height:1.55}
+.cl .paylogo{height:26px;min-width:40px;padding:0 8px;border-radius:5px;background:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;letter-spacing:.02em;line-height:1;box-shadow:0 1px 2px rgba(0,0,0,.2)}
+.cl .pl-visa{color:#1a1f71;font-style:italic;letter-spacing:.05em}
+.cl .pl-mc{gap:0}
+.cl .pl-mc i{width:15px;height:15px;border-radius:50%;display:block}
+.cl .pl-mc .mc-a{background:#eb001b}
+.cl .pl-mc .mc-b{background:#f79e1b;margin-left:-6px;mix-blend-mode:multiply}
+.cl .pl-amex{background:#1f72cd;color:#fff;letter-spacing:.03em}
+.cl .pl-applepay{color:#111}
+.cl .pl-gpay{color:#5f6368}
+.cl .pl-gpay b{color:#4285f4}
+.cl .pl-paypal{color:#003087}
+.cl .pl-paypal b{color:#0090da}
+.cl .pl-shoppay{background:#5a31f4;color:#fff}
+.cl .ftc-row{display:inline-flex;align-items:center;gap:9px;font-size:13.5px;color:rgba(250,246,240,.82);transition:.15s;width:fit-content}
+.cl .ftc-row:hover{color:var(--cream)}
+.cl .ftc-row svg{width:16px;height:16px;color:var(--bronze);flex:none}
+@media (max-width:1100px){
+  .cl .collhead-t{font-size:32px}
+}
+@media (max-width:1040px){
+  .cl .plpbody{grid-template-columns:208px 1fr;gap:30px}
+  .cl .pgrid{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:760px){
+  .cl .collhead-t{font-size:28px}
+  .cl .collhead{padding-top:8px;padding-bottom:22px}
+  .cl .plptop{flex-wrap:wrap;gap:12px;padding-top:16px}
+  .cl .filterbtn{display:inline-flex}
+  .cl .plpbody{grid-template-columns:1fr;gap:0;padding-bottom:64px}
+  .cl .filters{display:none}
+  .cl .pgrid{grid-template-columns:repeat(2,1fr);gap:22px 12px}
+}
+.cl .search-ov{position:fixed;inset:0;z-index:160;background:rgba(40,8,18,.42);backdrop-filter:blur(10px);display:flex;justify-content:center;align-items:flex-start;padding:11vh 20px 20px;animation:fade .2s ease}
+.cl .search-panel{width:min(680px,100%);background:var(--cream);border-radius:var(--r-lg);box-shadow:0 40px 90px rgba(40,8,18,.4);padding:22px;animation:pop .26s ease;position:relative}
+.cl .search-form{display:flex;align-items:center;gap:14px;background:#fff;border:1.5px solid var(--line);border-radius:100px;padding:6px 6px 6px 22px}
+.cl .search-form:focus-within{border-color:var(--plum)}
+.cl .search-form>svg{width:22px;height:22px;color:var(--muted);flex:none}
+.cl .search-input{border:0;background:transparent;outline:none;flex:1;font-size:17px;font-weight:600;color:var(--ink);letter-spacing:-.01em;padding:14px 0}
+.cl .search-go{display:inline-flex;align-items:center;gap:8px;background:var(--bord);color:var(--cream);font-weight:700;font-size:14px;padding:13px 22px;border-radius:100px;flex:none;transition:.2s}
+.cl .search-go:hover{background:var(--plum)}
+.cl .search-go svg{width:16px;height:16px}
+@media (max-width:560px){
+  .cl .search-go span{display:none}
+  .cl .search-go{padding:13px 16px}
+  .cl .search-panel{padding:16px}
+}
+
+/* ===== PAGE OVERRIDES =====
+   Same selector as an existing theme rule but a different value in this page's design.
+   Kept so the page matches the mock; this file only loads on its own template. */
+.cl .kick{text-transform:uppercase;letter-spacing:.18em;font-size:12px;font-weight:700;color:var(--plum)}
+.cl .mobonly{display:none}
+.cl .card{display:flex;flex-direction:column;transition:transform .3s ease;cursor:pointer}
+
+/* ===== LANE 7A APPENDS =====
+   Rules genuinely missing from the port: Shopify/Dawn plumbing (custom
+   elements, details drawer, price-range, Dawn pagination) plus the optional
+   .collhead-img the prototype markup never shipped. Tokens only. */
+
+/* custom-element display plumbing (custom elements default to inline) */
+.cl facet-filters-form{display:block}
+.cl cartel-facets-drawer{display:inline-flex}
+.cl cartel-sort{display:inline-flex}
+.cl .sorting{display:flex;align-items:center;position:relative}
+.cl .cl-fdrawer,.cl .cl-fdrawer details{display:block}
+
+/* collection header: rich-text description + optional image */
+.cl .collhead-p p{margin:0}
+.cl .collhead-p p+p{margin-top:8px}
+.cl .collhead-row.has-img{display:flex;align-items:flex-end;justify-content:space-between;gap:32px}
+.cl .collhead-img{width:280px;max-width:32%;aspect-ratio:16/10;border-radius:var(--r);overflow:hidden;flex:none}
+.cl .collhead-img img{width:100%;height:100%;object-fit:cover;display:block}
+
+/* toolbar: filter button is a <summary>, sort popover open state */
+.cl summary.filterbtn{list-style:none;cursor:pointer}
+.cl summary.filterbtn::marker{content:none}
+.cl summary.filterbtn::-webkit-details-marker{display:none}
+.cl .sortmenu{display:none}
+.cl .sortwrap.open .sortmenu{display:block}
+.cl cartel-sort:defined .cl-sortsel{position:absolute;width:1px;height:1px;padding:0;border:0;clip-path:inset(50%);overflow:hidden;white-space:nowrap}
+.cl cartel-sort:not(:defined) .sortbtn,.cl cartel-sort:not(:defined) .sortmenu{display:none}
+.cl cartel-sort:not(:defined) .cl-sortsel{appearance:none;-webkit-appearance:none;border:1.5px solid var(--line);background:#fff;border-radius:100px;padding:11px 17px;font-size:13.5px;font-weight:700;color:var(--bord)}
+
+/* facet inputs: labels wrap visually-hidden checkboxes */
+.cl .fopt,.cl .fpill,.cl .fswitch-row,.cl .fswitch{cursor:pointer}
+/* :checked drives the active look — facets.js never re-renders the group the
+   user just clicked, so the server-side .on/.fson classes alone would lag */
+.cl .fopt input:checked~.fbox{background:var(--bord);border-color:var(--bord);color:var(--cream)}
+.cl .fswitch-row input:checked~.fswitch{background:var(--bord)}
+.cl .fswitch-row input:checked~.fswitch .fswitch-k{left:21px}
+.cl .fpill:has(input:checked){background:var(--bord);color:var(--cream);border-color:var(--bord)}
+.cl .fopt input:focus-visible~.fbox,.cl .fswitch-row input:focus-visible~.fswitch{outline:2px solid var(--plum);outline-offset:2px}
+.cl .fpill:has(input:focus-visible){outline:2px solid var(--plum);outline-offset:2px}
+.cl .js-facet-remove.disabled{pointer-events:none;opacity:.55}
+.cl .activebar:empty{display:none}
+
+/* price range fields (Shopify price filter is a gte/lte range, not buckets) */
+.cl .cl-price{display:flex;align-items:center;gap:8px}
+.cl .cl-price-f{display:flex;align-items:center;gap:6px;flex:1;min-width:0;background:#fff;border:1.5px solid var(--line);border-radius:100px;padding:10px 14px;transition:.15s}
+.cl .cl-price-f:focus-within{border-color:var(--plum)}
+.cl .cl-price-cur{font-size:12.5px;font-weight:700;color:var(--muted);flex:none}
+.cl .cl-price-in{width:100%;min-width:0;border:0;outline:none;background:transparent;font-size:13.5px;font-weight:700;color:var(--bord)}
+.cl .cl-price-dash{color:var(--muted);flex:none}
+
+/* mobile filter drawer over Dawn's <menu-drawer>/<details> */
+body.cl-noscroll{overflow:hidden}
+.cl .cl-fdrawer .mobile-facets{position:fixed;inset:0;z-index:150;background:rgba(40,8,18,.5);backdrop-filter:blur(4px);display:flex;opacity:0;pointer-events:none;transition:opacity .25s ease}
+.cl .cl-fdrawer details.menu-opening .mobile-facets{opacity:1;pointer-events:auto}
+.cl .cl-fdrawer .fsheet{transform:translateX(-34px);opacity:.5;transition:transform .3s ease,opacity .3s ease;animation:none}
+.cl .cl-fdrawer details.menu-opening .fsheet{transform:none;opacity:1}
+.cl .cl-fform{display:flex;flex-direction:column;flex:1;min-height:0}
+
+/* AJAX loading states (facets.js toggles .loading) */
+.cl .plpcount.loading{opacity:.45}
+.cl #ProductGridContainer .collection.loading{opacity:.45;pointer-events:none;transition:opacity .2s ease}
+
+/* no-rail layout (brand template runs the grid without filters) */
+.cl .plpbody--full{grid-template-columns:1fr}
+
+/* Dawn pagination snippet restyled to the design's pill controls */
+.cl .pagination-wrapper{padding-top:48px}
+.cl .pagination__list{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px;list-style:none;margin:0;padding:0}
+.cl .pagination__item{display:inline-flex;align-items:center;justify-content:center;min-width:44px;height:44px;padding:0 15px;border:1.5px solid var(--line);border-radius:100px;font-size:13.5px;font-weight:700;color:var(--bord);background:transparent;text-decoration:none;transition:.15s}
+.cl a.pagination__item:hover{border-color:var(--bronze)}
+.cl .pagination__item--current{background:var(--bord);color:var(--cream);border-color:var(--bord)}
+.cl .pagination__item .svg-wrapper{display:inline-flex}
+.cl .pagination__item svg{width:14px;height:14px}
+@media (max-width:760px){
+  .cl .collhead-img{display:none}
+  .cl .collhead-row.has-img{display:block}
+}
