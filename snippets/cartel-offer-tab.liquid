@@ -1,1 +1,19 @@
-{% comment %} Filled by batch 7C (conversion extras). Intentionally renders nothing yet. {% endcomment %}
+{% comment %}
+  Cartel offer tab — the fixed right-edge "GET 10% OFF" tab (lane 7C).
+  Rendered on every page from theme.liquid. Clicking it opens the email
+  popup (cartel-email-popup.liquid) via cartel-conversion.js — including
+  after the popup was dismissed. z-index 140: below the popup overlay (150)
+  and the cart drawer (1000). Skin: assets/cartel-conversion.css.
+{% endcomment %}
+<div class="cl cl-fixed">
+  <button
+    type="button"
+    id="cl-offtab"
+    class="offtab"
+    aria-haspopup="dialog"
+    aria-controls="cl-popup"
+    aria-label="Get 10% off your first order"
+  >
+    Get 10% off
+  </button>
+</div>

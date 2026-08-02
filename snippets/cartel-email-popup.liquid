@@ -1,1 +1,61 @@
-{% comment %} Filled by batch 7C (conversion extras). Intentionally renders nothing yet. {% endcomment %}
+{% comment %}
+  Cartel email popup — 10%-off newsletter capture (lane 7C), rendered on
+  every page from theme.liquid, hidden until cartel-conversion.js opens it
+  (auto once per visitor via localStorage "cl_popup", or from the offer tab).
+  The image half prefers a Files upload named "cartel-popup.jpg"; otherwise
+  a branded monogram panel renders. Signup = Dawn's newsletter pattern:
+  {% form 'customer' %} + hidden contact[tags]=newsletter. After a
+  successful post the page reloads and [data-popup-posted] tells the JS to
+  reopen once with the success state. Skin: assets/cartel-conversion.css.
+{% endcomment %}
+<div class="cl cl-fixed">
+  <div class="ov" id="cl-popup-ov" hidden>
+    <div class="pop" id="cl-popup" role="dialog" aria-modal="true" aria-label="Get 10% off your first order">
+      <button class="pop-close" type="button" data-popup-close aria-label="Close">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M5.5 5.5l13 13M18.5 5.5l-13 13"></path></svg>
+      </button>
+      <div class="pop-img">
+        <div class="pop-img-brand" aria-hidden="true">
+          <span class="pop-monogram">CL</span>
+          <span class="pop-monogram-sub">Cartel Lash Supply</span>
+        </div>
+      </div>
+      {%- form 'customer', id: 'cl-popup-form', class: 'pop-b' -%}
+        {%- if form.posted_successfully? -%}
+          <div class="pop-done-wrap" data-popup-posted>
+            <div class="pop-done-ic">
+              <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>
+            </div>
+            <h2 class="pop-h">You're in.</h2>
+            <p class="pop-p">Your welcome code is on its way to your inbox. Welcome to the Cartel.</p>
+            <button class="btn btn-fill" type="button" data-popup-close>Start shopping</button>
+          </div>
+        {%- else -%}
+          <span class="kick">First order treat</span>
+          <h2 class="pop-h">Take 10% off your first order.</h2>
+          <p class="pop-p">Join the Cartel list for pro tips, restock alerts and early access to drops.</p>
+          <input type="hidden" name="contact[tags]" value="newsletter">
+          <div class="pop-form">
+            <input
+              class="pop-input"
+              type="email"
+              name="contact[email]"
+              value="{{ form.email }}"
+              required
+              placeholder="Your email address"
+              aria-label="Email address"
+              autocomplete="email"
+              autocapitalize="off"
+              autocorrect="off"
+            >
+            <button class="btn btn-fill w100" type="submit">Claim my 10%</button>
+          </div>
+          {%- if form.errors -%}
+            <div class="pop-msg-err" role="alert" data-popup-error>Hmm, that email doesn't look right. Try again?</div>
+          {%- endif -%}
+          <button class="pop-skip" type="button" data-popup-close>No thanks, I'll pay full price</button>
+        {%- endif -%}
+      {%- endform -%}
+    </div>
+  </div>
+</div>

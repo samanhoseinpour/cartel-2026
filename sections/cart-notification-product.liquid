@@ -1,58 +1,54 @@
+{% comment %}
+  Cartel notification line — lane 7C. cart-notification.js swaps the inner
+  markup of #cart-notification-product with the row matching the added line's
+  key, so every row here must keep id="cart-notification-product-{key}".
+{% endcomment %}
 {%- if cart != empty -%}
   {%- for item in cart.items -%}
+    {%- liquid
+      assign notif_gated = false
+      if item.product.vendor == 'Thuya' and customer == nil
+        assign notif_gated = true
+      endif
+    -%}
     <div id="cart-notification-product-{{ item.key }}" class="cart-item">
-      {%- if item.image -%}
-        <div class="cart-notification-product__image global-media-settings">
+      <div class="ci-img">
+        {%- if item.image -%}
           <img
-            src="{{ item.image | image_url: width: 140 }}"
+            class="ci-photo"
+            src="{{ item.image | image_url: width: 200 }}"
             alt="{{ item.image.alt | escape }}"
-            width="70"
-            height="{{ 70 | divided_by: item.image.aspect_ratio | ceil }}"
             loading="lazy"
+            width="74"
+            height="90"
           >
-        </div>
-      {%- endif -%}
-      <div>
-        {%- if settings.show_vendor -%}
-          <p class="caption-with-letter-spacing light">{{ item.product.vendor }}</p>
+        {%- else -%}
+          {{ 'product-1' | placeholder_svg_tag: 'ci-photo' }}
         {%- endif -%}
-        <div class="cart-notification-product__title">
-          <h3 class="cart-notification-product__name h4">
-            {{- item.product.title | escape -}}
-          </h3>
-          {% assign modal_id = 'CartDisclosureModal-notification-' | append: item.key | replace: ':', '-' %}
-          {%- render 'cart-disclosure-indicator', product: item.product, modal_id: modal_id -%}
-        </div>
-        <dl>
-          {%- unless item.product.has_only_default_variant -%}
-            {%- for option in item.options_with_values -%}
-              <div class="product-option">
-                <dt>{{ option.name }}:</dt>
-                <dd>{{ option.value }}</dd>
-              </div>
-            {%- endfor -%}
-          {%- endunless -%}
-          {%- for property in item.properties -%}
-            {%- assign property_first_char = property.first | slice: 0 -%}
-            {%- if property.last != blank and property_first_char != '_' -%}
-              <div class="product-option">
-                <dt>{{ property.first }}:</dt>
-                <dd>
-                  {%- if property.last contains '/uploads/' -%}
-                    <a href="{{ property.last }}" class="link" target="_blank">
-                      {{ property.last | split: '/' | last }}
-                    </a>
-                  {%- else -%}
-                    {{ property.last }}
-                  {%- endif -%}
-                </dd>
-              </div>
-            {%- endif -%}
-          {%- endfor -%}
-        </dl>
+      </div>
+      <div class="ci-b">
+        {%- if item.product.vendor != blank -%}
+          <span class="ci-brand">{{ item.product.vendor }}</span>
+        {%- endif -%}
+        <span class="ci-name">{{ item.product.title | escape }}</span>
+        {%- unless item.product.has_only_default_variant -%}
+          <span class="ci-var">{{ item.variant.title }}</span>
+        {%- endunless -%}
         {%- if item.selling_plan_allocation != null -%}
-          <p class="product-option">{{ item.selling_plan_allocation.selling_plan.name }}</p>
+          <span class="ci-var">{{ item.selling_plan_allocation.selling_plan.name }}</span>
         {%- endif -%}
+        <div class="ci-bottom">
+          <span class="ci-var">Qty {{ item.quantity }}</span>
+          <div class="ci-price">
+            {%- if notif_gated -%}
+              {% render 'cartel-gate-cta', gate_style: 'card' %}
+            {%- elsif item.final_price == 0 -%}
+              Price on request
+            {%- else -%}
+              {{ item.final_line_price | money }}
+            {%- endif -%}
+          </div>
+        </div>
       </div>
     </div>
   {%- endfor -%}
