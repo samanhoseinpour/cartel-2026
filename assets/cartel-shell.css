@@ -714,3 +714,16 @@
     right: 24px;
   }
 }
+
+/* §10 install fix (2026-08-02): with the gutters corrected, the payment
+   badges still sat at x=44 (not 24) at ≤749px — Dawn's section-footer.css
+   gives .footer__column--info (the badges' column) padding: 2rem each side
+   at mobile only (≥750px resets it to 0, which is why desktop was flush).
+   Zero it so the badges join the 24px gutter like everything else. Bumped
+   to (0,2,0): section-footer.css loads after this file and wins ties. */
+@media screen and (max-width: 749px) {
+  .footer .footer__column--info {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
