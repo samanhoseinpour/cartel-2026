@@ -1,1 +1,200 @@
-/* placeholder — filled by lane 7F */
+/* cartel-search.css — ported 1:1 from Search.dc.html, generated 2026-08-02.
+   Selectors scoped under .cl (the Cartel section wrapper). @container -> @media.
+   Omitted: rules already in cartel.css / cartel-home.css / cartel-shell.css, all header /
+   footer / cart-drawer / popup shell rules, and rules whose classes are unused on this page.
+   Do not hand-edit the ported block; append your own rules at the end. */
+
+@keyframes slideR{from{transform:translateX(34px);opacity:.5}to{transform:none;opacity:1}}
+@keyframes slideL{from{transform:translateX(-34px);opacity:.5}to{transform:none;opacity:1}}
+.cl .qty{display:flex;align-items:center;border:1px solid var(--line);border-radius:100px}
+.cl .qbtn{width:30px;height:32px;display:flex;align-items:center;justify-content:center;color:var(--bord)}
+.cl .qn{min-width:26px;text-align:center;font-size:13px;font-weight:700}
+.cl .msheet{width:min(390px,90vw);background:var(--cream);height:100%;display:flex;flex-direction:column;animation:slideL .3s ease;border-radius:0 var(--r-lg) var(--r-lg) 0}
+.cl .ms-head{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--line)}
+.cl .ms-body{flex:1;overflow-y:auto;padding:8px 22px}
+.cl .ms-search{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:100px;padding:12px 16px;margin:14px 0;color:var(--muted)}
+.cl .ms-search input{border:0;background:transparent;outline:none;flex:1;font-size:14px}
+.cl .ms-link{display:flex;align-items:center;justify-content:space-between;width:100%;padding:16px 4px;border-bottom:1px solid var(--line);font-size:17px;font-weight:700;color:var(--bord);text-align:left;letter-spacing:-.01em}
+.cl .ms-sub{display:flex;flex-direction:column;gap:1px;padding:2px 4px 12px}
+.cl .mslink{padding:11px 14px;font-size:14px;color:var(--ink);border-radius:12px}
+.cl .mslink:hover{background:var(--greige)}
+.cl .ms-foot{padding:18px 22px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted);line-height:1.7}
+.cl .chev{width:14px;height:14px;transition:.2s}
+.cl .rot{transform:rotate(180deg)}
+.cl .acctwrap{position:relative;display:inline-flex}
+.cl .acctmenu{position:absolute;right:0;top:54px;width:252px;background:#fff;border:1px solid var(--line);border-radius:var(--r-sm);box-shadow:0 20px 48px rgba(74,18,36,.18);padding:10px;z-index:70;animation:fade .15s}
+.cl .am-row{display:block;width:100%;text-align:left;padding:12px 14px;border-radius:12px;font-size:14px;font-weight:500;color:var(--bord)}
+.cl .am-row:hover{background:var(--greige)}
+.cl .am-strong{font-weight:800}
+.cl .am-note{font-size:11.5px;color:var(--muted);padding:10px 14px 4px;line-height:1.5;border-top:1px solid var(--line);margin-top:6px}
+.cl .cartbtn{position:relative}
+.cl .cbadge{position:absolute;top:2px;right:2px;min-width:18px;height:18px;padding:0 5px;background:var(--bord);color:var(--cream);border-radius:10px;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.cl .megacol-h{display:block;font-size:17px;color:var(--bord);margin-bottom:15px;font-weight:800;letter-spacing:-.02em}
+.cl .mlink{font-size:14px;color:var(--ink);transition:.15s;width:fit-content}
+.cl .mlink:hover{color:var(--plum);transform:translateX(3px)}
+.cl .aboutpop{position:absolute;left:50%;transform:translateX(-50%);top:100%;padding-top:13px;z-index:55;animation:fade .15s}
+.cl .aboutmenu{width:214px;background:var(--cream);border:1px solid var(--line);border-radius:var(--r-sm);box-shadow:0 28px 60px rgba(74,18,36,.16);padding:10px;display:flex;flex-direction:column;gap:2px}
+.cl .annbar{background:var(--bord);color:var(--cream);text-align:center;font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;min-height:40px;display:flex;align-items:center;justify-content:center;padding:0 16px}
+.cl .crumb{display:flex;align-items:center;gap:9px;font-size:12.5px;font-weight:600;color:var(--muted);padding-top:26px}
+.cl .crumb-a:hover{color:var(--plum)}
+.cl .crumb-cur{color:var(--bord);font-weight:700}
+.cl .crumb-sep{opacity:.45}
+.cl .subnav{display:flex;gap:9px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px}
+.cl .card-vid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .35s ease;z-index:1;background:#1a0a12}
+.cl .card:hover .card-vid{opacity:1}
+.cl .card-vidbadge{position:absolute;left:12px;bottom:12px;z-index:2;display:inline-flex;align-items:center;gap:6px;background:rgba(40,8,18,.62);backdrop-filter:blur(5px);color:var(--cream);border-radius:100px;padding:6px 12px;font-size:11px;font-weight:700;transition:opacity .25s ease}
+.cl .card:hover .card-vidbadge{opacity:0}
+.cl .ptag.sale{background:var(--bronze);color:var(--bord)}
+.cl .ptag.out{background:#e3d8c9;color:var(--muted)}
+.cl .priceblock{display:flex;align-items:baseline;gap:8px}
+.cl .pcompare{font-size:14px;color:var(--muted);text-decoration:line-through;font-weight:600}
+.cl .ftlogo{height:34px;margin-bottom:18px}
+.cl .socials{display:flex;gap:10px;margin-top:22px}
+.cl .soc{width:42px;height:42px;border-radius:50%;border:1px solid rgba(250,246,240,.28);display:flex;align-items:center;justify-content:center;color:var(--cream);transition:.2s}
+.cl .soc:hover{background:var(--bronze);color:var(--bord);border-color:var(--bronze);transform:translateY(-2px)}
+.cl .ftcol-h{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--bronze);font-weight:700;margin-bottom:17px}
+.cl .ftcol{display:flex;flex-direction:column;gap:12px}
+.cl .flink{font-size:14px;color:rgba(250,246,240,.74);transition:.15s;width:fit-content}
+.cl .flink:hover{color:var(--cream)}
+.cl .ftp{display:flex;align-items:flex-start;gap:12px;max-width:340px}
+.cl .ftp-ic{color:var(--bronze);width:22px;height:22px;flex:none;margin-top:1px}
+.cl .ftp-t{font-size:13px;font-weight:700;color:var(--cream)}
+.cl .ftp-s{font-size:12.5px;color:rgba(250,246,240,.62);margin-top:3px;line-height:1.55}
+.cl .paylogo{height:26px;min-width:40px;padding:0 8px;border-radius:5px;background:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;letter-spacing:.02em;line-height:1;box-shadow:0 1px 2px rgba(0,0,0,.2)}
+.cl .pl-visa{color:#1a1f71;font-style:italic;letter-spacing:.05em}
+.cl .pl-mc{gap:0}
+.cl .pl-mc i{width:15px;height:15px;border-radius:50%;display:block}
+.cl .pl-mc .mc-a{background:#eb001b}
+.cl .pl-mc .mc-b{background:#f79e1b;margin-left:-6px;mix-blend-mode:multiply}
+.cl .pl-amex{background:#1f72cd;color:#fff;letter-spacing:.03em}
+.cl .pl-applepay{color:#111}
+.cl .pl-gpay{color:#5f6368}
+.cl .pl-gpay b{color:#4285f4}
+.cl .pl-paypal{color:#003087}
+.cl .pl-paypal b{color:#0090da}
+.cl .pl-shoppay{background:#5a31f4;color:#fff}
+.cl .ftc-row{display:inline-flex;align-items:center;gap:9px;font-size:13.5px;color:rgba(250,246,240,.82);transition:.15s;width:fit-content}
+.cl .ftc-row:hover{color:var(--cream)}
+.cl .ftc-row svg{width:16px;height:16px;color:var(--bronze);flex:none}
+.cl .srchhead{padding-top:30px;max-width:780px}
+.cl .srch-h{font-size:50px;margin-top:12px}
+.cl .srchbar{display:flex;align-items:center;gap:14px;margin-top:22px;background:#fff;border:1.5px solid var(--line);border-radius:100px;padding:17px 24px;max-width:640px;transition:.18s}
+.cl .srchbar:focus-within{border-color:var(--plum);box-shadow:0 8px 24px rgba(74,18,36,.1)}
+.cl .srchbar svg{width:22px;height:22px;color:var(--muted);flex:none}
+.cl .srchbar input{border:0;background:transparent;outline:none;flex:1;font-size:17px;font-weight:600;color:var(--ink);letter-spacing:-.01em}
+.cl .srch-clear{flex:none;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--muted);background:var(--greige)}
+.cl .srch-clear:hover{color:var(--plum)}
+.cl .srch-clear svg{width:15px;height:15px}
+.cl .srchresults{padding-top:18px;padding-bottom:92px}
+.cl .srch-toolbar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 0 20px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.cl .srch-count{font-size:18px;font-weight:800;color:var(--bord);letter-spacing:-.02em}
+.cl .srch-tools{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.cl .srch-cats{display:flex;gap:7px;flex-wrap:wrap}
+.cl .srchchip{font-size:13px;font-weight:700;color:var(--bord);background:#fff;border:1.5px solid var(--line);padding:9px 15px;border-radius:100px;transition:.18s}
+.cl .srchchip:hover{border-color:var(--bronze)}
+.cl .srchchip.on{background:var(--bord);color:var(--cream);border-color:var(--bord)}
+.cl .ssortwrap{position:relative}
+.cl .ssortbtn{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:var(--bord);background:#fff;border:1.5px solid var(--line);padding:10px 16px;border-radius:100px}
+.cl .ssortbtn:hover{border-color:var(--bronze)}
+.cl .ssortbtn svg{width:14px;height:14px}
+.cl .ssortmenu{position:absolute;right:0;top:48px;z-index:40;width:214px;background:#fff;border:1px solid var(--line);border-radius:var(--r-sm);box-shadow:0 20px 48px rgba(74,18,36,.18);padding:8px}
+.cl .ssortopt{display:block;width:100%;text-align:left;padding:11px 14px;border-radius:12px;font-size:13.5px;font-weight:600;color:var(--bord)}
+.cl .ssortopt:hover{background:var(--greige)}
+.cl .ssortopt.on{background:var(--cream);color:var(--plum);font-weight:800}
+.cl .srchgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:36px 18px;padding-top:26px}
+.cl .sload{display:flex;flex-direction:column;align-items:center;gap:14px;margin-top:46px}
+.cl .sload-bar{width:200px;height:5px;background:rgba(74,18,36,.12);border-radius:10px;overflow:hidden}
+.cl .sload-bar-f{height:100%;background:var(--bronze);border-radius:10px;transition:width .4s}
+.cl .srch-empty{padding:70px 30px;text-align:center;display:flex;flex-direction:column;align-items:center;background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);margin-top:26px}
+.cl .srch-empty-ic{width:70px;height:70px;border-radius:50%;background:var(--greige);color:var(--bord);display:flex;align-items:center;justify-content:center;margin-bottom:18px}
+.cl .srch-empty-ic svg{width:32px;height:32px}
+.cl .srch-empty-t{font-size:26px;font-weight:800;color:var(--bord);letter-spacing:-.02em;margin-bottom:8px}
+.cl .srch-empty-p{font-size:15px;color:var(--muted);max-width:450px;line-height:1.6}
+.cl .srch-empty-sec{margin-top:28px}
+.cl .srch-empty-h{font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+.cl .srch-empty-chips{display:flex;flex-wrap:wrap;gap:9px;justify-content:center}
+@media (max-width:1040px){
+  .cl .srchgrid{grid-template-columns:repeat(3,1fr)}
+}
+@media (max-width:760px){
+  .cl .srch-h{font-size:34px}
+  .cl .srchbar{padding:14px 18px}
+  .cl .srchbar input{font-size:15px}
+  .cl .srchgrid{grid-template-columns:1fr 1fr;gap:24px 12px}
+  .cl .srch-toolbar{flex-direction:column;align-items:flex-start}
+}
+.cl .search-ov{position:fixed;inset:0;z-index:160;background:rgba(40,8,18,.42);backdrop-filter:blur(10px);display:flex;justify-content:center;align-items:flex-start;padding:11vh 20px 20px;animation:fade .2s ease}
+.cl .search-panel{width:min(680px,100%);background:var(--cream);border-radius:var(--r-lg);box-shadow:0 40px 90px rgba(40,8,18,.4);padding:22px;animation:pop .26s ease;position:relative}
+.cl .search-form{display:flex;align-items:center;gap:14px;background:#fff;border:1.5px solid var(--line);border-radius:100px;padding:6px 6px 6px 22px}
+.cl .search-form:focus-within{border-color:var(--plum)}
+.cl .search-form>svg{width:22px;height:22px;color:var(--muted);flex:none}
+.cl .search-input{border:0;background:transparent;outline:none;flex:1;font-size:17px;font-weight:600;color:var(--ink);letter-spacing:-.01em;padding:14px 0}
+.cl .search-go{display:inline-flex;align-items:center;gap:8px;background:var(--bord);color:var(--cream);font-weight:700;font-size:14px;padding:13px 22px;border-radius:100px;flex:none;transition:.2s}
+.cl .search-go:hover{background:var(--plum)}
+.cl .search-go svg{width:16px;height:16px}
+@media (max-width:560px){
+  .cl .search-go span{display:none}
+  .cl .search-go{padding:13px 16px}
+  .cl .search-panel{padding:16px}
+}
+
+/* ===== PAGE OVERRIDES =====
+   Same selector as an existing theme rule but a different value in this page's design.
+   Kept so the page matches the mock; this file only loads on its own template. */
+.cl .kick{text-transform:uppercase;letter-spacing:.18em;font-size:12px;font-weight:700;color:var(--plum)}
+.cl .card{display:flex;flex-direction:column;transition:transform .3s ease;cursor:pointer}
+
+/* ===== LANE 7F ADDITIONS (2026-08-02) — append-only; the ported block above is untouched ===== */
+
+/* §1 Suggested-term chips under the search bar */
+.cl .srch-suggest{display:flex;flex-wrap:wrap;gap:9px;margin-top:18px}
+.cl .srchchip{text-decoration:none}
+
+/* §2 CSS-only sort popover — <details>/<summary>; there is deliberately no
+   cartel-search.js, sorting is server-side sort_by links */
+.cl .ssortwrap>summary{list-style:none}
+.cl .ssortwrap>summary::-webkit-details-marker{display:none}
+.cl .ssortwrap[open]>summary.ssortbtn{border-color:var(--bronze)}
+.cl .ssortbtn svg{transition:.2s}
+.cl .ssortwrap[open] .ssortbtn svg{transform:rotate(180deg)}
+.cl .ssortmenu{display:flex;flex-direction:column}
+.cl .ssortopt{text-decoration:none}
+
+/* §3 Blog cards inside the search grid — cartel-blog.css only loads on blog /
+   article templates, so the .bl-card subset article results need lives here,
+   sized for the tighter 4-up grid */
+.cl .bl-card{display:flex;flex-direction:column;transition:transform .3s ease}
+.cl .bl-card:hover{transform:translateY(-6px)}
+.cl .bl-card-img{position:relative;aspect-ratio:4/3;background:var(--prodbg);border-radius:var(--r);overflow:hidden;margin-bottom:14px}
+.cl .bl-card-cat{position:absolute;top:14px;left:14px;z-index:2;background:rgba(250,246,240,.92);color:var(--bord);font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:7px 12px;border-radius:100px}
+.cl .bl-card-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.cl .bl-card-h{font-size:17px;font-weight:800;letter-spacing:-.02em;line-height:1.2;color:var(--bord);margin-bottom:8px;transition:color .2s}
+.cl .bl-card-h a{color:inherit}
+.cl .bl-card:hover .bl-card-h{color:var(--plum)}
+.cl .bl-card-x{font-size:13px;line-height:1.55;color:var(--muted);margin-bottom:12px;flex:1;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.cl .bl-card-meta{display:flex;align-items:center;gap:10px;padding-top:12px;border-top:1px solid var(--line)}
+.cl .bl-avatar{width:42px;height:42px;border-radius:50%;background:var(--bord);color:var(--cream);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;letter-spacing:.02em;flex:none}
+.cl .bl-avatar.sm{width:30px;height:30px;font-size:11px}
+.cl .bl-meta-txt{display:flex;flex-direction:column;gap:1px;text-align:left}
+.cl .bl-meta-by{font-size:12.5px;font-weight:800;color:var(--bord)}
+.cl .bl-meta-sub{font-size:11.5px;color:var(--muted);font-weight:600}
+
+/* §4 Page results */
+.cl .srch-pagecard{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:22px;display:flex;flex-direction:column;gap:8px}
+.cl .srch-pagecard-k{font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--bronze-d)}
+.cl .srch-pagecard-h{font-size:17px;font-weight:800;letter-spacing:-.02em;color:var(--bord);line-height:1.2}
+.cl .srch-pagecard-h a{color:inherit}
+.cl .srch-pagecard-h a:hover{color:var(--plum)}
+.cl .srch-pagecard-x{font-size:13px;line-height:1.55;color:var(--muted);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+
+/* §5 Load-more block + empty-state chips */
+.cl .sload-note{font-size:12.5px;color:var(--muted);font-weight:600}
+.cl .sload-prev{font-size:12.5px;font-weight:700;color:var(--muted);text-decoration:underline;text-underline-offset:3px}
+.cl .sload-prev:hover{color:var(--plum)}
+.cl .srch-popchip{font-size:13px;font-weight:700;color:var(--bord);background:#fff;border:1.5px solid var(--line);padding:9px 15px;border-radius:100px;transition:.18s;text-decoration:none}
+.cl .srch-popchip:hover{border-color:var(--bronze)}
+
+/* §6 Predictive dropdown anchoring under the template search bar (the header
+   dropdown is positioned by Dawn's component-predictive-search.css) */
+.cl .srch-form-wrap{position:relative;max-width:640px}
+.cl .srch-form-wrap .predictive-search{position:absolute;top:calc(100% + 10px);left:0;right:0;z-index:60}
