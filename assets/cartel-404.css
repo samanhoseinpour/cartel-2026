@@ -1,1 +1,25 @@
-/* placeholder — filled by lane 7D */
+/* cartel-404.css — Cartel Lash 404 (lane 7D). No design prototype: built
+   from the shell vocabulary. Tokens, .kick/.stitle/.lead and the .btn
+   suite come from cartel-home.css, which loads globally; this file only
+   adds the page's own layout. Scoped under .cl. */
+
+.cl .p404{max-width:640px;margin:0 auto;padding:96px 0 130px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:18px}
+.cl .p404 .lead{max-width:460px}
+.cl .s404-form{display:flex;align-items:center;gap:12px;width:min(520px,100%);background:#fff;border:1.5px solid var(--line);border-radius:100px;padding:6px 6px 6px 20px;margin-top:8px}
+.cl .s404-form:focus-within{border-color:var(--plum);box-shadow:0 0 0 3px rgba(124,27,64,.08)}
+.cl .s404-form>svg{width:20px;height:20px;color:var(--muted);flex:none}
+.cl .s404-input{flex:1;min-width:0;border:0;background:none;outline:none;font-size:15px;font-weight:600;color:var(--ink);letter-spacing:-.01em;padding:11px 0;appearance:none;-webkit-appearance:none}
+.cl .s404-input::placeholder{color:#b39ea2}
+.cl .s404-input::-webkit-search-decoration,.cl .s404-input::-webkit-search-cancel-button{-webkit-appearance:none}
+.cl .s404-go{flex:none;padding:13px 22px;font-size:14px}
+.cl .s404-go svg{width:16px;height:16px}
+.cl .s404-chips{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:14px}
+@media (min-width:761px) and (max-width:1100px){
+  .cl .p404 .stitle{font-size:38px}
+}
+@media (max-width:760px){
+  .cl .p404{padding:64px 0 84px;gap:14px}
+  .cl .p404 .stitle{font-size:30px}
+  .cl .s404-go span{display:none}
+  .cl .s404-go{padding:13px 16px}
+}

@@ -1,208 +1,205 @@
-{{ 'customer.css' | asset_url | stylesheet_tag }}
+{%- comment -%}
+  Cartel Lash — login (lane 7D). Auth split layout from Account.dc.html.
+  Form contracts are Dawn's: customer_login + recover_customer_password,
+  recover pane toggled with the #recover :target pattern. The recover form
+  is captured first so a failed recover POST can re-open its pane
+  server-side (.show-recover) — Dawn loses the pane on reload.
+  The brand panel is duplicated in main-register.liquid on purpose:
+  parallel lanes, no shared snippet.
+{%- endcomment -%}
 
-{%- style -%}
-  .section-{{ section.id }}-padding {
-    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
-    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
-  }
-
-  @media screen and (min-width: 750px) {
-    .section-{{ section.id }}-padding {
-      padding-top: {{ section.settings.padding_top }}px;
-      padding-bottom: {{ section.settings.padding_bottom }}px;
-    }
-  }
-{%- endstyle -%}
-
-{%- if section.settings.enable_shop_login_button == false -%}
-  {%- assign hide_shop_login_button = true -%}
-{%- endif -%}
-
-<div class="customer login section-{{ section.id }}-padding">
-  <h1 id="recover" tabindex="-1">
-    {{ 'customer.recover_password.title' | t }}
-  </h1>
-  <div>
-    <p>
-      {{ 'customer.recover_password.subtext' | t }}
-    </p>
-
-    {%- form 'recover_customer_password' -%}
-      {% assign recover_success = form.posted_successfully? %}
-      <div class="field">
-        <input
-          type="email"
-          value=""
-          name="email"
-          id="RecoverEmail"
-          autocorrect="off"
-          autocapitalize="off"
-          autocomplete="email"
-          {% if form.errors %}
-            aria-invalid="true"
-            aria-describedby="RecoverEmail-email-error"
-            autofocus
-          {% endif %}
-          placeholder="{{ 'customer.login_page.email' | t }}"
-        >
-        <label for="RecoverEmail">
-          {{ 'customer.login_page.email' | t }}
-        </label>
-      </div>
-      {%- if form.errors -%}
-        <small id="RecoverEmail-email-error" class="form__message">
-          <span class="svg-wrapper">
-            {{- 'icon-error.svg' | inline_asset_content -}}
-          </span>
-          {{ form.errors.messages.form }}
-        </small>
-      {%- endif -%}
-
-      <button>
-        {{ 'customer.login_page.submit' | t }}
-      </button>
-
-      <a href="#login">
-        {{ 'customer.login_page.cancel' | t }}
-      </a>
-    {%- endform -%}
-  </div>
-
-  <h1 id="login" tabindex="-1">
-    {{ 'customer.login_page.title' | t }}
-  </h1>
-  <div>
-    {%- if recover_success == true -%}
-      <h3 class="form__message" tabindex="-1" autofocus>
-        <span class="svg-wrapper">
-          {{- 'icon-success.svg' | inline_asset_content -}}
-        </span>
-        {{ 'customer.recover_password.success' | t }}
-      </h3>
+{%- capture recover_form_html -%}
+  {%- form 'recover_customer_password', class: 'form' -%}
+    {%- if form.posted_successfully? -%}
+      {%- assign recover_success = true -%}
     {%- endif -%}
-    {%- form 'customer_login', novalidate: 'novalidate' -%}
-      {%- if form.errors -%}
-        <h2 class="form__message" tabindex="-1" autofocus>
-          <span class="visually-hidden">{{ 'accessibility.error' | t }} </span>
-          <span class="svg-wrapper">
-            {{- 'icon-error.svg' | inline_asset_content -}}
-          </span>
-          {{ 'templates.contact.form.error_heading' | t }}
-        </h2>
-        {{ form.errors | default_errors }}
-      {%- endif -%}
+    {%- if form.errors -%}
+      {%- assign recover_has_errors = true -%}
+      <div class="form-alert" role="alert" tabindex="-1" autofocus>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7.5v5M12 16h.01"></path></svg>
+        <div class="form-alert-b">{{ form.errors.messages.form }}</div>
+      </div>
+    {%- endif -%}
+    <div class="field">
+      <label class="field-l" for="RecoverEmail">Email</label>
+      <input
+        class="inp{% if form.errors %} inp-err{% endif %}"
+        type="email"
+        value=""
+        name="email"
+        id="RecoverEmail"
+        autocorrect="off"
+        autocapitalize="off"
+        autocomplete="email"
+        placeholder="you@studio.com"
+        {% if form.errors %}
+          aria-invalid="true"
+        {% endif %}
+      >
+    </div>
+    <button class="btn btn-fill w100 af-submit" type="submit">Email me a reset link</button>
+  {%- endform -%}
+{%- endcapture -%}
 
-      {%- if shop.features.login_with_shop_classic_customer_accounts? -%}
-        <section name="sign-in-with-shop-provider">
-          {{ shop | login_button: hide_button: hide_shop_login_button }}
-
-          {%- unless hide_shop_login_button -%}
-            <p>
-              {{ 'customer.login_page.alternate_provider_separator' | t }}
-            </p>
-          {%- endunless -%}
-        </section>
-      {%- endif -%}
-
-      <div class="field">
-        <input
-          type="email"
-          name="customer[email]"
-          id="CustomerEmail"
-          autocomplete="email"
-          autocorrect="off"
-          autocapitalize="off"
-          {% if form.errors contains 'form' %}
-            aria-invalid="true"
-          {% endif %}
-          placeholder="{{ 'customer.login_page.email' | t }}"
-        >
-        <label for="CustomerEmail">
-          {{ 'customer.login_page.email' | t }}
-        </label>
+<div class="cl">
+  <div class="page-width">{% render 'cartel-breadcrumbs', extra_label: 'Account' %}</div>
+  <section class="page-width acctpage">
+    <div class="authgrid">
+      <div class="authbrand">
+        <div class="ab-glow"></div>
+        <div class="ab-glow2"></div>
+        <span class="ab-ghost" aria-hidden="true">C</span>
+        <div class="ab-top">
+          {%- if settings.logo != blank -%}
+            {{ settings.logo | image_url: width: 300 | image_tag: class: 'ab-logo', alt: shop.name, loading: 'lazy' }}
+          {%- endif -%}
+          <span class="ab-kick">Free account</span>
+          <h2 class="ab-h">Unlock Thuya pro pricing.</h2>
+          <p class="ab-p">
+            Create a free account to reveal pricing on Thuya professional products — plus order history, saved
+            addresses and faster checkout. It takes a minute.
+          </p>
+          <a class="btn btn-ghost-l ab-cta" href="{{ routes.account_register_url }}">Create a free account</a>
+        </div>
+        <div class="ab-benefits">
+          <div class="abf">
+            <span class="abf-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"></path><circle cx="12" cy="12" r="3"></circle></svg></span>
+            <div>
+              <div class="abf-t">See Thuya professional pricing</div>
+              <div class="abf-s">Thuya products show their price the moment you&rsquo;re signed in.</div>
+            </div>
+          </div>
+          <div class="abf">
+            <span class="abf-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 3l8 4v10l-8 4-8-4V7z"></path><path d="M4 7l8 4 8-4M12 11v10"></path></svg></span>
+            <div>
+              <div class="abf-t">Order history &amp; tracking</div>
+              <div class="abf-s">Every order in one place, from processing to delivered.</div>
+            </div>
+          </div>
+          <div class="abf">
+            <span class="abf-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 21s-6.5-5.3-6.5-10A6.5 6.5 0 0 1 18.5 11c0 4.7-6.5 10-6.5 10z"></path><circle cx="12" cy="11" r="2.4"></circle></svg></span>
+            <div>
+              <div class="abf-t">Saved addresses</div>
+              <div class="abf-s">Keep your studio and home addresses ready for one-tap delivery.</div>
+            </div>
+          </div>
+          <div class="abf">
+            <span class="abf-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M4 12a8 8 0 1 1 2.4 5.7"></path><path d="M4 20v-4.5h4.5"></path></svg></span>
+            <div>
+              <div class="abf-t">Faster checkout</div>
+              <div class="abf-s">Save your details and reorder your essentials in a tap.</div>
+            </div>
+          </div>
+        </div>
+        <div class="ab-foot">
+          <span class="ab-stars" aria-hidden="true">★★★★★</span>
+          <span class="ab-foot-t"><b>4.9</b> · loved by 2,000+ Canadian artists</span>
+        </div>
       </div>
 
-      {%- if form.password_needed -%}
-        <div class="field">
-          <input
-            type="password"
-            value=""
-            name="customer[password]"
-            id="CustomerPassword"
-            autocomplete="current-password"
-            {% if form.errors contains 'form' %}
-              aria-invalid="true"
-            {% endif %}
-            placeholder="{{ 'customer.login_page.password' | t }}"
-          >
-          <label for="CustomerPassword">
-            {{ 'customer.login_page.password' | t }}
-          </label>
+      <div class="authform{% if recover_has_errors %} show-recover{% endif %}">
+        <nav class="authtabs" aria-label="Sign in or create account">
+          <a class="atab on" href="{{ routes.account_login_url }}" aria-current="page">Sign in</a>
+          <a class="atab" href="{{ routes.account_register_url }}">Create account</a>
+        </nav>
+
+        <div id="recover" tabindex="-1">
+          <h1 class="af-h">Reset your password.</h1>
+          <p class="af-sub">Enter the email you use for your account and we&rsquo;ll send you a link to set a new one.</p>
+          {{ recover_form_html }}
+          <p class="af-alt af-alt-gap">Remembered it? <a href="#login">Back to sign in</a></p>
         </div>
 
-        <a href="#recover">
-          {{ 'customer.login_page.forgot_password' | t }}
-        </a>
-      {%- endif -%}
-
-      <button>
-        {{ 'customer.login_page.sign_in' | t }}
-      </button>
-
-      <a href="{{ routes.account_register_url }}">
-        {{ 'customer.login_page.create_account' | t }}
-      </a>
-    {%- endform -%}
-  </div>
-
-  {%- if shop.checkout.guest_login -%}
-    <div>
-      <hr>
-      <h2>{{ 'customer.login_page.guest_title' | t }}</h2>
-
-      {%- form 'guest_login' -%}
-        <button>
-          {{ 'customer.login_page.guest_continue' | t }}
-        </button>
-      {%- endform -%}
+        <div id="login" tabindex="-1">
+          <h1 class="af-h">Welcome back.</h1>
+          <p class="af-sub">Sign in to unlock Thuya pricing and pick up right where you left off.</p>
+          {%- if recover_success -%}
+            <div class="form-ok" role="status">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M8.5 12.5l2.4 2.4 4.6-5"></path></svg>
+              <span>If that email has an account, a password reset link is on its way. Check your inbox.</span>
+            </div>
+          {%- endif -%}
+          {%- form 'customer_login', novalidate: 'novalidate', class: 'form' -%}
+            {%- if form.errors -%}
+              <div class="form-alert" role="alert" tabindex="-1" autofocus>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7.5v5M12 16h.01"></path></svg>
+                <div class="form-alert-b">{{ form.errors.messages.form }}</div>
+              </div>
+            {%- endif -%}
+            <div class="field">
+              <label class="field-l" for="CustomerEmail">Email</label>
+              <input
+                class="inp{% if form.errors %} inp-err{% endif %}"
+                type="email"
+                name="customer[email]"
+                id="CustomerEmail"
+                autocomplete="email"
+                autocorrect="off"
+                autocapitalize="off"
+                placeholder="you@studio.com"
+                {% if form.errors %}
+                  aria-invalid="true"
+                {% endif %}
+              >
+            </div>
+            {%- if form.password_needed -%}
+              <div class="field">
+                <div class="field-lrow">
+                  <label class="field-l" for="CustomerPassword">Password</label>
+                  <a class="forgot" href="#recover">Forgot password?</a>
+                </div>
+                <div class="pwwrap">
+                  <input
+                    class="inp{% if form.errors %} inp-err{% endif %}"
+                    type="password"
+                    value=""
+                    name="customer[password]"
+                    id="CustomerPassword"
+                    autocomplete="current-password"
+                    placeholder="Your password"
+                    {% if form.errors %}
+                      aria-invalid="true"
+                    {% endif %}
+                  >
+                  <button type="button" class="pwtoggle" aria-label="Show password" aria-pressed="false">
+                    <svg class="pw-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                    <svg class="pw-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M3 3l18 18"></path><path d="M10.6 10.7a3 3 0 0 0 4.1 4.2"></path><path d="M9.8 5.2A9.4 9.4 0 0 1 12 5c6.5 0 10 7 10 7a16.8 16.8 0 0 1-3.3 4M6.1 6.2A16.6 16.6 0 0 0 2 12s3.5 7 10 7a9.3 9.3 0 0 0 3-.5"></path></svg>
+                  </button>
+                </div>
+              </div>
+            {%- endif -%}
+            <button class="btn btn-fill w100 af-submit" type="submit">Log in to my account</button>
+          {%- endform -%}
+          <p class="af-alt af-alt-gap">New here? <a href="{{ routes.account_register_url }}">Create an account</a></p>
+          {%- if shop.checkout.guest_login -%}
+            {%- form 'guest_login' -%}
+              <button class="btn btn-out w100 af-alt-gap" type="submit">Continue as guest</button>
+            {%- endform -%}
+          {%- endif -%}
+        </div>
+      </div>
     </div>
-  {%- endif -%}
+  </section>
 </div>
+
+<script>
+  (function () {
+    document.querySelectorAll('.cl .pwtoggle').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var input = btn.closest('.pwwrap').querySelector('input');
+        var show = input.type === 'password';
+        input.type = show ? 'text' : 'password';
+        btn.classList.toggle('showing', show);
+        btn.setAttribute('aria-pressed', show ? 'true' : 'false');
+        btn.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+      });
+    });
+  })();
+</script>
 
 {% schema %}
 {
   "name": "t:sections.main-login.name",
-  "settings": [
-    {
-      "type": "checkbox",
-      "id": "enable_shop_login_button",
-      "label": "t:sections.main-login.shop_login_button.enable",
-      "default": true
-    },
-    {
-      "type": "header",
-      "content": "t:sections.all.padding.section_padding_heading"
-    },
-    {
-      "type": "range",
-      "id": "padding_top",
-      "min": 0,
-      "max": 100,
-      "step": 4,
-      "unit": "px",
-      "label": "t:sections.all.padding.padding_top",
-      "default": 36
-    },
-    {
-      "type": "range",
-      "id": "padding_bottom",
-      "min": 0,
-      "max": 100,
-      "step": 4,
-      "unit": "px",
-      "label": "t:sections.all.padding.padding_bottom",
-      "default": 36
-    }
-  ]
+  "settings": []
 }
 {% endschema %}
