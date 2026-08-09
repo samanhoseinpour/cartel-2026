@@ -110,23 +110,51 @@
   {%- endfor -%}
 </nav>
 {%- if crumb_labels.size > 1 -%}
-  <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "BreadcrumbList",
-      "itemListElement": [
-        {%- for cl_label in crumb_labels -%}
-          {%- assign cl_url = crumb_urls[forloop.index0] -%}
-          {
-            "@type": "ListItem",
-            "position": {{ forloop.index }},
-            "name": {{ cl_label | json }}
-            {%- if cl_url != '#' and cl_url != blank -%}
-              , "item": {{ shop.url | append: cl_url | json }}
-            {%- endif -%}
-          }{% unless forloop.last %},{% endunless %}
-        {%- endfor -%}
-      ]
-    }
-  </script>
+  {%- comment -%}
+    Batch 10 install fix. Google requires `item` on every ListItem EXCEPT the
+    last. The visible nav above deliberately carries link-less INTERMEDIATE
+    crumbs ('Policies' always — there is no policies index; 'About' until a page
+    with handle 'about' exists), and those can never satisfy that rule, so
+    emitting them made Google discard the whole BreadcrumbList on the policy and
+    FAQ pages. They are dropped from the JSON-LD instead, with `position`
+    renumbered so it stays contiguous from 1. The <nav> is untouched — the crumb
+    is still visible, it just isn't claimed as a structured-data ancestor.
+  {%- endcomment -%}
+  {%- capture crumb_ld_items -%}
+    {%- assign cl_pos = 0 -%}
+    {%- for cl_label in crumb_labels -%}
+      {%- assign cl_url = crumb_urls[forloop.index0] -%}
+      {%- assign cl_has_item = true -%}
+      {%- if cl_url == '#' or cl_url == blank -%}
+        {%- assign cl_has_item = false -%}
+      {%- endif -%}
+      {%- if cl_has_item or forloop.last -%}
+        {%- assign cl_pos = cl_pos | plus: 1 -%}
+        {%- if cl_pos > 1 -%},{%- endif -%}
+        {
+          "@type": "ListItem",
+          "position": {{ cl_pos }},
+          "name": {{ cl_label | json }}
+          {%- comment -%}
+            `and forloop.last == false`: the final crumb is the current page and
+            must never carry `item`. Every case branch today ends on '#' so this
+            is belt-and-braces — except the 'customers/order' arm, which ends on
+            a linked Account crumb and would otherwise emit one.
+          {%- endcomment -%}
+          {%- if cl_has_item and forloop.last == false -%}
+            , "item": {{ shop.url | append: cl_url | json }}
+          {%- endif -%}
+        }
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endcapture -%}
+  {%- if cl_pos > 1 -%}
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [{{ crumb_ld_items }}]
+      }
+    </script>
+  {%- endif -%}
 {%- endif -%}
