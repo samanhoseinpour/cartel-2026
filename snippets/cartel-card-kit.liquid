@@ -15,7 +15,7 @@
     assign on_sale = true
     assign saved = p.compare_at_price | minus: p.price | money_without_trailing_zeros
   endif
-  assign includes = p.metafields.custom.includes
+  assign includes = p.metafields.custom.includes.value
   if includes == blank
     assign includes = p.description | strip_html | truncatewords: 16
   endif
@@ -54,14 +54,15 @@
         <div class="kit-priceline">
           {%- if on_sale -%}<span class="kit-was">{{ p.compare_at_price | money }}</span>{%- endif -%}
           <span class="kit-now">
-            {%- if p == blank -%}$00.00{%- elsif p.price == 0 -%}Price on request{%- else -%}{{ p.price | money }}{%- endif -%}
+            {%- comment -%} v, not p: p.price is the product minimum {%- endcomment -%}
+            {%- if p == blank -%}$00.00{%- elsif v.price == 0 -%}Price on request{%- else -%}{{ p.price | money }}{%- endif -%}
           </span>
         </div>
         {%- if p == blank -%}
           <span class="btn btn-fill btn-sm w100" aria-disabled="true">Add bundle to bag</span>
         {%- elsif p.available == false -%}
           <span class="btn btn-out btn-sm w100" aria-disabled="true">Sold out</span>
-        {%- elsif p.price == 0 -%}
+        {%- elsif v.price == 0 -%}
           <a class="btn btn-out btn-sm w100" href="{{ pages.contact.url | default: '/pages/contact' }}">Enquire about pricing</a>
         {%- elsif p.variants_count > 1 -%}
           <a class="btn btn-fill btn-sm w100" href="{{ p.url }}">Choose options</a>
@@ -69,8 +70,14 @@
           <product-form data-section-id="{{ section.id }}">
             {%- form 'product', p, id: form_id, class: 'w100', novalidate: 'novalidate', data-type: 'add-to-cart-form' -%}
               <input type="hidden" name="id" value="{{ v.id }}">
-              <button type="submit" name="add" class="btn btn-fill btn-sm w100">
+              {%- comment -%}
+                .loading__spinner / .sold-out-message are required by product-form.js
+                (:28, :63) — see the note in cartel-card.liquid.
+              {%- endcomment -%}
+              <button type="submit" name="add" class="btn btn-fill btn-sm w100" data-sold-out-message="true">
                 <span>Add bundle to bag</span>
+                <span class="sold-out-message hidden">Sold out</span>
+                {%- render 'loading-spinner' -%}
               </button>
             {%- endform -%}
           </product-form>

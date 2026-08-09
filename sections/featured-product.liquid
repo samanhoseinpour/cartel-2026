@@ -433,8 +433,14 @@
                   {%- if product.metafields.reviews.rating.value != blank -%}
                     <div class="rating-wrapper">
                       {% liquid
+                        # Cartel: the store's reviews.rating metafield is a plain number, not
+                        # Shopify's structured rating type — support both shapes, exactly as
+                        # main-product.liquid does. Without this the CSS vars rendered empty.
+                        assign cl_rating_value = product.metafields.reviews.rating.value
+                        assign cl_rating = cl_rating_value.rating | default: cl_rating_value | times: 1.0
+                        assign cl_rating_max = cl_rating_value.scale_max | default: 5 | times: 1.0
                         assign rating_decimal = 0
-                        assign decimal = product.metafields.reviews.rating.value.rating | modulo: 1
+                        assign decimal = cl_rating | modulo: 1
                         if decimal >= 0.3 and decimal <= 0.7
                           assign rating_decimal = 0.5
                         elsif decimal > 0.7
@@ -444,19 +450,16 @@
                       <div
                         class="rating"
                         role="img"
-                        aria-label="{{ 'accessibility.star_reviews_info' | t: rating_value: product.metafields.reviews.rating.value, rating_max: product.metafields.reviews.rating.value.scale_max }}"
+                        aria-label="{{ 'accessibility.star_reviews_info' | t: rating_value: cl_rating, rating_max: cl_rating_max }}"
                       >
                         <span
                           aria-hidden="true"
                           class="rating-star"
-                          style="--rating: {{ product.metafields.reviews.rating.value.rating | floor }}; --rating-max: {{ product.metafields.reviews.rating.value.scale_max }}; --rating-decimal: {{ rating_decimal }};"
+                          style="--rating: {{ cl_rating | floor }}; --rating-max: {{ cl_rating_max }}; --rating-decimal: {{ rating_decimal }};"
                         ></span>
                       </div>
                       <p class="rating-text caption">
-                        <span aria-hidden="true">
-                          {{- product.metafields.reviews.rating.value }} /
-                          {{ product.metafields.reviews.rating.value.scale_max -}}
-                        </span>
+                        <span aria-hidden="true">{{ cl_rating }} / {{ cl_rating_max }}</span>
                       </p>
                       <p class="rating-count caption">
                         <span aria-hidden="true">({{ product.metafields.reviews.rating_count }})</span>

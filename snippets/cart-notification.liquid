@@ -8,8 +8,12 @@
   cart page, which enforces the login CTA. Skin: assets/cartel-conversion.css.
 
   Accepts:
-  - color_scheme: {String} (optional)
   - desktop_menu_type: {String} (optional)
+
+  Note: sections/header.liquid still passes color_scheme, but this snippet
+  deliberately ignores it — the Cartel skin owns the notification's surface, so
+  applying Dawn's `color-<scheme> gradient` classes would override it. Listing it
+  as an accepted param made it look wired when it never was.
 
   Usage:
   {% render 'cart-notification' %}

@@ -12,7 +12,6 @@
   endif
   assign v = p.selected_or_first_available_variant
   assign tag_label = ''
-  assign tag_class = ''
   if p.compare_at_price > p.price
     assign saved = p.compare_at_price | minus: p.price | money_without_trailing_zeros
     assign tag_label = 'Save ' | append: saved
@@ -25,7 +24,7 @@
 -%}
 <div class="card {{ card_extra }}">
   <div class="card-img">
-    {%- if tag_label != blank -%}<span class="ptag {{ tag_class }}">{{ tag_label }}</span>{%- endif -%}
+    {%- if tag_label != blank -%}<span class="ptag">{{ tag_label }}</span>{%- endif -%}
     <a class="imglink" href="{{ p.url }}" aria-label="{{ p.title | escape }}">
       {%- if p.featured_media -%}
         {{
@@ -51,7 +50,8 @@
       </span>
     {%- elsif p == blank -%}
       <span class="pprice">$00.00</span>
-    {%- elsif p.price == 0 and p.available -%}
+    {%- comment -%} v, not p: p.price is the product MINIMUM, so one $0 variant hid every price {%- endcomment -%}
+    {%- elsif v.price == 0 and p.available -%}
       <span class="pprice">Price on request</span>
     {%- else -%}
       <span class="pprice">{{ p.price | money }}</span>
@@ -63,7 +63,7 @@
     <span class="btn btn-fill btn-sm w100" aria-disabled="true">Add to bag</span>
   {%- elsif p.available == false -%}
     <span class="btn btn-out btn-sm w100" aria-disabled="true">Sold out</span>
-  {%- elsif p.price == 0 -%}
+  {%- elsif v.price == 0 -%}
     <a class="btn btn-out btn-sm w100" href="{{ pages.contact.url | default: '/pages/contact' }}">Enquire about pricing</a>
   {%- elsif p.variants_count > 1 -%}
     <a class="btn btn-fill btn-sm w100" href="{{ p.url }}">Choose options</a>
@@ -71,8 +71,15 @@
     <product-form data-section-id="{{ section.id }}">
       {%- form 'product', p, id: form_id, class: 'w100', novalidate: 'novalidate', data-type: 'add-to-cart-form' -%}
         <input type="hidden" name="id" value="{{ v.id }}">
-        <button type="submit" name="add" class="btn btn-fill btn-sm w100">
+        {%- comment -%}
+          Dawn's product-form.js dereferences .loading__spinner and .sold-out-message
+          unguarded (assets/product-form.js:28, :63) — without them the submit handler
+          throws after preventDefault() and nothing is ever added to the cart.
+        {%- endcomment -%}
+        <button type="submit" name="add" class="btn btn-fill btn-sm w100" data-sold-out-message="true">
           <span>Add to bag</span>
+          <span class="sold-out-message hidden">Sold out</span>
+          {%- render 'loading-spinner' -%}
         </button>
       {%- endform -%}
     </product-form>

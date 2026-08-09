@@ -240,6 +240,11 @@
    submits it). Restyled to read exactly like the prototype's .qn span. */
 .cl .qty input.qn{-webkit-appearance:none;appearance:textfield;-moz-appearance:textfield;border:0;background:transparent;padding:0;min-width:26px;width:34px;text-align:center;font-size:13px;font-weight:700;color:var(--ink)}
 .cl .qty input.qn::-webkit-inner-spin-button,.cl .qty input.qn::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+/* The +/- buttons carry Dawn's .quantity__button as well as .qbtn, because
+   global.js:269/274 does querySelector(".quantity__button[name='minus']") and
+   dereferences the result unguarded — with only .qbtn it threw on every line.
+   base.css:1949-1969 then styles that class, so re-assert the Cartel skin. */
+.cl .qty .quantity__button{margin:0;font-size:inherit}
 .cl .qty-lg input.qn{min-width:30px;width:38px;font-size:14px}
 
 /* Thuya gate (cartel-gate-cta, gate_style: card) inside the line price cell */

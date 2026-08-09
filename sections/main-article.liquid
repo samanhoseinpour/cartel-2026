@@ -38,7 +38,7 @@
 
   assign stand = article.excerpt | strip_html | strip
   if stand == blank
-    assign stand = article.metafields.custom.standfirst
+    assign stand = article.metafields.custom.standfirst.value
   endif
 
   assign share_url = request.origin | append: article.url

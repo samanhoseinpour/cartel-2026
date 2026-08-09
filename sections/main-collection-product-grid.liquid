@@ -42,7 +42,17 @@
           data-total-count="{{ collection.all_products_count }}"
           role="status"
         >
-          Showing <span class="cnum">{{ collection.products.size }}</span> of {{ collection.products_count }} product{% if collection.products_count != 1 %}s{% endif %}
+          {%- liquid
+            # collection.products.size is the PAGE WINDOW inside the paginate block, so
+            # this read "Showing 12 of 87" on every page. Report the actual range instead.
+            assign cl_shown_from = paginate.current_offset | plus: 1
+            assign cl_shown_to = paginate.current_offset | plus: paginate.page_size | at_most: paginate.items
+          -%}
+          {%- if paginate.pages > 1 -%}
+            Showing <span class="cnum">{{ cl_shown_from }}&ndash;{{ cl_shown_to }}</span> of {{ paginate.items }} product{% if paginate.items != 1 %}s{% endif %}
+          {%- else -%}
+            <span class="cnum">{{ paginate.items }}</span> product{% if paginate.items != 1 %}s{% endif %}
+          {%- endif -%}
         </span>
         {%- if section.settings.enable_filtering or section.settings.enable_sorting -%}
           <div class="plptop-r">

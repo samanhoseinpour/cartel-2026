@@ -134,8 +134,10 @@
                     <span class="ci-var">{{ item.selling_plan_allocation.selling_plan.name }}</span>
                   {%- endif -%}
                   <div class="ci-bottom">
+                    {%- comment -%} Bundles child lines report these false — see main-cart-items {%- endcomment -%}
+                    {%- assign can_update_quantity = item.instructions.can_update_quantity | default: true -%}
                     <quantity-input class="qty">
-                      <button class="qbtn" name="minus" type="button">
+                      <button class="qbtn quantity__button" name="minus" type="button" {% if can_update_quantity == false %}disabled{% endif %}>
                         <span class="visually-hidden">Decrease quantity for {{ item.product.title | escape }}</span>
                         <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 12h14"></path></svg>
                       </button>
@@ -158,8 +160,9 @@
                         aria-label="Quantity for {{ item.product.title | escape }}"
                         id="Drawer-quantity-{{ item.index | plus: 1 }}"
                         data-index="{{ item.index | plus: 1 }}"
+                        {% if can_update_quantity == false %}disabled{% endif %}
                       >
-                      <button class="qbtn" name="plus" type="button">
+                      <button class="qbtn quantity__button" name="plus" type="button" {% if can_update_quantity == false %}disabled{% endif %}>
                         <span class="visually-hidden">Increase quantity for {{ item.product.title | escape }}</span>
                         <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
                       </button>
@@ -167,7 +170,8 @@
                     <div class="ci-price">
                       {%- if dw_line_gated -%}
                         {% render 'cartel-gate-cta', gate_style: 'card' %}
-                      {%- elsif item.final_price == 0 -%}
+                      {%- elsif item.variant.price == 0 -%}
+                        {%- comment -%} catalogue price, not post-discount final_price {%- endcomment -%}
                         Price on request
                       {%- else -%}
                         {{ item.final_line_price | money }}
@@ -181,9 +185,11 @@
                     </span>
                   </div>
                 </div>
+                {%- assign can_remove = item.instructions.can_remove | default: true -%}
                 <cart-remove-button
                   id="CartDrawer-Remove-{{ item.index | plus: 1 }}"
                   data-index="{{ item.index | plus: 1 }}"
+                  {% if can_remove == false %}class="hidden"{% endif %}
                 >
                   <button type="button" class="ci-rm" aria-label="Remove {{ item.product.title | escape }}">
                     <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 7h16M9.5 7V5h5v2M6.5 7l.8 13h9.4l.8-13"></path></svg>

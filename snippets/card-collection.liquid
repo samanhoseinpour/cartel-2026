@@ -17,12 +17,25 @@
   assign c = card_collection
   assign img = card_image | default: c.featured_image
   assign card_title = c.title | default: 'Brand line'
-  assign blurb_text = blurb
-  if blurb_text == blank and c != blank
+  # blurb is a plain-text setting, so escape it. The description fallback must NOT be
+  # escaped again: strip_html removes tags but leaves entities encoded, so a description
+  # containing "&" (stored as &amp;) came out as "&amp;amp;" — literal "&amp;" on screen.
+  assign blurb_text = ''
+  if blurb != blank
+    assign blurb_text = blurb | escape
+  elsif c != blank
     assign blurb_text = c.description | strip_html | truncate: 140
   endif
 -%}
-<a class="bx-card {{ accent }}" {% if c != blank %}href="{{ c.url }}"{% endif %}>
+{%- comment -%}
+  With no collection picked (theme-editor placeholder) an <a> would have no href —
+  not focusable and not exposed as a link — so render a plain div instead.
+{%- endcomment -%}
+{%- if c != blank -%}
+  <a class="bx-card {{ accent }}" href="{{ c.url }}">
+{%- else -%}
+  <div class="bx-card {{ accent }}">
+{%- endif -%}
   <div class="bx-imgwrap">
     {%- if img -%}
       {{ img | image_url: width: 900 | image_tag: widths: '450,675,900', loading: 'lazy', alt: card_title }}
@@ -39,7 +52,7 @@
   <div class="bx-card-b">
     {%- if eyebrow != blank -%}<span class="bx-eyebrow">{{ eyebrow | escape }}</span>{%- endif -%}
     <h2 class="bx-name">{{ card_title | escape }}</h2>
-    {%- if blurb_text != blank -%}<p class="bx-blurb">{{ blurb_text | escape }}</p>{%- endif -%}
+    {%- if blurb_text != blank -%}<p class="bx-blurb">{{ blurb_text }}</p>{%- endif -%}
     {%- if specs != blank -%}
       <div class="bx-specs">
         {%- assign spec_list = specs | split: ',' -%}
@@ -61,4 +74,8 @@
       </span>
     </div>
   </div>
-</a>
+{%- if c != blank -%}
+  </a>
+{%- else -%}
+  </div>
+{%- endif -%}

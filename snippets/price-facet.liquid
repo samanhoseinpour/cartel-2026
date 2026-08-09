@@ -18,7 +18,12 @@
       {%- if filter.min_value.value %}
       value="{{ filter.min_value.value | money_without_currency | replace: ',', '' }}"
       {%- endif %}
-      type="text"
+      {%- comment -%}
+        type="number", not text: facets.js:411 clamps with Number(input.value), and
+        onKeyDown explicitly allows "," and " ", so "1,000" produced NaN — both
+        comparisons false, no clamping, and the raw string went into the filter param.
+      {%- endcomment -%}
+      type="number"
       inputmode="decimal"
       placeholder="0"
       data-min="0"
@@ -36,7 +41,12 @@
       {%- if filter.max_value.value %}
       value="{{ filter.max_value.value | money_without_currency | replace: ',', '' }}"
       {%- endif %}
-      type="text"
+      {%- comment -%}
+        type="number", not text: facets.js:411 clamps with Number(input.value), and
+        onKeyDown explicitly allows "," and " ", so "1,000" produced NaN — both
+        comparisons false, no clamping, and the raw string went into the filter param.
+      {%- endcomment -%}
+      type="number"
       inputmode="decimal"
       placeholder="{{ filter.range_max | money_without_currency | replace: ',', '' }}"
       data-min="0"

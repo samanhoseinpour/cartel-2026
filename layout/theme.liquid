@@ -414,7 +414,13 @@
       };
 
       window.variantStrings = {
-        addToCart: `{{ 'products.product.add_to_cart' | t }}`,
+        {%- comment -%}
+          The theme's buy button reads "Add to bag" (buy-buttons.liquid), and
+          product-form.js:144 resets the label from this string on every variant
+          change — so it has to match here, globally. cartel-pdp.js used to patch
+          it, but that file only loads on the product template.
+        {%- endcomment -%}
+        addToCart: `Add to bag`,
         soldOut: `{{ 'products.product.sold_out' | t }}`,
         unavailable: `{{ 'products.product.unavailable' | t }}`,
         unavailable_with_option: `{{ 'products.product.value_unavailable' | t: option_value: '[value]' }}`,

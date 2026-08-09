@@ -58,12 +58,22 @@
       });
     });
 
-    /* clicking the pill on a hover device must not slam the panel shut */
+    /* Clicking the pill on a hover device must not slam the panel shut when the
+       pointer merely passed over it — but it must still TOGGLE. Unconditionally
+       reopening meant the panel could never be closed from the pill, which also
+       trapped keyboard users (Enter on a <summary> dispatches a click).
+       Setting details.open fires the native toggle event, so Dawn's own
+       DetailsDisclosure close logic still runs. */
     Array.prototype.forEach.call(nav.querySelectorAll('summary'), function (summary) {
       summary.addEventListener('click', function (event) {
         if (!canHover()) return;
         event.preventDefault();
-        open(nav, summary.parentElement);
+        var details = summary.parentElement;
+        if (details && details.open) {
+          details.open = false;
+        } else {
+          open(nav, details);
+        }
       });
     });
 

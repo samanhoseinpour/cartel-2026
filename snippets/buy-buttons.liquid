@@ -23,8 +23,14 @@
   {%- unless pickup_only -%}
     {%- if cartel_gated -%}
       {%- render 'cartel-gate-cta', gate_style: 'buttons' -%}
+    {%- comment -%}
+      Test the SELECTED variant, not product.price (the product minimum). With the
+      minimum, one $0 variant replaced add-to-cart with the enquiry link for every
+      variant — and since this branch emits no <product-form>, product-info.js had
+      nothing to re-enable on variant change, so the product was unbuyable.
+    {%- endcomment -%}
     {%- elsif product != blank
-      and product.price == 0
+      and product.selected_or_first_available_variant.price == 0
       and product.selected_or_first_available_variant.available
     -%}
       {%- comment -%} Cartel: price on request — no add-to-cart, enquire instead {%- endcomment -%}
