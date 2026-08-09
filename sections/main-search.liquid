@@ -170,19 +170,25 @@
 
           {%- if paginate.pages > 1 -%}
             {%- liquid
+              # These links are full-page navigation, not append-in-place, so the label and
+              # count must describe the CURRENT page. "Load more" over a cumulative "Showing
+              # 48 of 100" read as appending while the page actually showed only items 25-48.
               assign shown = paginate.current_offset | plus: paginate.page_size | at_most: paginate.items
+              assign range_start = paginate.current_offset | plus: 1
               assign pct = shown | times: 100 | divided_by: paginate.items
             -%}
             <div class="sload">
               <div class="sload-bar" role="presentation">
                 <div class="sload-bar-f" style="width:{{ pct }}%"></div>
               </div>
-              <span class="sload-note">Showing {{ shown }} of {{ paginate.items }}</span>
+              <span class="sload-note">
+                Showing {{ range_start }}&ndash;{{ shown }} of {{ paginate.items }}
+              </span>
               {%- if paginate.next -%}
-                <a class="btn btn-out" href="{{ paginate.next.url }}">Load more results</a>
+                <a class="btn btn-out" href="{{ paginate.next.url }}">Next page</a>
               {%- endif -%}
               {%- if paginate.previous -%}
-                <a class="sload-prev" href="{{ paginate.previous.url }}">Back to previous results</a>
+                <a class="sload-prev" href="{{ paginate.previous.url }}">Previous page</a>
               {%- endif -%}
             </div>
           {%- endif -%}
@@ -207,7 +213,8 @@
                 </div>
               </div>
             {%- endif -%}
-            {%- if section.settings.suggest_collections.count > 0 -%}
+            {%- comment -%} .size, not .count — Liquid arrays expose size/first/last only {%- endcomment -%}
+            {%- if section.settings.suggest_collections.size > 0 -%}
               <div class="srch-empty-sec">
                 <div class="srch-empty-h">Browse categories</div>
                 <div class="srch-empty-chips">

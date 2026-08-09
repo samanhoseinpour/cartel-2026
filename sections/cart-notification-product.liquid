@@ -42,7 +42,8 @@
           <div class="ci-price">
             {%- if notif_gated -%}
               {% render 'cartel-gate-cta', gate_style: 'card' %}
-            {%- elsif item.final_price == 0 -%}
+            {%- elsif item.variant.price == 0 -%}
+              {%- comment -%} catalogue price, not post-discount final_price {%- endcomment -%}
               Price on request
             {%- else -%}
               {{ item.final_line_price | money }}

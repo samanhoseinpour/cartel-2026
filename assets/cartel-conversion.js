@@ -106,10 +106,19 @@
 
     // A just-submitted signup (success or validation error) reopens once so
     // the visitor sees the outcome, then stays quiet.
+    //
+    // form.posted_successfully? is scoped to the request's form_type, not to a
+    // form id, so EVERY {% form 'customer' %} on the page renders its success
+    // state after any one of them posts — the inline homepage band, the
+    // resources band and the footer all flipped this popup open. Shopify points
+    // the form action at #<form-id>, so the surviving fragment tells us whether
+    // this popup was actually the form that posted.
     const submitted = ov.querySelector('[data-popup-posted]') || ov.querySelector('[data-popup-error]');
     if (submitted) {
-      if (ov.querySelector('[data-popup-posted]')) mark();
-      if (!designMode) window.setTimeout(open, 400);
+      if (window.location.hash === '#cl-popup-form') {
+        if (ov.querySelector('[data-popup-posted]')) mark();
+        if (!designMode) window.setTimeout(open, 400);
+      }
       return;
     }
 

@@ -31,17 +31,19 @@
       endfor
     endfor
   endif
-  if blog.metafields.custom.count_technique != blank
-    assign c_technique = blog.metafields.custom.count_technique
+  # .value is required: without it these are metafield OBJECTS, and `object > 0`
+  # at the chip-count test below is always false, so the override silently did nothing.
+  if blog.metafields.custom.count_technique.value != blank
+    assign c_technique = blog.metafields.custom.count_technique.value
   endif
-  if blog.metafields.custom.count_education != blank
-    assign c_education = blog.metafields.custom.count_education
+  if blog.metafields.custom.count_education.value != blank
+    assign c_education = blog.metafields.custom.count_education.value
   endif
-  if blog.metafields.custom.count_business != blank
-    assign c_business = blog.metafields.custom.count_business
+  if blog.metafields.custom.count_business.value != blank
+    assign c_business = blog.metafields.custom.count_business.value
   endif
-  if blog.metafields.custom.count_supplies != blank
-    assign c_supplies = blog.metafields.custom.count_supplies
+  if blog.metafields.custom.count_supplies.value != blank
+    assign c_supplies = blog.metafields.custom.count_supplies.value
   endif
   assign curtags_d = current_tags | join: ',' | downcase
 -%}

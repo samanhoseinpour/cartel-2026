@@ -23,17 +23,35 @@
   {%- endcomment -%}
   {%- liquid
     assign cl_t = product.selected_or_first_available_variant
+    # selected_or_first_available_variant can be null (Dawn checks for exactly this at
+    # buy-buttons.liquid:70-73). Without a guard the else-branch rendered an empty price.
+    assign cl_has_variant = false
+    if cl_t != blank
+      assign cl_has_variant = true
+    endif
+    # Honour settings.currency_code_enabled the way Dawn's branch does below, or the PDP
+    # prints "$00.00" while every Dawn-rendered surface prints "$00.00 CAD".
+    assign cl_price_money = cl_t.price | money
+    assign cl_compare_money = cl_t.compare_at_price | money
+    if settings.currency_code_enabled
+      assign cl_price_money = cl_t.price | money_with_currency
+      assign cl_compare_money = cl_t.compare_at_price | money_with_currency
+    endif
   -%}
-  {%- if cl_t.price == 0 -%}
+  {%- if cl_has_variant == false -%}
+    <div class="p-price-row">
+      <span class="p-price">{{ 'products.product.unavailable' | t }}</span>
+    </div>
+  {%- elsif cl_t.price == 0 -%}
     <div class="p-price-row">
       <span class="p-price">Price on request</span>
     </div>
     <a class="p-tax p-enquire" href="{{ pages.contact.url | default: '/pages/contact' }}">Enquire about pricing</a>
   {%- else -%}
     <div class="p-price-row">
-      <span class="p-price">{{ cl_t.price | money }}</span>
+      <span class="p-price">{{ cl_price_money }}</span>
       {%- if cl_t.compare_at_price > cl_t.price -%}
-        <span class="p-compare">{{ cl_t.compare_at_price | money }}</span>
+        <span class="p-compare">{{ cl_compare_money }}</span>
         {%- assign cl_save = cl_t.compare_at_price | minus: cl_t.price -%}
         <span class="p-save">Save {{ cl_save | money_without_trailing_zeros }}</span>
       {%- endif -%}

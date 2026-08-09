@@ -8,9 +8,9 @@
 (function () {
   'use strict';
 
-  /* Dawn's product-form.js resets the submit label from variantStrings on every
-     variant change — keep it saying "Add to bag" (the server renders the same). */
-  if (window.variantStrings) window.variantStrings.addToCart = 'Add to bag';
+  /* window.variantStrings.addToCart is now set to "Add to bag" globally in
+     theme.liquid — patching it here only covered the product template, so a
+     featured-product section elsewhere reverted to the locale string. */
 
   /* ---- before / after compare ---- */
   function initCompare(cmp) {

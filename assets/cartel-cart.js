@@ -64,7 +64,20 @@
       /[&<>"']/g,
       (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])
     );
-  const money = (cents) => '$' + ((parseInt(cents, 10) || 0) / 100).toFixed(2);
+  /* Shopify stores money in the shop currency's minor unit; format with the
+     active currency rather than assuming USD. */
+  const money = (() => {
+    try {
+      const code = (window.Shopify && window.Shopify.currency && window.Shopify.currency.active) || 'USD';
+      const nf = new Intl.NumberFormat(document.documentElement.lang || undefined, {
+        style: 'currency',
+        currency: code,
+      });
+      return (cents) => nf.format((parseInt(cents, 10) || 0) / 100);
+    } catch (e) {
+      return (cents) => '$' + ((parseInt(cents, 10) || 0) / 100).toFixed(2);
+    }
+  })();
 
   /* ---------- order note ---------- */
   let notePref = null; // null = follow the server-rendered state
@@ -120,9 +133,18 @@
     const img = it.image
       ? '<img class="card-photo" src="' + esc(it.image) + '" alt="' + esc(it.title) + '" loading="lazy">'
       : '';
-    const price = it.price
-      ? '<span class="pprice">' + esc(money(it.price)) + '</span>'
-      : '<span class="line-lock"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>Log in for price</span>';
+    /* Empty data-price = login-gated. "0" is a truthy string, so zero-priced
+       (enquire-only) products must be tested numerically, not for truthiness. */
+    const cents = it.price === '' || it.price == null ? null : parseInt(it.price, 10);
+    let price;
+    if (cents === null || isNaN(cents)) {
+      price =
+        '<span class="line-lock"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>Log in for price</span>';
+    } else if (cents === 0) {
+      price = '<span class="pprice">Price on request</span>';
+    } else {
+      price = '<span class="pprice">' + esc(money(cents)) + '</span>';
+    }
     return (
       '<div class="saved-card" data-saved-id="' + esc(it.id) + '">' +
       '<div class="saved-img">' +
@@ -284,13 +306,22 @@
     const submitter = e.submitter;
     if (submitter && submitter.name === 'checkout') {
       e.preventDefault();
-      window.location.href = '/checkout?discount=' + encodeURIComponent(code);
+      /* Derive /checkout from routes.cart_url so locale/market prefixes
+         (e.g. /en-ca/cart) survive. */
+      const cartUrl = (window.routes && window.routes.cart_url) || '/cart';
+      const checkoutUrl = cartUrl.replace(/\/cart\/?$/, '') + '/checkout';
+      window.location.href = checkoutUrl + '?discount=' + encodeURIComponent(code);
     }
   });
 
-  /* ---------- re-hydrate after cart.js replaces section HTML ---------- */
-  const cartItemsEl = document.querySelector('cart-items');
-  if (cartItemsEl && 'MutationObserver' in window) {
+  /* ---------- re-hydrate after cart.js replaces section HTML ----------
+     Watch .js-contents, NOT <cart-items>. The saved-for-later grid lives inside
+     <cart-items> but outside .js-contents, so observing the whole element made
+     renderSaved()'s own innerHTML write re-trigger the observer — a permanent
+     ~25Hz render loop as soon as the shopper saved anything. .js-contents is
+     also the only node cart.js actually swaps (cart.js:149,164). */
+  const cartContentsEl = document.querySelector('#main-cart-items .js-contents');
+  if (cartContentsEl && 'MutationObserver' in window) {
     let pending = null;
     new MutationObserver(() => {
       if (pending) return;
@@ -300,7 +331,7 @@
         syncPromo();
         renderSaved();
       }, 40);
-    }).observe(cartItemsEl, { childList: true, subtree: true });
+    }).observe(cartContentsEl, { childList: true, subtree: true });
   }
 
   syncNote();

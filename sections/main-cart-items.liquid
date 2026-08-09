@@ -146,23 +146,37 @@
                           {%- if item.selling_plan_allocation != null -%}
                             <span class="line-var">{{ item.selling_plan_allocation.selling_plan.name }}</span>
                           {%- endif -%}
+                          {%- comment -%}
+                            Shopify Bundles child lines report can_remove/can_update_quantity
+                            false; without these guards they were independently editable, which
+                            corrupts the bundle. Matches Dawn baseline main-cart-items:308.
+                            Save-for-later removes the line, so it is gated on can_remove too.
+                          {%- endcomment -%}
+                          {%- assign can_remove = item.instructions.can_remove | default: true -%}
                           <div class="line-tools">
                             <button
                               type="button"
-                              class="line-tool line-save"
+                              class="line-tool line-save{% if can_remove == false %} hidden{% endif %}"
                               data-line-save
                               data-variant-id="{{ item.variant.id }}"
                               data-product-title="{{ item.product.title | escape }}"
                               data-brand="{{ item.product.vendor | escape }}"
                               data-variant-title="{% unless item.product.has_only_default_variant %}{{ item.variant.title | escape }}{% endunless %}"
-                              data-price="{% unless line_gated %}{{ item.final_price }}{% endunless %}"
+                              {%- comment -%}
+                                Catalogue price, not final_price: a saved item leaves the cart,
+                                so cart-level discounts no longer apply to it.
+                              {%- endcomment -%}
+                              data-price="{% unless line_gated %}{{ item.variant.price }}{% endunless %}"
                               data-image="{% if item.image %}{{ item.image | image_url: width: 600 }}{% endif %}"
                               data-url="{{ item.url }}"
                             >
                               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M7 4h10v16l-5-3.5L7 20z"></path></svg>
                               Save for later
                             </button>
-                            <cart-remove-button data-index="{{ item.index | plus: 1 }}">
+                            <cart-remove-button
+                              data-index="{{ item.index | plus: 1 }}"
+                              {% if can_remove == false %}class="hidden"{% endif %}
+                            >
                               <button type="button" class="line-tool" aria-label="Remove {{ item.product.title | escape }}">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 7h16M9.5 7V5h5v2M6.5 7l.8 13h9.4l.8-13"></path></svg>
                                 Remove
@@ -172,8 +186,9 @@
                         </div>
                       </div>
                       <div class="line-qtyc">
+                        {%- assign can_update_quantity = item.instructions.can_update_quantity | default: true -%}
                         <quantity-input class="qty qty-lg">
-                          <button class="qbtn" name="minus" type="button">
+                          <button class="qbtn quantity__button" name="minus" type="button" {% if can_update_quantity == false %}disabled{% endif %}>
                             <span class="visually-hidden">Decrease quantity for {{ item.product.title | escape }}</span>
                             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 12h14"></path></svg>
                           </button>
@@ -196,8 +211,9 @@
                             aria-label="Quantity for {{ item.product.title | escape }}"
                             id="Quantity-{{ item.index | plus: 1 }}"
                             data-index="{{ item.index | plus: 1 }}"
+                            {% if can_update_quantity == false %}disabled{% endif %}
                           >
-                          <button class="qbtn" name="plus" type="button">
+                          <button class="qbtn quantity__button" name="plus" type="button" {% if can_update_quantity == false %}disabled{% endif %}>
                             <span class="visually-hidden">Increase quantity for {{ item.product.title | escape }}</span>
                             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
                           </button>
@@ -207,7 +223,11 @@
                         {%- render 'loading-spinner' -%}
                         {%- if line_gated -%}
                           {% render 'cartel-gate-cta', gate_style: 'card' %}
-                        {%- elsif item.final_price == 0 -%}
+                        {%- comment -%}
+                          variant.price, not final_price — final_price is post-discount, so a
+                          gift-with-purchase or 100%-off line was reading as "Price on request".
+                        {%- endcomment -%}
+                        {%- elsif item.variant.price == 0 -%}
                           <span class="line-price">Price on request</span>
                         {%- else -%}
                           <span class="line-price">{{ item.final_line_price | money }}</span>

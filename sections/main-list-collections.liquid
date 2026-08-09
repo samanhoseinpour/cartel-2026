@@ -16,8 +16,8 @@
   </section>
 
   <section class="wrap bpage">
-    <div class="bx-grid6">
-      {%- if section.blocks.size > 0 -%}
+    {%- if section.blocks.size > 0 -%}
+      <div class="bx-grid6">
         {%- for block in section.blocks -%}
           <div class="bx-item" {{ block.shopify_attributes }}>
             {% render 'card-collection',
@@ -31,16 +31,43 @@
             %}
           </div>
         {%- endfor -%}
-      {%- else -%}
-        {%- for c in collections -%}
-          {%- if c.handle == 'all' or c.handle == 'frontpage' -%}{%- continue -%}{%- endif -%}
-          {%- capture accent -%}{% cycle 'bx-wine', 'bx-bronze', 'bx-blush', 'bx-mauve', 'bx-taupe', 'bx-sage' %}{%- endcapture -%}
-          <div class="bx-item">
-            {% render 'card-collection', card_collection: c, accent: accent %}
-          </div>
-        {%- endfor -%}
-      {%- endif -%}
-    </div>
+      </div>
+    {%- else -%}
+      {%- comment -%}
+        Paginated: an unpaginated `for c in collections` is capped at 50 by Shopify, so
+        collection 51+ was unreachable with no UI to page to it.
+      {%- endcomment -%}
+      {%- paginate collections by 24 -%}
+        <div class="bx-grid6">
+          {%- for c in collections -%}
+            {%- if c.handle == 'all' or c.handle == 'frontpage' -%}{%- continue -%}{%- endif -%}
+            {%- capture accent -%}{% cycle 'bx-wine', 'bx-bronze', 'bx-blush', 'bx-mauve', 'bx-taupe', 'bx-sage' %}{%- endcapture -%}
+            <div class="bx-item">
+              {% render 'card-collection', card_collection: c, accent: accent %}
+            </div>
+          {%- endfor -%}
+        </div>
+        {%- if paginate.pages > 1 -%}
+          <nav class="pgn" role="navigation" aria-label="Brands pagination">
+            {%- if paginate.previous -%}
+              <a href="{{ paginate.previous.url }}" aria-label="Previous page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg></a>
+            {%- endif -%}
+            {%- for part in paginate.parts -%}
+              {%- if part.is_link -%}
+                <a href="{{ part.url }}" aria-label="Page {{ part.title }}">{{ part.title }}</a>
+              {%- elsif part.title == paginate.current_page -%}
+                <span class="pgn-cur" aria-current="page">{{ part.title }}</span>
+              {%- else -%}
+                <span>{{ part.title }}</span>
+              {%- endif -%}
+            {%- endfor -%}
+            {%- if paginate.next -%}
+              <a href="{{ paginate.next.url }}" aria-label="Next page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg></a>
+            {%- endif -%}
+          </nav>
+        {%- endif -%}
+      {%- endpaginate -%}
+    {%- endif -%}
   </section>
 </div>
 

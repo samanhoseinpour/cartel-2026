@@ -92,6 +92,9 @@
               if product.vendor == 'Thuya' and customer == nil
                 assign cartel_gated = true
               endif
+              # Set by the buy_buttons block arm. Declared here so the quantity_selector
+              # arm can test it even when buy_buttons renders first (block reordering).
+              assign cartel_buy_rendered = false
             -%}
 
             {%- for block in section.blocks -%}
@@ -180,7 +183,9 @@
                       endif
                     -%}
                     {%- if cl_variant.available and cl_low_stock -%}
-                      <span class="stockdot"></span>Low stock &middot; order soon, dispatched within 48 hrs
+                      <span class="stockdot"></span>Low stock
+                      {%- if block.settings.show_inventory_quantity %} &middot; only {{ cl_variant.inventory_quantity }} left{% endif -%}
+                      &middot; order soon, dispatched within 48 hrs
                     {%- elsif cl_variant.available -%}
                       <span class="stockdot"></span>In stock &middot; ready to ship, dispatched within 48 hrs
                     {%- else -%}
@@ -461,6 +466,16 @@
                       </volume-pricing>
                     {%- endif -%}
                   {%- endcapture -%}
+                  {%- comment -%}
+                    Normally buy_buttons comes after this block and emits both captures inside
+                    the .p-buy row. If a merchant reorders the blocks so buy_buttons renders
+                    first, it printed an empty capture and the whole stepper silently vanished —
+                    emit it here instead so it is never lost, just not nested in .p-buy.
+                  {%- endcomment -%}
+                  {%- if cartel_buy_rendered -%}
+                    {{ cartel_qty_html }}
+                    {{ cartel_volume_html }}
+                  {%- endif -%}
                   {%- endif -%}
                 {%- when 'popup' -%}
                   <modal-opener
@@ -499,6 +514,7 @@
                     product_form_id: product_form_id
                   %}
                 {%- when 'buy_buttons' -%}
+                  {%- assign cartel_buy_rendered = true -%}
                   <div class="p-buy" data-cl-sticky-watch>
                     {{ cartel_qty_html }}
                     {%- render 'buy-buttons',
@@ -540,7 +556,8 @@
                       </div>
                       <p class="rating-count p-rating-n">
                         <span aria-hidden="true">
-                          <b>{{ product.metafields.reviews.rating.value }}</b>
+                          {%- comment -%} cl_rating, not the raw metafield: a structured rating prints as an object {%- endcomment -%}
+                          <b>{{ cl_rating }}</b>
                           &middot; {{ product.metafields.reviews.rating_count }} review
                           {%- if product.metafields.reviews.rating_count != 1 -%}s{%- endif -%}
                         </span>
@@ -879,7 +896,10 @@
       <div class="pdp-sticky" id="CartelSticky-{{ section.id }}" aria-hidden="true">
         {%- if cartel_gated -%}
           <a class="btn btn-fill btn-lg w100" href="{{ routes.account_login_url }}">Log in to view pricing</a>
-        {%- elsif product.price == 0 and product.selected_or_first_available_variant.available -%}
+        {%- comment -%} must mirror buy-buttons.liquid's condition exactly {%- endcomment -%}
+        {%- elsif product.selected_or_first_available_variant.price == 0
+          and product.selected_or_first_available_variant.available
+        -%}
           <a class="btn btn-fill btn-lg w100" href="{{ pages.contact.url | default: '/pages/contact' }}">Enquire about pricing</a>
         {%- else -%}
           <button
@@ -1032,26 +1052,6 @@
       "name": "t:sections.main-product.blocks.inventory.name",
       "limit": 1,
       "settings": [
-        {
-          "type": "select",
-          "id": "text_style",
-          "options": [
-            {
-              "value": "body",
-              "label": "t:sections.main-product.blocks.inventory.settings.text_style.options__1.label"
-            },
-            {
-              "value": "subtitle",
-              "label": "t:sections.main-product.blocks.inventory.settings.text_style.options__2.label"
-            },
-            {
-              "value": "uppercase",
-              "label": "t:sections.main-product.blocks.inventory.settings.text_style.options__3.label"
-            }
-          ],
-          "default": "body",
-          "label": "t:sections.main-product.blocks.inventory.settings.text_style.label"
-        },
         {
           "type": "range",
           "id": "inventory_threshold",
