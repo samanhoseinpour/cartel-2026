@@ -1076,3 +1076,17 @@
     padding: 56px 0 72px;
   }
 }
+
+/* §11e install fix (2026-08-09): base.css gives .search-modal
+   min-height: calc(100% + var(--inputs-margin-offset) + 2*var(--inputs-
+   border-width)) = viewport + 2px. Harmless under Dawn's top-band layout,
+   but §11e's overflow-y:auto turns that constant 2px overflow into an
+   always-on scrollbar wherever classic scrollbars render (Windows, macOS
+   "always show") — the strip paints over the blur and pushes the panel
+   7.5px left of centre (measured). height:100% already sizes the overlay;
+   zero the min-height ((0,3,0) beats base.css (0,1,0)). Long predictive
+   result lists still scroll — overflow-y:auto only engages on REAL
+   overflow now. */
+.header__search .search-modal.modal__content {
+  min-height: 0;
+}
