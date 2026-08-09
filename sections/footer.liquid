@@ -230,8 +230,18 @@
                       </span>
                     </button>
                   </div>
+                  {%- comment -%}
+                    data-cl-form-msg: posted_successfully?/errors are scoped to
+                    form_type, so the popup or a page newsletter posting made the
+                    footer claim it had been submitted too. cartel-conversion.js
+                    drops whichever message doesn't match the redirect fragment.
+                  {%- endcomment -%}
                   {%- if form.errors -%}
-                    <small class="newsletter-form__message form__message" id="ContactFooter-error">
+                    <small
+                      class="newsletter-form__message form__message"
+                      id="ContactFooter-error"
+                      data-cl-form-msg="ContactFooter"
+                    >
                       <span class="svg-wrapper">
                         {{- 'icon-error.svg' | inline_asset_content -}}
                       </span>
@@ -244,6 +254,7 @@
                   <h3
                     class="newsletter-form__message newsletter-form__message--success form__message"
                     id="ContactFooter-success"
+                    data-cl-form-msg="ContactFooter"
                     tabindex="-1"
                     autofocus
                   >

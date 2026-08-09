@@ -21,9 +21,14 @@
       assign theme_class = tk
   endcase
 
+  # Test that the metafield EXISTS, not that it is truthy. `gated_mf != blank`
+  # delegates blank? to the value, so a boolean set to false read as "not set"
+  # and fell through to the title fallback — a collection called "Thuya" could
+  # never be un-gated from the metafield. `.type` is only ever nil when the
+  # definition/value is absent.
   assign gated_mf = collection.metafields.custom.gated
   assign gated = false
-  if gated_mf != blank
+  if gated_mf.type != blank
     assign gated = gated_mf.value
   elsif collection.title == 'Thuya'
     assign gated = true
@@ -33,8 +38,14 @@
 {%- if section.settings.mode == 'hero' -%}
   {%- liquid
     assign logo = collection.metafields.custom.brand_logo.value
-    assign tagline = collection.metafields.custom.tagline.value
-    if tagline == blank
+    # Escape the plain-text metafield here; do NOT escape the description
+    # fallback. strip_html removes tags but leaves entities encoded, so escaping
+    # it again turned "lash &amp; brow" into a literal "&amp;" on screen. Same
+    # split card-collection.liquid documents.
+    assign tagline_mf = collection.metafields.custom.tagline.value
+    if tagline_mf != blank
+      assign tagline = tagline_mf | escape
+    else
       assign tagline = collection.description | strip_html | truncate: 180
     endif
 
@@ -89,7 +100,7 @@
           <h1 class="bhead-name">{{ collection.title | escape }}</h1>
         {%- endif -%}
         {%- if tagline != blank -%}
-          <p class="bhead-tag">{{ tagline | escape }}</p>
+          <p class="bhead-tag">{{ tagline }}</p>
         {%- endif -%}
         {%- if gated and customer == nil -%}
           <span class="bhead-gate">

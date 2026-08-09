@@ -12,7 +12,18 @@
   Usage:
   {% render 'buy-buttons', block: block, product: product, product_form_id: product_form_id, section_id: section.id, show_pickup_availability: true %}
 {% endcomment %}
-<div class="{% if pickup_only %}p-pickup-slot{% else %}p-buy-main{% endif %}" {{ block.shopify_attributes }}>
+{%- comment -%}
+  CartelBuy-{{ section_id }} is the re-render anchor for cartel-pdp.js. The whole buy
+  area has to be swapped on variant change, not just the submit button: the gate and
+  the "price on request" arms below emit NO <product-form>, so product-info.js's
+  `this.productForm?.toggleSubmitButton(...)` is a no-op and the wrong arm survives.
+  The pickup-only pass renders a different slot and must NOT claim the id.
+{%- endcomment -%}
+<div
+  class="{% if pickup_only %}p-pickup-slot{% else %}p-buy-main{% endif %}"
+  {% unless pickup_only %}id="CartelBuy-{{ section_id }}"{% endunless %}
+  {{ block.shopify_attributes }}
+>
   {%- liquid
     # Cartel: Thuya login gate — no add-to-cart for guests
     assign cartel_gated = false

@@ -135,7 +135,15 @@
                   {%- endif -%}
                   <div class="ci-bottom">
                     {%- comment -%} Bundles child lines report these false — see main-cart-items {%- endcomment -%}
-                    {%- assign can_update_quantity = item.instructions.can_update_quantity | default: true -%}
+                    {%- comment -%}
+                      allow_false is required: Liquid's `default` substitutes on
+                      nil, "" AND false, so without it a bundle child reporting
+                      can_update_quantity == false read back as true and every
+                      `== false` guard below was dead code.
+                    {%- endcomment -%}
+                    {%- assign can_update_quantity = item.instructions.can_update_quantity
+                      | default: true, allow_false: true
+                    -%}
                     <quantity-input class="qty">
                       <button class="qbtn quantity__button" name="minus" type="button" {% if can_update_quantity == false %}disabled{% endif %}>
                         <span class="visually-hidden">Decrease quantity for {{ item.product.title | escape }}</span>
@@ -185,7 +193,7 @@
                     </span>
                   </div>
                 </div>
-                {%- assign can_remove = item.instructions.can_remove | default: true -%}
+                {%- assign can_remove = item.instructions.can_remove | default: true, allow_false: true -%}
                 <cart-remove-button
                   id="CartDrawer-Remove-{{ item.index | plus: 1 }}"
                   data-index="{{ item.index | plus: 1 }}"

@@ -78,13 +78,21 @@
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5.5 5.5l13 13M18.5 5.5l-13 13"></path></svg>
           </button>
+          {%- comment -%}
+            Must stay INSIDE the form (as in the Dawn baseline, and as
+            header-search.liquid still does). predictive-search.liquid renders
+            "View all results" as a <button> with no type, no href and no click
+            handler — it works purely by implicit form submission, and
+            predictive-search.js activates it with .click(). Outside the form
+            that button belongs to no form and does nothing at all.
+          {%- endcomment -%}
+          {%- if settings.predictive_search_enabled -%}
+            <div class="predictive-search predictive-search--search-template" tabindex="-1" data-predictive-search>
+              {%- render 'loading-spinner', class: 'predictive-search__loading-state' -%}
+            </div>
+            <span class="predictive-search-status visually-hidden" role="status" aria-hidden="true"></span>
+          {%- endif -%}
         </form>
-        {%- if settings.predictive_search_enabled -%}
-          <div class="predictive-search predictive-search--search-template" tabindex="-1" data-predictive-search>
-            {%- render 'loading-spinner', class: 'predictive-search__loading-state' -%}
-          </div>
-          <span class="predictive-search-status visually-hidden" role="status" aria-hidden="true"></span>
-        {%- endif -%}
       </main-search>
       {%- if settings.predictive_search_enabled -%}
         </predictive-search>

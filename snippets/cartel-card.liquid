@@ -11,9 +11,11 @@
     assign gated = true
   endif
   assign v = p.selected_or_first_available_variant
+  # Save badge reads the same variant the card prices below, so it can't
+  # advertise a saving from a variant the shopper isn't being shown.
   assign tag_label = ''
-  if p.compare_at_price > p.price
-    assign saved = p.compare_at_price | minus: p.price | money_without_trailing_zeros
+  if v.compare_at_price > v.price
+    assign saved = v.compare_at_price | minus: v.price | money_without_trailing_zeros
     assign tag_label = 'Save ' | append: saved
   elsif p.tags contains 'best-seller' or p.tags contains 'Best seller'
     assign tag_label = 'Best seller'
@@ -50,11 +52,17 @@
       </span>
     {%- elsif p == blank -%}
       <span class="pprice">$00.00</span>
-    {%- comment -%} v, not p: p.price is the product MINIMUM, so one $0 variant hid every price {%- endcomment -%}
+    {%- comment -%}
+      v, not p, on BOTH the test and the output. p.price is the product MINIMUM
+      across every variant including sold-out ones, so a product with an
+      available "Standard $45" plus a $0 sample printed "$0.00" next to a
+      "Choose options" button while its PDP showed $45. v is the variant the PDP
+      lands on, so card and PDP now agree.
+    {%- endcomment -%}
     {%- elsif v.price == 0 and p.available -%}
       <span class="pprice">Price on request</span>
     {%- else -%}
-      <span class="pprice">{{ p.price | money }}</span>
+      <span class="pprice">{{ v.price | money }}</span>
     {%- endif -%}
   </div>
   {%- if gated -%}

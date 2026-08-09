@@ -190,24 +190,35 @@
           {%- if section.settings.news_text != blank -%}<p class="fr-news-p">{{ section.settings.news_text }}</p>{%- endif -%}
         </div>
         <div class="fr-news-r">
-          {%- form 'customer', id: 'CartelResourcesNews' -%}
+          {%- comment -%}
+            Namespaced by section.id (the form id is the post-submit anchor), and
+            both halves render because posted_successfully? is scoped to
+            form_type rather than to this form — cartel-conversion.js keeps the
+            half whose id matches the redirect fragment.
+          {%- endcomment -%}
+          {%- assign news_form_id = 'CartelResourcesNews-' | append: section.id -%}
+          {%- form 'customer', id: news_form_id -%}
+            {%- comment -%} `form` only exists inside this block. {%- endcomment -%}
+            {%- assign news_hide = '' -%}
             {%- if form.posted_successfully? -%}
-              <div class="fr-news-done">
+              {%- assign news_hide = ' hidden' -%}
+              <div class="fr-news-done" data-cl-form-ok="{{ news_form_id }}">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12.5l4 4 9.5-10"></path></svg>
                 {{- section.settings.news_success -}}
               </div>
-            {%- else -%}
-              <input type="hidden" name="contact[tags]" value="newsletter">
-              <div class="fr-newsform">
-                <input class="fr-nf-input" type="email" name="contact[email]" placeholder="{{ section.settings.news_placeholder }}" autocomplete="email" required aria-label="Email address">
-                <button class="fr-nf-btn" type="submit">{{ section.settings.news_btn_label }}</button>
+            {%- endif -%}
+            <input type="hidden" name="contact[tags]" value="newsletter">
+            <div class="fr-newsform{{ news_hide }}" data-cl-form-fields="{{ news_form_id }}">
+              <input class="fr-nf-input" type="email" name="contact[email]" placeholder="{{ section.settings.news_placeholder }}" autocomplete="email" required aria-label="Email address">
+              <button class="fr-nf-btn" type="submit">{{ section.settings.news_btn_label }}</button>
+            </div>
+            {%- if form.errors -%}
+              <div class="fr-news-fine" data-cl-form-msg="{{ news_form_id }}">{{ form.errors.messages['email'] }}</div>
+            {%- endif -%}
+            {%- if section.settings.news_fine != blank -%}
+              <div class="fr-news-fine{{ news_hide }}" data-cl-form-fields="{{ news_form_id }}">
+                {{- section.settings.news_fine -}}
               </div>
-              {%- if form.errors -%}
-                <div class="fr-news-fine">{{ form.errors.messages['email'] }}</div>
-              {%- endif -%}
-              {%- if section.settings.news_fine != blank -%}
-                <div class="fr-news-fine">{{ section.settings.news_fine }}</div>
-              {%- endif -%}
             {%- endif -%}
           {%- endform -%}
         </div>

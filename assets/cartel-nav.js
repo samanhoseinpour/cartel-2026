@@ -14,13 +14,32 @@
     return window.matchMedia('(hover: hover) and (pointer: fine)').matches && window.innerWidth >= 990;
   }
 
+  /* TOP-LEVEL menus only. querySelectorAll('details') returned a FLAT list, so
+     closeAll() also shut the clicked item's own level-1 ancestor: in dropdown
+     mode a level-2 disclosure opened inside a menu that had just been closed,
+     and its level-3 links were unreachable by click OR hover (hover is bound to
+     top-level <li> only, and the summary handler preventDefault()s the native
+     toggle). Nested <details> now keep Dawn's own behaviour untouched. */
   function menus(nav) {
-    return Array.prototype.slice.call(nav.querySelectorAll('details'));
+    return Array.prototype.slice.call(nav.querySelectorAll(':scope > ul > li > details'));
+  }
+
+  /* global.js gives these summaries role="button" + aria-expanded and only
+     re-syncs the attribute inside its own click listener. role="button" hides
+     <details>'s implicit expanded state from the accessibility tree, so every
+     programmatic open/close here must write the attribute too — otherwise a
+     hover-opened panel reads "collapsed" and a hover-closed one reads
+     "expanded", with aria-controls pointing at an unrendered node. */
+  function setOpen(details, open) {
+    if (!details || details.open === open) return;
+    details.open = open;
+    var summary = details.querySelector(':scope > summary');
+    if (summary) summary.setAttribute('aria-expanded', open ? 'true' : 'false');
   }
 
   function closeAll(nav, except) {
     menus(nav).forEach(function (d) {
-      if (d !== except && d.open) d.open = false;
+      if (d !== except) setOpen(d, false);
     });
   }
 
@@ -39,7 +58,7 @@
 
   function open(nav, details) {
     closeAll(nav, details);
-    if (!details.open) details.open = true;
+    setOpen(details, true);
     positionCondensed(details);
   }
 
@@ -64,18 +83,21 @@
        trapped keyboard users (Enter on a <summary> dispatches a click).
        Setting details.open fires the native toggle event, so Dawn's own
        DetailsDisclosure close logic still runs. */
-    Array.prototype.forEach.call(nav.querySelectorAll('summary'), function (summary) {
-      summary.addEventListener('click', function (event) {
-        if (!canHover()) return;
-        event.preventDefault();
-        var details = summary.parentElement;
-        if (details && details.open) {
-          details.open = false;
-        } else {
-          open(nav, details);
-        }
-      });
-    });
+    Array.prototype.forEach.call(
+      nav.querySelectorAll(':scope > ul > li > details > summary'),
+      function (summary) {
+        summary.addEventListener('click', function (event) {
+          if (!canHover()) return;
+          event.preventDefault();
+          var details = summary.parentElement;
+          if (details && details.open) {
+            setOpen(details, false);
+          } else {
+            open(nav, details);
+          }
+        });
+      }
+    );
 
     var bar = nav.closest('.header-wrapper') || nav;
     /* mouseleave ignores descendants, and the panel IS a descendant,
