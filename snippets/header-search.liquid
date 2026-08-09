@@ -1,5 +1,13 @@
 {% comment %}
   Renders a header search modal. Should be used with 'header.liquid'
+  Batch 8: Dawn's full-width band is restyled as the design's centred
+  overlay panel (Home.dc.html .search-ov / .search-panel / .search-form).
+  Markup deltas vs stock Dawn — a decorative leading magnifier span, the
+  design's placeholder copy, and a LABELLED wine submit pill ("Search →")
+  instead of the bare icon button. Every JS hook is unchanged:
+  details-modal / <details>, predictive-search or search-form element,
+  .search__input #input_id with the combobox attrs, reset + close buttons.
+  Layout lives in cartel-shell.css §11e.
 
   Accepts:
   - input_id: {String} Id for the search input element (required)
@@ -42,13 +50,16 @@
         {%- endif -%}
         <form action="{{ routes.search_url }}" method="get" role="search" class="search search-modal__form">
           <div class="field">
+            <span class="search-lead-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.3-4.3"></path></svg>
+            </span>
             <input
               class="search__input field__input"
               id="{{ input_id }}"
               type="search"
               name="q"
               value="{{ search.terms | escape }}"
-              placeholder="{{ 'general.search.search' | t }}"
+              placeholder="Search products, brands, categories"
               {%- if settings.predictive_search_enabled -%}
                 role="combobox"
                 aria-expanded="false"
@@ -74,9 +85,8 @@
               </span>
             </button>
             <button class="search__button field__button" aria-label="{{ 'general.search.search' | t }}">
-              <span class="svg-wrapper">
-                {{- 'icon-search.svg' | inline_asset_content -}}
-              </span>
+              <span>Search</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"></path></svg>
             </button>
           </div>
 

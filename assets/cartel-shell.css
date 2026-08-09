@@ -727,3 +727,352 @@
     padding-right: 0;
   }
 }
+
+/* ============================================================
+   11. BATCH 8 — pixel-parity + defect fixes (2026-08-09)
+   Append to assets/cartel-shell.css (after §10).
+   Pairs with: replaced icon SVG assets, new snippets/header-search.liquid,
+   sections/main-404.liquid centering class. See CLAUDE-PROMPT.md.
+   ============================================================ */
+
+/* ----- 11a. HEADER STACKING ORDER (reported: hero progress pill rides
+   over the navbar). base.css gives the sticky header section z-index 3,
+   but the design's homepage chrome inside .cl uses z-indexes up to 6
+   (.hero-dots) in the same root stacking context, so the pill painted on
+   top of the translucent header while scrolling. The design header is
+   z-60 (.hdr). 45 keeps the header above ALL in-flow section content but
+   below every overlay that must cover it: offer tab (140), email popup,
+   search/menu drawers (they live inside the header section), cart drawer
+   (component-cart-drawer.css, 1000+). ----- */
+.section-header.shopify-section-group-header-group {
+  z-index: 45;
+}
+/* §2's backdrop-filter on .header-wrapper makes it the CONTAINING BLOCK
+   for every position:fixed descendant (filters do that) — the search
+   modal below could never cover the viewport: its dim started at the
+   header's bottom edge and the announcement bar stayed crisp. Move the
+   translucent blur onto a ::before pseudo so the wrapper itself stops
+   trapping fixed children. Visually identical. */
+.header-wrapper {
+  background: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+.header-wrapper::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: rgba(250, 246, 240, 0.82);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  pointer-events: none;
+}
+
+/* ----- 11b. FOOTER LINK RHYTHM (reported: spacing between links).
+   header.liquid carries an UNSCOPED style block: .list-menu__item--link
+   gets padding 1rem/1rem (<750: even more) — it leaks into the footer's
+   menu columns and stacked on §6's 12px flex gap, so the pitch between
+   Blog / Free Resources / FAQ was ~40px against the design's ~30px
+   (.ftcol gap:12px, .flink 14px). Zero the leaked padding; the flex gap
+   is the single source of rhythm, exactly like the design. ----- */
+.footer .footer-block__details-content .list-menu__item--link {
+  padding-top: 0;
+  padding-bottom: 0;
+  line-height: 1.65; /* theme body is 1.8; the design's footer runs 1.65 */
+}
+.footer .footer-block__details-content > li {
+  margin: 0;
+  padding: 0;
+  line-height: 1;
+}
+/* section-footer.css adds margin-bottom:4rem to every details-content
+   below 750px — the 2-col grid's 30px row gap already owns that space */
+.footer .footer-block__details-content {
+  margin-bottom: 0;
+}
+
+/* ----- 11c. GET IN TOUCH (reported: the border + spacing around it).
+   The hairline is §6's border-top on .footer-block--contact (kept — it IS
+   the design's .ft-contact rule). What drifted is inside: the heading ran
+   §6's generic 17px margin and the two rows were inline anchors in a
+   block container, so the mail/phone rows spaced on line-height instead
+   of the design's 10px column gap (.ft-contact{gap:10px}, .ft-contact-h
+   margin-bottom:2px, rows 13.5px). ----- */
+.footer .footer-block--contact .footer-block__heading {
+  margin-bottom: 1.2rem !important; /* §6 sets 1.7rem on the same element */
+}
+.footer .footer-block__details-content.footer-contact {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.footer .footer-contact__row {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  width: fit-content;
+  font-size: 1.35rem;
+  color: rgba(var(--cartel-cream), 0.82);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+.footer .footer-contact__row:hover {
+  color: rgb(var(--cartel-cream));
+  text-decoration: none;
+}
+.footer .footer-contact__icon {
+  display: inline-flex;
+  flex: none;
+}
+.footer .footer-contact__icon svg {
+  width: 16px;
+  height: 16px;
+  color: rgb(var(--cartel-bronze));
+}
+
+/* ----- 11d. PRODUCT CARD FOOTER (reported: sold-out button corners cut
+   off). Two defects with one cause — real catalog titles wrap to two
+   lines and only some cards carry a variant line, heights the prototype
+   data never produced: (1) every card's price + button landed at a
+   different y (ragged row), (2) the tallest card's button could sit past
+   the scroller's box and get its bottom corners clipped. Pin the price
+   row to the bottom of the card so buttons align on one baseline across
+   the row — the flex column absorbs the height difference above the
+   price instead of below the button. ----- */
+.cl .card .prow {
+  margin-top: auto;
+  padding-top: 12px; /* .prow's own margin:12px 0 14px collapses to auto on top */
+}
+.cl .card .pvar {
+  min-height: 0;
+}
+/* give the scroller breathing room so the 4px top pad + hover lift and
+   the button's focus ring never clip inside the overflow box */
+.cl .carousel {
+  padding-bottom: 16px;
+}
+
+/* ----- 11e. SEARCH MODAL (reported: search bar doesn't match the design).
+   Dawn's full-width top band becomes the design's overlay: dimmed, blurred
+   backdrop (.search-ov: rgba(40,8,18,.42) + blur(10px)) with a floating
+   cream panel (.search-panel: min(680px,100%), r-lg, 22px pad) holding a
+   pill form — magnifier left, 17px input, wine "Search →" pill right
+   (.search-go). Markup contract unchanged: details-modal / predictive-
+   search / .search__input keep their hooks; header-search.liquid adds the
+   design's structure classes. ----- */
+.header__search .search-modal.modal__content {
+  position: fixed;
+  inset: 0;
+  height: 100%;
+  background: rgba(40, 8, 18, 0.42);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border-bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 11vh 20px 20px;
+  overflow-y: auto;
+}
+.header__search .search-modal__content {
+  width: min(680px, 100%);
+  max-width: none;
+  height: auto; /* component-search.css stretches it to 100% of the overlay */
+  margin: 0;
+  padding: 22px;
+  background: rgb(var(--cartel-cream));
+  border-radius: 34px;
+  box-shadow: 0 40px 90px rgba(40, 8, 18, 0.4);
+  position: relative;
+  min-height: 0;
+}
+.header__search .search-modal__form {
+  width: 100%;
+  max-width: none;
+}
+/* the pill row */
+.header__search .search-modal .search.search-modal__form,
+.header__search .search-modal .field {
+  display: flex;
+  align-items: center;
+}
+.header__search .search-modal .search .field {
+  gap: 14px;
+  background: #fff;
+  border: 1.5px solid rgba(var(--cartel-bord), 0.12);
+  border-radius: 100px;
+  padding: 6px 6px 6px 22px;
+  transition: border-color 0.2s ease;
+}
+.header__search .search-modal .search .field:focus-within {
+  border-color: rgb(var(--cartel-plum));
+}
+/* leading magnifier (the form's decorative icon span added by the new
+   header-search.liquid) */
+.header__search .search-modal .search-lead-icon {
+  display: inline-flex;
+  flex: none;
+  width: 22px;
+  height: 22px;
+  color: rgba(var(--cartel-ink), 0.55);
+}
+.header__search .search-modal .search-lead-icon svg {
+  width: 22px;
+  height: 22px;
+}
+/* input: kill Dawn's floating label + boxed field */
+.header__search .search-modal .search__input.field__input {
+  flex: 1;
+  min-width: 0;
+  height: auto;
+  padding: 14px 0;
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: rgb(var(--cartel-ink));
+}
+.header__search .search-modal .search__input.field__input:focus,
+.header__search .search-modal .search__input.field__input:focus-visible {
+  box-shadow: none;
+  outline: none;
+}
+.header__search .search-modal .field__label {
+  display: none;
+}
+.header__search .search-modal .search__input::placeholder {
+  color: #b39ea2;
+  opacity: 1;
+}
+.header__search .search-modal .search__input::-webkit-search-decoration,
+.header__search .search-modal .search__input::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+}
+/* submit: Dawn's bare icon button becomes the design's labeled wine pill */
+.header__search .search-modal .search__button.field__button {
+  position: static;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: auto;
+  height: auto;
+  flex: none;
+  padding: 13px 22px;
+  border-radius: 100px;
+  background: rgb(var(--cartel-bord));
+  color: rgb(var(--cartel-cream));
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+.header__search .search-modal .search__button.field__button:hover {
+  background: rgb(var(--cartel-plum));
+}
+.header__search .search-modal .search__button .icon,
+.header__search .search-modal .search__button svg {
+  width: 16px;
+  height: 16px;
+  color: currentColor;
+}
+/* reset (clear) button: small ghost circle before the pill */
+.header__search .search-modal .reset__button.field__button {
+  position: static;
+  width: 34px;
+  height: 34px;
+  flex: none;
+  border-radius: 50%;
+  color: rgba(var(--cartel-ink), 0.55);
+}
+.header__search .search-modal .reset__button.field__button::after {
+  display: none;
+}
+.header__search .search-modal .reset__button .icon {
+  width: 14px;
+  height: 14px;
+}
+/* close: design's .icbtn in the panel's top-right, above the pill */
+.header__search .search-modal__close-button.modal__close-button {
+  position: absolute;
+  top: -52px;
+  right: 0;
+  width: 42px;
+  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: rgb(var(--cartel-cream));
+  transition: background 0.2s ease;
+}
+.header__search .search-modal__close-button.modal__close-button:hover {
+  background: rgba(250, 246, 240, 0.14);
+}
+.header__search .search-modal__close-button .icon {
+  width: 22px;
+  height: 22px;
+}
+/* predictive results: drop into the panel under the pill, design cards */
+.header__search .search-modal predictive-search {
+  position: relative;
+}
+.header__search .predictive-search.predictive-search--header {
+  position: static;
+  width: 100%;
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+  margin-top: 6px;
+}
+@media (max-width: 560px) {
+  .header__search .search-modal__content {
+    padding: 16px;
+    border-radius: 24px;
+  }
+  .header__search .search-modal .search__button span {
+    display: none;
+  }
+  .header__search .search-modal .search__button.field__button {
+    padding: 13px 16px;
+  }
+}
+
+/* ----- 11f. 404 PAGE (reported: not centered + UI issues). The block
+   sat at a fixed 96px from the header with a dead sea of cream under the
+   chips. Center the whole group in the leftover viewport between header
+   (annbar 40 + header 74 ≈ 114) and the footer's start, with the old
+   padding as the floor so short viewports never crush it. ----- */
+.cl .p404 {
+  min-height: calc(100svh - 300px);
+  justify-content: center;
+  padding: 72px 0 96px;
+}
+@media (max-width: 760px) {
+  .cl .p404 {
+    min-height: calc(100svh - 260px);
+    padding: 56px 0 72px;
+  }
+}
+
+/* §11f install fix (2026-08-09): cartel-404.css loads INSIDE theme.liquid's
+   per-template case block (line ~327), i.e. AFTER this file (line ~285), so
+   its .cl .p404 padding (96px 0 130px; ≤760: 64px 0 84px) wins the (0,2,0)
+   tie against §11f's values and the centred block sits 17px high. Same
+   class of fix as the §10 install fix above: bump to (0,3,0) so §11f's
+   measured padding actually applies. min-height/justify-content need no
+   bump — cartel-404.css never sets them. */
+.cl .p404.p404 {
+  padding: 72px 0 96px;
+}
+@media (max-width: 760px) {
+  .cl .p404.p404 {
+    padding: 56px 0 72px;
+  }
+}
