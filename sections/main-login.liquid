@@ -50,9 +50,15 @@
         <div class="ab-glow2"></div>
         <span class="ab-ghost" aria-hidden="true">C</span>
         <div class="ab-top">
-          {%- if settings.logo != blank -%}
-            {{ settings.logo | image_url: width: 300 | image_tag: class: 'ab-logo', alt: shop.name, loading: 'lazy' }}
-          {%- endif -%}
+          <img
+            class="ab-logo"
+            src="{{ 'logo-cream.png' | asset_url }}"
+            alt="{{ shop.name | escape }}"
+            width="1367"
+            height="552"
+            loading="lazy"
+            style="filter: none"
+          >
           <span class="ab-kick">Free account</span>
           <h2 class="ab-h">Unlock Thuya pro pricing.</h2>
           <p class="ab-p">
