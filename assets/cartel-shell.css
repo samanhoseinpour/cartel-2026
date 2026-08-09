@@ -799,6 +799,18 @@
    block container, so the mail/phone rows spaced on line-height instead
    of the design's 10px column gap (.ft-contact{gap:10px}, .ft-contact-h
    margin-bottom:2px, rows 13.5px). ----- */
+/* fix 2026-08-09 (reported: "GET IN TOUCH" is stuck to its top border).
+   §6's padding-top:20px on .footer-block--contact (0,2,0) — and cartel.css's
+   ported 2.6rem (0,1,0) — were both dead: §6's own grid-item reset
+   (`… .footer__blocks-wrapper > .footer-block.grid__item { … padding: 0 }`,
+   five classes = (0,5,0)) shorthand-zeroes the top pad in BOTH
+   breakpoints. So the heading rendered flush under the hairline with
+   only its half-leading for air. Restore the design's 26px at matching
+   (0,5,0) — later in source, so it wins the tie at every width. Same trap as
+   §10's `padding` shorthand on a .page-width element. */
+.footer .footer__content-top .footer__blocks-wrapper > .footer-block--contact.grid__item {
+  padding-top: 26px;
+}
 .footer .footer-block--contact .footer-block__heading {
   margin-bottom: 1.2rem !important; /* §6 sets 1.7rem on the same element */
 }
@@ -876,6 +888,11 @@
   overflow-y: auto;
 }
 .header__search .search-modal__content {
+  /* the design's .search-panel is border-box (.cl * reset), so min(680px,100%)
+     is the panel's TOTAL width. Dawn's base.css ships no global border-box
+     reset, so without this the 22px padding rode on top of the 100% branch
+     and the panel overflowed the overlay by 44px on narrow viewports. */
+  box-sizing: border-box;
   width: min(680px, 100%);
   max-width: none;
   height: auto; /* component-search.css stretches it to 100% of the overlay */
@@ -891,13 +908,26 @@
   width: 100%;
   max-width: none;
 }
+/* the form stacks — pill row, then the predictive dropdown UNDER it.
+   (fix 2026-08-09: this rule used to make the <form> a flex ROW alongside
+   .field. Harmless in stock Dawn, where .predictive-search is absolutely
+   positioned, but §11e below makes the dropdown `position: static` so it
+   renders inside the panel — and a static sibling in a row layout parked
+   the whole results card BESIDE the search pill, with the pill floated to
+   the vertical middle of the left half. The pill row keeps its own flex.) */
+.header__search .search-modal .search.search-modal__form {
+  display: block;
+}
 /* the pill row */
-.header__search .search-modal .search.search-modal__form,
 .header__search .search-modal .field {
   display: flex;
   align-items: center;
 }
 .header__search .search-modal .search .field {
+  /* Dawn's base.css has no global border-box reset, and .field is width:100%
+     — as a block-level row (see above) its 28px padding + 3px border would
+     otherwise push the pill 31px past the panel's right edge */
+  box-sizing: border-box;
   gap: 14px;
   background: #fff;
   border: 1.5px solid rgba(var(--cartel-bord), 0.12);
@@ -1029,7 +1059,9 @@
   border: 0;
   box-shadow: none;
   background: transparent;
-  margin-top: 6px;
+  /* same offset the /search template's anchored dropdown uses
+     (cartel-search.css §6: top: calc(100% + 10px)) */
+  margin-top: 10px;
 }
 @media (max-width: 560px) {
   .header__search .search-modal__content {
@@ -1089,4 +1121,20 @@
    overflow now. */
 .header__search .search-modal.modal__content {
   min-height: 0;
+}
+
+/* §11d install fix (2026-08-09): client-reported "sold out button corners
+   cut off". Root cause is a CLASS COLLISION, not the carousel: cartel.css
+   §"Cards" (batch 2, written for DAWN's card component) sets
+   `.card{border-radius:24px;overflow:hidden}` and the prototype's cartel
+   cards use the same .card class. §11d pins every card button flush to
+   the card's bottom edge (margin-top:auto baseline fix), so the card's
+   24px clip arcs now slice the bottom corners off EVERY row button —
+   glaring on outlined .btn-out chips (bottom quarter-arcs of the 1.5px
+   border vanish), subtle on filled ones. Prototype cards never wanted a
+   card-level clip (.card-img rounds itself; .kitcard owns its own clip).
+   Dawn surfaces keep cartel.css's rule — this only unhooks .cl cards. */
+.cl .card {
+  border-radius: 0;
+  overflow: visible;
 }
