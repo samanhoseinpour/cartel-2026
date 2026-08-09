@@ -240,34 +240,47 @@
         <p class="bl-news-p">{{ section.settings.news_text }}</p>
       </div>
       <div class="bl-news-r">
-        {%- form 'customer', class: 'bl-news-formwrap' -%}
+        {%- comment -%}
+          posted_successfully? is scoped to form_type, not to this form — see
+          main-blog.liquid. Both halves render; cartel-conversion.js keeps the
+          one whose id matches the redirect fragment.
+        {%- endcomment -%}
+        {%- assign news_form_id = 'CartelArticleNews-' | append: section.id -%}
+        {%- form 'customer', id: news_form_id, class: 'bl-news-formwrap' -%}
           {%- if form.posted_successfully? -%}
-            <div class="bl-news-done">
+            <div class="bl-news-done" data-cl-form-ok="{{ news_form_id }}">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>
               You’re on the list, see you in your inbox.
             </div>
-          {%- else -%}
-            <input type="hidden" name="contact[tags]" value="newsletter">
-            <div class="bl-news-form">
-              <input
-                class="bl-news-input"
-                type="email"
-                name="contact[email]"
-                value="{{ form.email }}"
-                aria-label="Email address"
-                placeholder="Your email address"
-                autocomplete="email"
-                autocorrect="off"
-                autocapitalize="off"
-                required
-              >
-              <button class="btn btn-bronze" type="submit">Subscribe</button>
-            </div>
-            {%- if form.errors -%}
-              <span class="bl-news-err" role="alert">Please enter a valid email address.</span>
-            {%- endif -%}
-            <span class="bl-news-note">{{ section.settings.news_note }}</span>
           {%- endif -%}
+          {%- assign news_hide = '' -%}
+          {%- if form.posted_successfully? -%}
+            {%- assign news_hide = ' hidden' -%}
+          {%- endif -%}
+          <input type="hidden" name="contact[tags]" value="newsletter">
+          <div class="bl-news-form{{ news_hide }}" data-cl-form-fields="{{ news_form_id }}">
+            <input
+              class="bl-news-input"
+              type="email"
+              name="contact[email]"
+              value="{{ form.email }}"
+              aria-label="Email address"
+              placeholder="Your email address"
+              autocomplete="email"
+              autocorrect="off"
+              autocapitalize="off"
+              required
+            >
+            <button class="btn btn-bronze" type="submit">Subscribe</button>
+          </div>
+          {%- if form.errors -%}
+            <span class="bl-news-err" role="alert" data-cl-form-msg="{{ news_form_id }}">
+              Please enter a valid email address.
+            </span>
+          {%- endif -%}
+          <span class="bl-news-note{{ news_hide }}" data-cl-form-fields="{{ news_form_id }}">
+            {{- section.settings.news_note -}}
+          </span>
         {%- endform -%}
       </div>
     </div>

@@ -201,6 +201,12 @@
       const src = doc.querySelector('.js-contents');
       const dst = itemsEl.querySelector('.js-contents');
       if (src && dst) dst.innerHTML = src.innerHTML;
+      /* Moving a saved item into an EMPTY cart re-renders the lines but left
+         `is-empty` on <cart-items> — which Dawn's own CSS keys off. Mirror the
+         freshly rendered state instead of assuming it. */
+      const liveWrap = document.querySelector('cart-items');
+      const freshWrap = doc.querySelector('cart-items');
+      if (liveWrap && freshWrap) liveWrap.classList.toggle('is-empty', freshWrap.classList.contains('is-empty'));
     }
     if (sections['cart-icon-bubble']) {
       const doc = new DOMParser().parseFromString(sections['cart-icon-bubble'], 'text/html');
@@ -315,23 +321,38 @@
   });
 
   /* ---------- re-hydrate after cart.js replaces section HTML ----------
-     Watch .js-contents, NOT <cart-items>. The saved-for-later grid lives inside
-     <cart-items> but outside .js-contents, so observing the whole element made
-     renderSaved()'s own innerHTML write re-trigger the observer — a permanent
-     ~25Hz render loop as soon as the shopper saved anything. .js-contents is
-     also the only node cart.js actually swaps (cart.js:149,164). */
-  const cartContentsEl = document.querySelector('#main-cart-items .js-contents');
-  if (cartContentsEl && 'MutationObserver' in window) {
+     There are TWO different swaps to survive:
+       • updateQuantity() replaces #main-cart-items .js-contents only;
+       • onCartUpdate() replaces the innerHTML of the WHOLE <cart-items>
+         (cart.js:130-138) for any cart update whose source isn't 'cart-items' —
+         including "Add to bag" on this page's own "Complete your kit" cards.
+     The second swap discards [data-saved-zone] and [data-promo-zone] (they sit
+     inside <cart-items> but outside .js-contents) and restores their server
+     state. Watching .js-contents missed it entirely: that node is removed as
+     part of an ancestor subtree, so the records fire on <cart-items> and the
+     observer detached silently — re-hydration stopped for the rest of the
+     page's life, and the shopper's saved-for-later grid simply vanished.
+
+     Observing <cart-items> does mean renderSaved()'s own innerHTML write is a
+     mutation, which is what caused the earlier ~25Hz loop. Disconnect around our
+     own writes instead of narrowing the target; a boolean flag cannot work here
+     because the callback is a microtask and would run after the flag cleared. */
+  const cartItemsEl = document.querySelector('cart-items');
+  if (cartItemsEl && 'MutationObserver' in window) {
+    const watch = { childList: true, subtree: true };
     let pending = null;
-    new MutationObserver(() => {
+    const observer = new MutationObserver(() => {
       if (pending) return;
       pending = window.setTimeout(() => {
         pending = null;
+        observer.disconnect(); // also empties the pending record queue
         syncNote();
         syncPromo();
         renderSaved();
+        observer.observe(cartItemsEl, watch);
       }, 40);
-    }).observe(cartContentsEl, { childList: true, subtree: true });
+    });
+    observer.observe(cartItemsEl, watch);
   }
 
   syncNote();

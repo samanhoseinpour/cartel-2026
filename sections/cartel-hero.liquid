@@ -17,7 +17,18 @@
             assign has_video = true
           endif
         -%}
-        <div class="hero-slide{% if forloop.first %} on{% endif %}" {{ block.shopify_attributes }}>
+        {%- comment -%}
+          Inactive slides are only opacity:0 + pointer-events:none, which stops
+          the mouse but not the keyboard: every off-screen slide kept its <h1>
+          and both CTAs in the tab order and the accessibility tree (four <h1>s
+          and six invisible tab stops on the live homepage). `inert` removes
+          both; cartel-home.js keeps it in sync as slides change.
+        {%- endcomment -%}
+        <div
+          class="hero-slide{% if forloop.first %} on{% endif %}"
+          {% unless forloop.first %}inert aria-hidden="true"{% endunless %}
+          {{ block.shopify_attributes }}
+        >
           <div class="hero-media
             {%- if has_video %} hero-media-vid{% endif -%}
             {%- if fit == 'contain' %} hero-media-prod{% endif -%}

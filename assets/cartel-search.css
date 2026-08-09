@@ -80,7 +80,12 @@
 .cl .srch-h{font-size:50px;margin-top:12px}
 .cl .srchbar{display:flex;align-items:center;gap:14px;margin-top:22px;background:#fff;border:1.5px solid var(--line);border-radius:100px;padding:17px 24px;max-width:640px;transition:.18s}
 .cl .srchbar:focus-within{border-color:var(--plum);box-shadow:0 8px 24px rgba(74,18,36,.1)}
-.cl .srchbar svg{width:22px;height:22px;color:var(--muted);flex:none}
+/* Direct children only. The predictive-search results panel now lives inside
+   this form (it has to — its "View all results" control is a bare submit
+   button), and a descendant selector would force every result icon to 22px
+   and repaint it muted. */
+.cl .srchbar > svg,
+.cl .srchbar > button svg{width:22px;height:22px;color:var(--muted);flex:none}
 .cl .srchbar input{border:0;background:transparent;outline:none;flex:1;font-size:17px;font-weight:600;color:var(--ink);letter-spacing:-.01em}
 .cl .srch-clear{flex:none;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--muted);background:var(--greige)}
 .cl .srch-clear:hover{color:var(--plum)}

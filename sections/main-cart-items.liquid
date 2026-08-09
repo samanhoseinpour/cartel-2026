@@ -15,26 +15,44 @@
 <script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
 
 {%- liquid
+  # Accumulate the priced (non-gated) side DIRECTLY. Deriving it by subtracting
+  # the gated lines from the cart totals mixed two different bases:
+  # final_line_price is before cart-level discounts, cart.total_price is after —
+  # so any cart-level discount came off twice and an all-gated cart could render
+  # a NEGATIVE estimated total.
   assign gate_count = 0
-  assign gated_subtotal = 0
   assign priced_units = 0
+  assign priced_subtotal = 0
   for item in cart.items
     if item.product.vendor == 'Thuya' and customer == nil
       assign gate_count = gate_count | plus: 1
-      assign gated_subtotal = gated_subtotal | plus: item.final_line_price
     else
       assign priced_units = priced_units | plus: item.quantity
+      assign priced_subtotal = priced_subtotal | plus: item.final_line_price
     endif
   endfor
-  assign display_subtotal = cart.items_subtotal_price | minus: gated_subtotal
-  assign display_total = cart.total_price | minus: gated_subtotal
+  assign display_subtotal = priced_subtotal
+  # Nothing gated → the cart's own totals are exact, and subtotal − discounts
+  # reconciles. With gated lines present a cart-level discount cannot be split
+  # per line in Liquid, so the honest figure is the priced subtotal; the "+"
+  # suffix and the "Log in to see your total" CTA already say it is partial,
+  # and the discount rows below switch to a non-numeric note to match.
+  if gate_count > 0
+    assign display_total = priced_subtotal
+  else
+    assign display_total = cart.total_price
+  endif
+  # Free-shipping progress has to track the total the shopper can actually see.
+  # Reading cart.total_price included the gated prices, which contradicted the
+  # "Subtotal · 0 items $0.00" row right above it and let a logged-out visitor
+  # derive the gated subtotal from "$X away from free shipping".
   assign ship_threshold = 15000
-  assign ship_remaining = ship_threshold | minus: cart.total_price
+  assign ship_remaining = ship_threshold | minus: display_total
   assign ship_free = false
-  if cart.total_price >= ship_threshold
+  if display_total >= ship_threshold
     assign ship_free = true
   endif
-  assign ship_pct = cart.total_price | times: 100 | divided_by: ship_threshold
+  assign ship_pct = display_total | times: 100 | divided_by: ship_threshold
   if ship_pct > 100
     assign ship_pct = 100
   endif
@@ -47,7 +65,16 @@
   <div class="wrap cartpage">
     {% render 'cartel-breadcrumbs', extra_label: 'Your bag' %}
 
-    <form action="{{ routes.cart_url }}" class="cart__contents" method="post" id="cart">
+    {%- comment -%}
+      NOT class="cart__contents". Dawn's component-cart.css hides `.is-empty
+      .cart__contents`, and cart.js puts `is-empty` on <cart-items> above. Dawn
+      gets away with it because its empty state lives outside the form; this page
+      renders the empty state INSIDE it, so the rule would blank the whole cart
+      page. Harmless today only because theme.liquid loads component-cart.css
+      solely when cart_type is "drawer" — i.e. it would break the moment the
+      client flips the cart to Drawer.
+    {%- endcomment -%}
+    <form action="{{ routes.cart_url }}" class="cl-cart-contents" method="post" id="cart">
       <div id="main-cart-items" data-id="{{ section.id }}">
         <div class="js-contents">
           <div class="cart-head">
@@ -149,10 +176,18 @@
                           {%- comment -%}
                             Shopify Bundles child lines report can_remove/can_update_quantity
                             false; without these guards they were independently editable, which
-                            corrupts the bundle. Matches Dawn baseline main-cart-items:308.
-                            Save-for-later removes the line, so it is gated on can_remove too.
+                            corrupts the bundle. Save-for-later removes the line, so it is
+                            gated on can_remove too.
+
+                            allow_false is required and is a deliberate divergence from the
+                            Dawn baseline (main-cart-items:308), which has the same defect:
+                            Liquid's `default` substitutes on nil, "" AND false, so a bundle
+                            child reporting can_remove == false read back as true and every
+                            `== false` guard below was dead code.
                           {%- endcomment -%}
-                          {%- assign can_remove = item.instructions.can_remove | default: true -%}
+                          {%- assign can_remove = item.instructions.can_remove
+                            | default: true, allow_false: true
+                          -%}
                           <div class="line-tools">
                             <button
                               type="button"
@@ -186,7 +221,9 @@
                         </div>
                       </div>
                       <div class="line-qtyc">
-                        {%- assign can_update_quantity = item.instructions.can_update_quantity | default: true -%}
+                        {%- assign can_update_quantity = item.instructions.can_update_quantity
+                          | default: true, allow_false: true
+                        -%}
                         <quantity-input class="qty qty-lg">
                           <button class="qbtn quantity__button" name="minus" type="button" {% if can_update_quantity == false %}disabled{% endif %}>
                             <span class="visually-hidden">Decrease quantity for {{ item.product.title | escape }}</span>
@@ -234,7 +271,16 @@
                           <span class="line-unit">{{ item.final_price | money }} each</span>
                         {%- endif -%}
                       </div>
-                      <cart-remove-button data-index="{{ item.index | plus: 1 }}">
+                      {%- comment -%}
+                        Same can_remove guard as the .line-tools button above —
+                        cart.js binds updateQuantity(index, 0) to EVERY
+                        cart-remove-button, so an unguarded second control still
+                        deleted a non-removable bundle child.
+                      {%- endcomment -%}
+                      <cart-remove-button
+                        data-index="{{ item.index | plus: 1 }}"
+                        {% if can_remove == false %}class="hidden"{% endif %}
+                      >
                         <button type="button" class="line-rm" aria-label="Remove {{ item.product.title | escape }}">
                           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>
                         </button>
@@ -271,10 +317,20 @@
                     <span>Subtotal · {{ priced_units }} item{% if priced_units != 1 %}s{% endif %}</span>
                     <span class="sum-row-v">{{ display_subtotal | money }}</span>
                   </div>
+                  {%- comment -%}
+                    Only show the amount when it actually reconciles. With gated
+                    lines in the bag the estimated total is the priced subtotal,
+                    so printing "−$10.00" between it and the subtotal would be
+                    arithmetic the shopper can see is wrong.
+                  {%- endcomment -%}
                   {%- for discount in cart.cart_level_discount_applications -%}
                     <div class="sum-row">
                       <span>Discount · {{ discount.title | escape }}</span>
-                      <span class="sum-row-v sum-free">&minus;{{ discount.total_allocated_amount | money }}</span>
+                      {%- if gate_count > 0 -%}
+                        <span class="muted-val">Applied at checkout</span>
+                      {%- else -%}
+                        <span class="sum-row-v sum-free">&minus;{{ discount.total_allocated_amount | money }}</span>
+                      {%- endif -%}
                     </div>
                   {%- endfor -%}
                   <div class="sum-row">

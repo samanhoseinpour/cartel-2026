@@ -10,10 +10,12 @@
     assign gated = true
   endif
   assign v = p.selected_or_first_available_variant
+  # Sale badge and "was" price read the same variant the card prices below, so
+  # the badge can't advertise a saving from a variant the shopper isn't seeing.
   assign on_sale = false
-  if p.compare_at_price > p.price
+  if v.compare_at_price > v.price
     assign on_sale = true
-    assign saved = p.compare_at_price | minus: p.price | money_without_trailing_zeros
+    assign saved = v.compare_at_price | minus: v.price | money_without_trailing_zeros
   endif
   assign includes = p.metafields.custom.includes.value
   if includes == blank
@@ -52,10 +54,15 @@
         <a class="btn btn-out btn-sm w100" href="{{ routes.account_login_url }}">Log in to view</a>
       {%- else -%}
         <div class="kit-priceline">
-          {%- if on_sale -%}<span class="kit-was">{{ p.compare_at_price | money }}</span>{%- endif -%}
+          {%- if on_sale -%}<span class="kit-was">{{ v.compare_at_price | money }}</span>{%- endif -%}
           <span class="kit-now">
-            {%- comment -%} v, not p: p.price is the product minimum {%- endcomment -%}
-            {%- if p == blank -%}$00.00{%- elsif v.price == 0 -%}Price on request{%- else -%}{{ p.price | money }}{%- endif -%}
+            {%- comment -%}
+              v, not p, on the OUTPUT as well as the test: p.price is the product
+              minimum across every variant including sold-out ones, so a $0
+              sample variant made the kit print "$0.00" while its PDP showed the
+              real price.
+            {%- endcomment -%}
+            {%- if p == blank -%}$00.00{%- elsif v.price == 0 -%}Price on request{%- else -%}{{ v.price | money }}{%- endif -%}
           </span>
         </div>
         {%- if p == blank -%}

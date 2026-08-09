@@ -44,6 +44,13 @@
   <script src="{{ 'product-info.js' | asset_url }}" defer="defer"></script>
   <script src="{{ 'show-more.js' | asset_url }}" defer="defer"></script>
   <script src="{{ 'price-per-item.js' | asset_url }}" defer="defer"></script>
+  {%- comment -%}
+    This section can sit on any template, where theme.liquid does not load
+    cartel-pdp.js — and without it the buy area never re-renders on a variant
+    change, so a "price on request" variant leaves the enquiry link in place.
+    The file guards itself against a second execution on the product template.
+  {%- endcomment -%}
+  <script src="{{ 'cartel-pdp.js' | asset_url }}" defer="defer"></script>
 
   {% comment %} TODO: assign `product.selected_or_first_available_variant` to variable and replace usage to reduce verbosity {% endcomment %}
 
@@ -152,7 +159,12 @@
                       {%- endif -%}
                     </div>
                   {%- endif -%}
-                  {%- unless placeholder -%}
+                  {%- comment -%}
+                    Gated too: <shopify-payment-terms> paints the per-instalment
+                    amount (and carries the full price in its shopify-meta JSON)
+                    right under "Log in to see price".
+                  {%- endcomment -%}
+                  {%- unless placeholder or cartel_gated -%}
                     <div {{ block.shopify_attributes }}>
                       {%- form 'product', product -%}
                         <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
@@ -510,9 +522,16 @@
     <script src="{{ 'product-model.js' | asset_url }}" defer></script>
   {%- endif -%}
 
-  <script type="application/ld+json">
-    {{ product | structured_data }}
-  </script>
+  {%- comment -%}
+    Gated: structured_data serialises offers.price, publishing the price this
+    page deliberately hides. Accepted cost — no price/availability rich results
+    for gated products.
+  {%- endcomment -%}
+  {%- unless cartel_gated -%}
+    <script type="application/ld+json">
+      {{ product | structured_data }}
+    </script>
+  {%- endunless -%}
 
   {% if product.media.size > 0 %}
     <script src="{{ 'product-modal.js' | asset_url }}" defer="defer"></script>

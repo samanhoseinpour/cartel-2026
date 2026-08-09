@@ -34,9 +34,16 @@
               {{ block.settings.image | image_url: width: 700 | image_tag: class: 'reel-media', widths: '300,480,700', loading: 'lazy', alt: block.settings.caption }}
             {%- endif -%}
             <div class="reel-grad"></div>
+            {%- comment -%}
+              The lightbox button only makes sense when there IS a video:
+              cartel-home.js's openBox() inserts media inside `if (v)`, so an
+              image-only tile (the state this section's own preset ships in)
+              opened a full-screen overlay containing nothing but a close button
+              and a caption — and locked body scroll behind it.
+            {%- endcomment -%}
             {%- if block.settings.link != blank -%}
               <a class="reel-hit" href="{{ block.settings.link }}" aria-label="{{ block.settings.caption | escape }}"></a>
-            {%- else -%}
+            {%- elsif block.settings.video != blank -%}
               <button class="reel-hit" type="button" data-reel-open aria-label="Play {{ block.settings.caption | escape }}"></button>
             {%- endif -%}
             {%- if block.settings.video != blank -%}

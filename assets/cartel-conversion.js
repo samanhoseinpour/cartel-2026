@@ -1,9 +1,37 @@
-/* cartel-conversion.js — lane 7C conversion chrome (offer tab + email popup).
-   Loads on every template. Auto-opens the popup once per visitor after ~12s
-   or on exit intent (localStorage "cl_popup" remembers dismissal), never on
-   /cart and never in the theme editor. The offer tab reopens it any time.
-   Esc / backdrop close, focus trapped while open. Checkout pages are
-   Shopify-hosted, so no theme JS runs there. */
+/* cartel-conversion.js — lane 7C conversion chrome (offer tab + email popup)
+   plus the shared newsletter-form state guard. Loads on every template.
+   Auto-opens the popup once per visitor after ~12s or on exit intent
+   (localStorage "cl_popup" remembers dismissal), never on /cart and never in
+   the theme editor. The offer tab reopens it any time. Esc / backdrop close,
+   focus trapped while open. Checkout pages are Shopify-hosted, so no theme JS
+   runs there. */
+
+/* ---------- shared newsletter-form state guard ----------
+   form.posted_successfully? and form.errors are scoped to the request's
+   form_type, NOT to a form id, so after ANY {% form 'customer' %} on the page
+   posts, every other one renders its posted state too: submitting the 10%-off
+   popup on /blogs/journal flipped the untouched in-page band to "You're on the
+   list", and an invalid email painted its error next to an empty field.
+
+   Shopify points a {% form %} action at #<form-id>, and the browser carries
+   that fragment through the redirect — so the hash is the only reliable signal
+   of WHICH form posted. Each band renders its posted state next to its own
+   fields (hidden); this reveals whichever half belongs to this request. With
+   JS off the markup degrades to exactly the previous behaviour. */
+(() => {
+  'use strict';
+
+  const states = document.querySelectorAll('[data-cl-form-ok], [data-cl-form-msg]');
+  Array.prototype.forEach.call(states, (el) => {
+    const id = el.getAttribute('data-cl-form-ok') || el.getAttribute('data-cl-form-msg');
+    if (!id || '#' + id === window.location.hash) return; // this one really did post
+    el.remove();
+    if (!el.hasAttribute('data-cl-form-ok')) return; // a message, not a replaced form
+    const fields = document.querySelectorAll('[data-cl-form-fields="' + id + '"]');
+    Array.prototype.forEach.call(fields, (field) => field.classList.remove('hidden'));
+  });
+})();
+
 (() => {
   'use strict';
 

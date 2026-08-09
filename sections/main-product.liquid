@@ -158,11 +158,18 @@
                     </div>
                   {%- endif -%}
                   <div {{ block.shopify_attributes }}>
-                    {%- assign product_form_installment_id = 'product-form-installment-' | append: section.id -%}
-                    {%- form 'product', product, id: product_form_installment_id, class: 'installment caption-large' -%}
-                      <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
-                      {{ form | payment_terms }}
-                    {%- endform -%}
+                    {%- comment -%}
+                      Gated too. <shopify-payment-terms> paints "4 interest-free
+                      payments of $X" and carries the full price in its
+                      shopify-meta JSON — directly under "Log in to see price".
+                    {%- endcomment -%}
+                    {%- unless cartel_gated -%}
+                      {%- assign product_form_installment_id = 'product-form-installment-' | append: section.id -%}
+                      {%- form 'product', product, id: product_form_installment_id, class: 'installment caption-large' -%}
+                        <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+                        {{ form | payment_terms }}
+                      {%- endform -%}
+                    {%- endunless -%}
                   </div>
                 {%- when 'inventory' -%}
                   {%- comment -%}
@@ -962,9 +969,17 @@
         endif
       -%}
 
-      <script type="application/ld+json">
-        {{ product | structured_data }}
-      </script>
+      {%- comment -%}
+        structured_data serialises offers.price, so it published the gated price
+        in plain text while the page showed "Log in to see price". Suppressed for
+        gated products — the accepted cost is losing price/availability rich
+        results on those PDPs.
+      {%- endcomment -%}
+      {%- unless cartel_gated -%}
+        <script type="application/ld+json">
+          {{ product | structured_data }}
+        </script>
+      {%- endunless -%}
     </div>
   </product-component>
 </product-info>

@@ -74,6 +74,11 @@
       this.i = i;
       this.slides.forEach(function (s, n) {
         s.classList.toggle('on', n === i);
+        /* opacity:0 + pointer-events:none hides an inactive slide from the mouse
+           only — its heading and CTAs stayed focusable and were still announced.
+           Keep inert/aria-hidden in step with the visible state. */
+        if ('inert' in s) s.inert = n !== i;
+        s.setAttribute('aria-hidden', n === i ? 'false' : 'true');
         var v = s.querySelector('video');
         if (!v) return;
         if (n === i) {

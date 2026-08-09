@@ -1,5 +1,10 @@
 {{ 'collage.css' | asset_url | stylesheet_tag }}
 {{ 'component-card.css' | asset_url | stylesheet_tag }}
+{%- comment -%}
+  Collection blocks render the Cartel .bx-card, whose styles live only in
+  cartel-brands.css (theme.liquid loads it on list-collections alone).
+{%- endcomment -%}
+{{ 'cartel-brands.css' | asset_url | stylesheet_tag }}
 {{ 'component-price.css' | asset_url | stylesheet_tag }}
 {{ 'component-modal-video.css' | asset_url | stylesheet_tag }}
 {{ 'component-deferred-media.css' | asset_url | stylesheet_tag }}
@@ -103,14 +108,16 @@
               %}
               {% assign skip_card_product_styles = true %}
             {%- when 'collection' -%}
-              {%- assign placeholder_image = 'collection-apparel-' | append: placeholder_image_index -%}
+              {%- comment -%}
+                The Cartel card takes `accent`; Dawn's media_aspect_ratio /
+                columns / extend_height / wrapper_class / placeholder_image are
+                silently ignored, and with no accent it rendered `bx-card `.
+              {%- endcomment -%}
+              {%- assign bx_accents = 'bx-bronze,bx-blush,bx-mauve,bx-taupe,bx-wine,bx-sage' | split: ',' -%}
+              {%- assign bx_index = forloop.index0 | modulo: bx_accents.size -%}
               {% render 'card-collection',
                 card_collection: block.settings.collection,
-                media_aspect_ratio: 'adapt',
-                columns: 2,
-                extend_height: true,
-                wrapper_class: section.settings.card_styles,
-                placeholder_image: placeholder_image
+                accent: bx_accents[bx_index]
               %}
             {%- when 'video' -%}
               <div class="collage-card {% if section.settings.card_styles == 'none' %}global-media-settings{% else %}{{ section.settings.card_styles }} color-{{ settings.card_color_scheme }} gradient{% endif %}">
