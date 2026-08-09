@@ -1140,3 +1140,258 @@
   border-radius: 0;
   overflow: visible;
 }
+
+/* ============================================================
+   12. BATCH 9 — mobile menu drawer skinned to the design
+   (Home.dc.html .msheet mobile sheet). Append after §11 and its
+   install notes. CSS-only: header-drawer.liquid markup and
+   Dawn's slide mechanics are untouched.
+   Specificity: component-menu-drawer.css + header.liquid's
+   {% style %} load in the BODY and beat head stylesheets on
+   ties, so every rule doubles a class — same convention as §5–§11.
+   ============================================================ */
+
+/* the sheet: cream, 390px, rounded right edge (design .msheet) */
+.menu-drawer.menu-drawer{
+  width:min(390px,90vw);
+  max-width:none;
+  background:var(--cream,#FAF6F0);
+  border-right:1px solid var(--line,rgba(74,18,36,.12));
+  border-radius:0 var(--r-lg,34px) var(--r-lg,34px) 0;
+  box-shadow:0 28px 60px rgba(47,11,23,.22);
+  overflow:hidden;
+}
+.menu-drawer.menu-drawer .menu-drawer__inner-container,
+.menu-drawer.menu-drawer .menu-drawer__navigation-container{background:transparent}
+
+/* dim the page behind the sheet (design .ov). The ::before paints
+   before the #menu-drawer sibling, so the panel and the header
+   close-toggle stay on top and clickable. */
+#Details-menu-drawer-container[open]::before{
+  content:"";position:fixed;inset:0;
+  background:rgba(47,11,23,.45);
+  animation:cl-fade .25s ease;
+}
+@keyframes cl-fade{from{opacity:0}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){
+  #Details-menu-drawer-container[open]::before{animation:none}
+}
+
+/* nav column gutter (design .ms-body: 8px 22px) */
+.menu-drawer.menu-drawer .menu-drawer__navigation{padding:8px 22px 24px}
+
+/* top-level rows — design .ms-link: 17px/700 wine, hairline between */
+.menu-drawer.menu-drawer .menu-drawer__menu-item{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  width:100%;padding:16px 4px;
+  border-bottom:1px solid var(--line,rgba(74,18,36,.12));
+  font-size:17px;font-weight:700;letter-spacing:-.01em;
+  color:var(--bord,#4A1224);text-align:left;text-decoration:none;
+}
+.menu-drawer.menu-drawer .menu-drawer__menu-item:hover{
+  color:var(--plum,#7C1B40);background:transparent;text-decoration:none;
+}
+.menu-drawer.menu-drawer .menu-drawer__menu-item--active{color:var(--plum,#7C1B40)}
+
+/* parent-row caret: hide Dawn's arrow glyph, keep ONE bronze caret,
+   un-pin it (base.css absolutely positions summary .icon-caret) and
+   point it right — the group slides in as a panel */
+.menu-drawer.menu-drawer summary.menu-drawer__menu-item .svg-wrapper{
+  width:auto;height:auto;margin:0;position:static;
+}
+.menu-drawer.menu-drawer summary.menu-drawer__menu-item .icon-arrow{display:none}
+.menu-drawer.menu-drawer summary.menu-drawer__menu-item .icon-caret{
+  position:static;width:12px;height:12px;flex:none;
+  color:var(--bronze-d,#a8884f);transform:rotate(-90deg);
+}
+
+/* slide-in submenu panel = the same cream sheet */
+.menu-drawer.menu-drawer .menu-drawer__submenu{
+  background:var(--cream,#FAF6F0);
+  border-radius:0 var(--r-lg,34px) var(--r-lg,34px) 0;
+}
+.menu-drawer.menu-drawer .menu-drawer__inner-submenu{padding:8px 22px 24px}
+
+/* back row (Dawn's close-button) styled like a sheet header row */
+.menu-drawer.menu-drawer .menu-drawer__close-button{
+  display:flex;align-items:center;gap:10px;width:100%;
+  padding:16px 4px;margin:0;
+  border-bottom:1px solid var(--line,rgba(74,18,36,.12));
+  font-size:17px;font-weight:800;letter-spacing:-.01em;color:var(--bord,#4A1224);
+}
+.menu-drawer.menu-drawer .menu-drawer__close-button .icon-arrow{
+  width:15px;height:15px;color:var(--bronze-d,#a8884f);
+}
+
+/* child links — design .mslink: 14px ink, 12px radius, greige hover */
+.menu-drawer.menu-drawer .menu-drawer__submenu .menu-drawer__menu-item{
+  padding:11px 14px;border-bottom:0;border-radius:12px;
+  font-size:14px;font-weight:600;letter-spacing:0;color:var(--ink,#3a2226);
+}
+.menu-drawer.menu-drawer .menu-drawer__submenu .menu-drawer__menu-item:hover{
+  background:var(--greige,#ece2d4);color:var(--bord,#4A1224);
+}
+/* group heads inside Shop (they slide one level deeper) read bold wine */
+.menu-drawer.menu-drawer .menu-drawer__submenu summary.menu-drawer__menu-item{
+  font-weight:800;color:var(--bord,#4A1224);
+}
+
+/* utility block — design .ms-foot: hairline top, quiet type */
+.menu-drawer.menu-drawer .menu-drawer__utility-links{
+  padding:18px 22px;background:transparent;
+  border-top:1px solid var(--line,rgba(74,18,36,.12));
+}
+.menu-drawer.menu-drawer .menu-drawer__account{
+  display:inline-flex;align-items:center;gap:10px;padding:6px 0 10px;
+  font-size:14px;font-weight:700;color:var(--bord,#4A1224);text-decoration:none;
+}
+.menu-drawer.menu-drawer .menu-drawer__account:hover{color:var(--plum,#7C1B40)}
+.menu-drawer.menu-drawer .menu-drawer__account .svg-wrapper,
+.menu-drawer.menu-drawer .menu-drawer__account account-icon{width:20px;height:20px}
+.menu-drawer.menu-drawer .list-social{justify-content:flex-start;gap:2px}
+.menu-drawer.menu-drawer .list-social__link{padding:8px 10px;color:var(--bronze-d,#a8884f)}
+.menu-drawer.menu-drawer .list-social__link:hover{color:var(--plum,#7C1B40)}
+.menu-drawer.menu-drawer .list-social__link .icon{width:17px;height:17px}
+
+/* ------------------------------------------------------------
+   §12 INSTALL FIXES (2026-08-09, appended during install)
+   Six defects §12 produces against THIS theme's markup. Every
+   number below was measured in a local harness that loads the
+   real files in the real order — base.css → cartel.css →
+   cartel-home.css → cartel-shell.css in the head, then
+   component-menu-drawer.css + header.liquid's {% style %} in the
+   body — with the drawer markup from snippets/header-drawer.liquid
+   and this store's settings (menu_color_scheme background-1,
+   enable_customer_avatar true, one social link).
+   ------------------------------------------------------------ */
+
+/* §12 install fix 1 (2026-08-09): parent rows had NO disclosure glyph.
+   component-menu-drawer.css:124-126 carries `.js .menu-drawer__menu-item
+   .icon-caret{display:none}` — Dawn shows the ARROW on drawer parent rows
+   and keeps the caret for the desktop nav. §12 L59 hides the arrow and
+   L60-63 restyles the caret's position/size/colour but never declares
+   `display`, so `display:none` was the only declaration for that property
+   and BOTH glyphs stayed hidden (measured: caret box 0×0, so nothing
+   signalled that Shop opens a panel). Re-show it at the same (0,4,1) §12's
+   own caret rule already uses.
+   Second half: component-menu-drawer.css:128-134 pairs the wrapper's
+   absolute positioning with `transform:translateY(-50%)`. §12 L56-58 sets
+   the wrapper position:static but leaves the transform — harmless only
+   while the wrapper collapsed to 0×0. With the caret restored the wrapper
+   is 12px tall and the caret paints 6px above the row's centre line. */
+.menu-drawer.menu-drawer summary.menu-drawer__menu-item .icon-caret {
+  display: block;
+}
+.menu-drawer.menu-drawer summary.menu-drawer__menu-item > .svg-wrapper {
+  transform: none;
+}
+
+/* §12 install fix 2 (2026-08-09): §12's scrim is the SECOND scrim, not the
+   first, and it is the wrong kind. base.css:2582-2591 already paints one
+   whenever the drawer is open — `.header__icon--menu[aria-expanded='true']
+   ::before`, absolute inside .header-wrapper (base.css:2360 position:
+   relative), top:100%, height = viewport − header bottom — and global.js:80
+   flips that aria-expanded on every toggle click. It was invisible until
+   now only because Dawn's drawer is width:100% on mobile; §12's 390px sheet
+   is what exposes it. Stacking §12's own fixed inset:0 layer on top means:
+     • the page below the header takes BOTH (.45 wine over Dawn's .5 ink
+       ≈ .73 composite) while the header strip takes only .45 — a two-tone
+       seam exactly at the header's bottom edge, and a page far darker than
+       the design's .ov;
+     • §12's layer also covers the announcement bar and the header, so the
+       logo and the ✕ sit behind a wine wash while the search and cart icons
+       beside them stay crisp (those two keep base.css's position:relative
+       and paint above it — the toggle does not: component-menu-drawer.css
+       :1-3 forces `.header__icon--menu{position:initial}`);
+     • it is a pseudo-element of the <details>, so tapping the backdrop
+       closes nothing, and it paints above every non-positioned part of the
+       toggle — the ✕'s 44×44 tap target shrank to the 20×20 glyph that
+       base.css:2732-2738 absolutely positions.
+   Dawn's overlay has none of those problems: it stops at the header's
+   bottom edge, and because it belongs to the <summary> a tap anywhere on it
+   closes the drawer (verified by hit-test). So drop §12's layer and give
+   Dawn's the design's colour and fade instead. Identical selector appended
+   later in the same file wins §12's; (0,2,0) tying base.css wins on source
+   order (theme.liquid:282 vs :285). cl-fade is §12's own keyframe. */
+#Details-menu-drawer-container[open]::before {
+  content: none;
+}
+.header__icon--menu[aria-expanded='true']::before {
+  background: rgba(47, 11, 23, 0.45);
+  animation: cl-fade 0.25s ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  .header__icon--menu[aria-expanded='true']::before {
+    animation: none;
+  }
+}
+
+/* §12 install fix 3 (2026-08-09): two Dawn margins §12 overrode around.
+   (a) enable_customer_avatar is ON (header-group.json:67), so the account
+       link renders <account-icon><span class="svg-wrapper">. §12 L107 pins
+       account-icon to 20×20 but component-menu-drawer.css:208-212 keeps
+       margin-right:1rem on the wrapper INSIDE it, so half of that 20px line
+       is margin and the wrapper is squeezed to 10×20 — the glyph letterboxes
+       to half size (measured 10px wide against the intended 20px).
+   (b) the same 1rem on the submenu back row (component-menu-drawer.css
+       :166-170) stacks with §12 L73's gap:10px for a 20px icon-to-label gap
+       against the design's 10px.
+   §12's own `gap:10px` on both rows is the single source of that spacing. */
+.menu-drawer.menu-drawer .menu-drawer__account .svg-wrapper,
+.menu-drawer.menu-drawer .menu-drawer__close-button .svg-wrapper {
+  margin-right: 0;
+}
+
+/* §12 install fix 4 (2026-08-09): component-menu-drawer.css:111-118 washes
+   the --active row, ANY :focus row and the back button in
+   rgba(var(--color-foreground),.04) — with menu_color_scheme background-1
+   that is ink 58,34,38, i.e. a ~#F2EDE8 warm-grey band on the #FAF6F0
+   sheet. §12 recolours those states (L48-51, L73-78) but never declares a
+   background, so the wash survives. It is not a transient hover artifact:
+   global.js:459-461 programmatically focuses the back button every time a
+   submenu slides in and :528 refocuses the parent summary on every back-out,
+   so the band sits on the back row for as long as any panel is open and
+   reads as an unintended selected-state highlight. Keyboard focus stays
+   visible — base.css:750 `.focus-inset:focus-visible` and :756
+   `.focused.focus-inset` both paint an outline, which is what trapFocus
+   actually relies on. §12's greige child-link hover (L88-90, (0,5,0)) still
+   wins over the (0,4,0) :focus branch when a link is hovered AND focused. */
+.menu-drawer.menu-drawer .menu-drawer__menu-item--active,
+.menu-drawer.menu-drawer .menu-drawer__menu-item:focus,
+.menu-drawer.menu-drawer .menu-drawer__close-button:hover,
+.menu-drawer.menu-drawer .menu-drawer__close-button:focus {
+  background-color: transparent;
+}
+
+/* §12 install fix 5 (2026-08-09): §12 L70 puts the submenu gutter on
+   `.menu-drawer__inner-submenu`, but header-drawer.liquid renders that
+   wrapper only at submenu level 1 (line 45). A third-level group (line
+   80-83, e.g. a category inside Shop — the case §12 L91-94's own comment
+   anticipates) holds its back row and <ul> directly on
+   `.menu-drawer__submenu`, so it inherits no side gutter at all: its rows
+   run edge-to-edge and its back row sits flush at 0px where level 1's sits
+   8px down. Latent until the merchant's linklist actually has three levels,
+   which is admin data — apply the same inset either way. */
+.menu-drawer.menu-drawer .menu-drawer__submenu .menu-drawer__submenu {
+  padding: 8px 22px 24px;
+}
+
+/* §12 install fix 6 (2026-08-09): two leftovers in the utility block.
+   (a) component-menu-drawer.css:224-227 pulls .list-social 1.25rem left to
+       optically cancel Dawn's 1.1rem link padding. §12 L109 re-pads the
+       links to 10px but leaves the −12.5px, so the Instagram box landed at
+       x=19.5 while the "Log in" icon it should line up with sits at x=22.
+       Retuned to §12's padding, −10px puts it at exactly 22px. (An
+       adversarial re-check called the residual sub-perceptual, since the
+       two glyphs have different intrinsic insets anyway; the retune is kept
+       because it is strictly closer and costs one declaration.)
+   (b) the account link carries Dawn's `h5` class, and base.css:269-283
+       gives .h5 `letter-spacing: calc(var(--font-heading-scale)*0.06rem)`.
+       §12 L101-104 sets that row's size/weight/colour but no tracking, so
+       "Log in" ran ~0.6px looser than every other label in the sheet. */
+.menu-drawer.menu-drawer .list-social {
+  margin-left: -10px;
+}
+.menu-drawer.menu-drawer .menu-drawer__account {
+  letter-spacing: 0;
+}
