@@ -1,49 +1,132 @@
 {% comment %}
-  Cartel breadcrumbs — 1:1 with the prototype (<nav class="crumb"> in Collection.dc.html).
-  Shared by the PLP, PDP, blog and content-page lanes: markup lives here so no lane forks it.
-  The .crumb / .crumb-a / .crumb-sep / .crumb-cur rules ship in each lane's stylesheet.
+  Cartel breadcrumbs — <nav class="crumb"> from the prototype (Collection.dc.html).
+  Shared by the PLP, PDP, blog, search, account and content-page lanes: markup
+  lives here so no lane forks it. The .crumb / .crumb-a / .crumb-sep / .crumb-cur
+  rules ship in each lane's stylesheet.
 
   Usage:
     {% render 'cartel-breadcrumbs' %}                          auto (collection / product / blog / article / page)
     {% render 'cartel-breadcrumbs', extra_label: 'Search' %}    append one custom crumb
+
+  Batch 10 — the trail is now built ONCE as two ~-delimited lists (labels + urls,
+  where '#' means "no link") and rendered twice: as the visible nav, and as
+  schema.org BreadcrumbList JSON-LD (migration SEO — Google draws the trail in
+  results). Deeper trails added at the same time: brand collections sit under
+  Brands, FAQ under About, policy pages under Policies, and account sub-pages
+  under Account. '~' is stripped from dynamic titles so it can't break the split.
 {% endcomment %}
 {%- liquid
-  assign shop_url = routes.collections_url | default: '/collections/all'
+  assign sep = '~'
+  assign all_url = routes.all_products_collection_url | default: '/collections/all'
+  assign brands_url = routes.collections_url | default: '/collections'
+  assign labels = 'Home'
+  assign urls = routes.root_url
+
+  case request.page_type
+    when 'product'
+      assign labels = labels | append: sep | append: 'Shop'
+      assign urls = urls | append: sep | append: all_url
+      if collection.title != blank
+        assign cl_coll = collection.title | replace: sep, '-'
+        assign labels = labels | append: sep | append: cl_coll
+        assign urls = urls | append: sep | append: collection.url
+      endif
+      assign cl_prod = product.title | replace: sep, '-'
+      assign labels = labels | append: sep | append: cl_prod
+      assign urls = urls | append: sep | append: '#'
+
+    when 'collection'
+      if collection.template_suffix == 'brand'
+        assign labels = labels | append: sep | append: 'Brands'
+        assign urls = urls | append: sep | append: brands_url
+      else
+        assign labels = labels | append: sep | append: 'Shop'
+        assign urls = urls | append: sep | append: all_url
+      endif
+      assign cl_coll = collection.title | replace: sep, '-'
+      assign labels = labels | append: sep | append: cl_coll
+      assign urls = urls | append: sep | append: '#'
+
+    when 'list-collections'
+      assign labels = labels | append: sep | append: 'Brands'
+      assign urls = urls | append: sep | append: '#'
+
+    when 'blog'
+      assign cl_blog = blog.title | replace: sep, '-'
+      assign labels = labels | append: sep | append: cl_blog
+      assign urls = urls | append: sep | append: '#'
+
+    when 'article'
+      assign cl_blog = blog.title | replace: sep, '-'
+      assign labels = labels | append: sep | append: cl_blog
+      assign urls = urls | append: sep | append: blog.url
+      assign cl_art = article.title | truncate: 46 | replace: sep, '-'
+      assign labels = labels | append: sep | append: cl_art
+      assign urls = urls | append: sep | append: '#'
+
+    when 'page'
+      # FAQ lives under About; the four policy pages under a (link-less) Policies crumb.
+      if page.template_suffix == 'faq'
+        assign cl_about = pages['about']
+        assign labels = labels | append: sep | append: 'About'
+        if cl_about != blank
+          assign urls = urls | append: sep | append: cl_about.url
+        else
+          assign urls = urls | append: sep | append: '#'
+        endif
+      elsif page.template_suffix == 'policy'
+        assign labels = labels | append: sep | append: 'Policies'
+        assign urls = urls | append: sep | append: '#'
+      endif
+      assign cl_page = page.title | replace: sep, '-'
+      assign labels = labels | append: sep | append: cl_page
+      assign urls = urls | append: sep | append: '#'
+
+    when 'customers/addresses', 'customers/order'
+      assign labels = labels | append: sep | append: 'Account'
+      assign urls = urls | append: sep | append: routes.account_url
+  endcase
+
+  if extra_label != blank
+    assign cl_extra = extra_label | replace: sep, '-'
+    assign labels = labels | append: sep | append: cl_extra
+    assign urls = urls | append: sep | append: '#'
+  endif
+
+  assign crumb_labels = labels | split: sep
+  assign crumb_urls = urls | split: sep
 -%}
 <nav class="crumb" aria-label="Breadcrumb">
-  <a class="crumb-a" href="{{ routes.root_url }}">Home</a>
-  {%- case request.page_type -%}
-    {%- when 'product' -%}
-      <span class="crumb-sep">/</span>
-      <a class="crumb-a" href="{{ shop_url }}">Shop</a>
-      {%- if collection.title != blank -%}
-        <span class="crumb-sep">/</span>
-        <a class="crumb-a" href="{{ collection.url }}">{{ collection.title }}</a>
-      {%- endif -%}
-      <span class="crumb-sep">/</span>
-      <span class="crumb-cur">{{ product.title }}</span>
-    {%- when 'collection' -%}
-      <span class="crumb-sep">/</span>
-      <a class="crumb-a" href="{{ shop_url }}">Shop</a>
-      <span class="crumb-sep">/</span>
-      <span class="crumb-cur">{{ collection.title }}</span>
-    {%- when 'list-collections' -%}
-      <span class="crumb-sep">/</span>
-      <span class="crumb-cur">Brands</span>
-    {%- when 'blog' -%}
-      <span class="crumb-sep">/</span>
-      <span class="crumb-cur">{{ blog.title }}</span>
-    {%- when 'article' -%}
-      <span class="crumb-sep">/</span>
-      <a class="crumb-a" href="{{ blog.url }}">{{ blog.title }}</a>
-      <span class="crumb-sep">/</span>
-      <span class="crumb-cur">{{ article.title | truncate: 46 }}</span>
-    {%- when 'page' -%}
-      <span class="crumb-sep">/</span>
-      <span class="crumb-cur">{{ page.title }}</span>
-  {%- endcase -%}
-  {%- if extra_label != blank -%}
-    <span class="crumb-sep">/</span>
-    <span class="crumb-cur">{{ extra_label }}</span>
-  {%- endif -%}
+  {%- for cl_label in crumb_labels -%}
+    {%- assign cl_url = crumb_urls[forloop.index0] -%}
+    {%- unless forloop.first -%}<span class="crumb-sep">/</span>{%- endunless -%}
+    {%- if forloop.last -%}
+      <span class="crumb-cur">{{ cl_label }}</span>
+    {%- elsif cl_url == '#' or cl_url == blank -%}
+      <span class="crumb-a">{{ cl_label }}</span>
+    {%- else -%}
+      <a class="crumb-a" href="{{ cl_url }}">{{ cl_label }}</a>
+    {%- endif -%}
+  {%- endfor -%}
 </nav>
+{%- if crumb_labels.size > 1 -%}
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {%- for cl_label in crumb_labels -%}
+          {%- assign cl_url = crumb_urls[forloop.index0] -%}
+          {
+            "@type": "ListItem",
+            "position": {{ forloop.index }},
+            "name": {{ cl_label | json }}
+            {%- if cl_url != '#' and cl_url != blank -%}
+              , "item": {{ shop.url | append: cl_url | json }}
+            {%- endif -%}
+          }{% unless forloop.last %},{% endunless %}
+        {%- endfor -%}
+      ]
+    }
+  </script>
+{%- endif -%}
