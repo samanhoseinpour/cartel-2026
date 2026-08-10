@@ -264,7 +264,11 @@
 .cl .af-alt a:hover{text-decoration:underline}
 
 /* brand panel extras — cream logo knock-out (same trick as the footer), ghost cta */
-.cl .ab-logo{height:28px;width:auto;filter:brightness(0) invert(.97)}
+/* No filter: logo-cream.png is already cream-on-transparent, which is why both
+   call sites carried an inline `style="filter:none"` to cancel this rule. The
+   inline override is gone and so is the rule — brightness(0) invert(.97) would
+   have recoloured the cream to near-white and cost a filter pass for nothing. */
+.cl .ab-logo{height:28px;width:auto}
 .cl .ab-cta{margin-top:2px;align-self:flex-start}
 
 /* auth panes — Dawn's #recover :target pattern, restyled.

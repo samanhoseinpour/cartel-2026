@@ -50,14 +50,21 @@
         <div class="ab-glow2"></div>
         <span class="ab-ghost" aria-hidden="true">C</span>
         <div class="ab-top">
+          {%- comment -%}
+            asset_url serves the file verbatim — no CDN resize, no WebP — so the
+            source has to be display-sized itself. It is painted at 28px tall
+            (cartel-account.css:267), i.e. ~69x28 CSS px; the asset is now 224x90,
+            which covers DPR 3. It was 1367x552 / 68KB.
+            Not lazy: this sits at the top of .authbrand and is the LCP candidate
+            on this page — lazy explicitly deferred it out of the first fetch batch.
+          {%- endcomment -%}
           <img
             class="ab-logo"
             src="{{ 'logo-cream.png' | asset_url }}"
             alt="{{ shop.name | escape }}"
-            width="1367"
-            height="552"
-            loading="lazy"
-            style="filter: none"
+            width="224"
+            height="90"
+            fetchpriority="high"
           >
           <span class="ab-kick">Free account</span>
           <h2 class="ab-h">Unlock Thuya pro pricing.</h2>
