@@ -60,7 +60,7 @@
         {%- if section.settings.show_search -%}
           <div class="faqsearch">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.3-4.3"></path></svg>
-            <input type="search" data-faq-search placeholder="{{ section.settings.search_placeholder | default: 'Search questions' }}" aria-label="Search questions">
+            <input type="search" data-faq-search placeholder="{{ section.settings.search_placeholder | default: 'Search questions' | escape }}" aria-label="Search questions">
           </div>
         {%- endif -%}
       </section>

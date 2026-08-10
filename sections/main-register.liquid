@@ -120,10 +120,10 @@
               id="RegisterFullName"
               autocomplete="name"
               placeholder="Priya Mehta"
-              value="{{ full_name }}"
+              value="{{ full_name | escape }}"
             >
-            <input type="hidden" name="customer[first_name]" id="RegisterFirstName" value="{{ form.first_name }}">
-            <input type="hidden" name="customer[last_name]" id="RegisterLastName" value="{{ form.last_name }}">
+            <input type="hidden" name="customer[first_name]" id="RegisterFirstName" value="{{ form.first_name | escape }}">
+            <input type="hidden" name="customer[last_name]" id="RegisterLastName" value="{{ form.last_name | escape }}">
           </div>
           <div class="field">
             <label class="field-l" for="RegisterEmail">Email</label>
@@ -132,7 +132,7 @@
               type="email"
               name="customer[email]"
               id="RegisterEmail"
-              value="{{ form.email }}"
+              value="{{ form.email | escape }}"
               spellcheck="false"
               autocapitalize="off"
               autocomplete="email"

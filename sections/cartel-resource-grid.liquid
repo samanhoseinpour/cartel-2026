@@ -209,11 +209,17 @@
             {%- endif -%}
             <input type="hidden" name="contact[tags]" value="newsletter">
             <div class="fr-newsform{{ news_hide }}" data-cl-form-fields="{{ news_form_id }}">
-              <input class="fr-nf-input" type="email" name="contact[email]" placeholder="{{ section.settings.news_placeholder }}" autocomplete="email" required aria-label="Email address">
+              <input class="fr-nf-input" type="email" name="contact[email]" placeholder="{{ section.settings.news_placeholder | escape }}" autocomplete="email" required aria-label="Email address">
               <button class="fr-nf-btn" type="submit">{{ section.settings.news_btn_label }}</button>
             </div>
             {%- if form.errors -%}
-              <div class="fr-news-fine" data-cl-form-msg="{{ news_form_id }}">{{ form.errors.messages['email'] }}</div>
+              {%- comment -%}
+                Same as cartel-email.liquid: the guard is any-error, the message
+                was email-only, so a form-level error painted an empty box.
+              {%- endcomment -%}
+              <div class="fr-news-fine" data-cl-form-msg="{{ news_form_id }}">
+                {{- form.errors.messages['email'] | default: 'Please enter a valid email address.' -}}
+              </div>
             {%- endif -%}
             {%- if section.settings.news_fine != blank -%}
               <div class="fr-news-fine{{ news_hide }}" data-cl-form-fields="{{ news_form_id }}">

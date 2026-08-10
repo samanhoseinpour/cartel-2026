@@ -15,7 +15,21 @@
     {%- if section.blocks.size > 1 -%}
       <div class="ba-chips">
         {%- for block in section.blocks -%}
-          <button class="ba-chip{% if forloop.first %} on{% endif %}" type="button" data-ba-chip="{{ forloop.index0 }}">
+          {%- comment -%}
+            aria-pressed/aria-controls + inert on the hidden pairs (2026-08-10):
+            only a CSS class marked the visible pair, so all four pairs' images
+            and Before/After tags stayed in the accessibility tree at once and
+            the chips announced no state. cartel-hero.liquid:41 and
+            cartel-spotlight.liquid:32 already do this; the sibling chip UIs in
+            cartel-faq-list and cartel-resource-grid already set aria-pressed.
+          {%- endcomment -%}
+          <button
+            class="ba-chip{% if forloop.first %} on{% endif %}"
+            type="button"
+            data-ba-chip="{{ forloop.index0 }}"
+            aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}"
+            aria-controls="{{ section.id }}-ba-pair-{{ forloop.index0 }}"
+          >
             {{- block.settings.label -}}
           </button>
         {%- endfor -%}
@@ -23,7 +37,13 @@
     {%- endif -%}
     <div class="ba-cmp">
       {%- for block in section.blocks -%}
-        <div class="ba-pair{% if forloop.first %} on{% endif %}" data-ba-pair="{{ forloop.index0 }}" {{ block.shopify_attributes }}>
+        <div
+          class="ba-pair{% if forloop.first %} on{% endif %}"
+          id="{{ section.id }}-ba-pair-{{ forloop.index0 }}"
+          data-ba-pair="{{ forloop.index0 }}"
+          {% unless forloop.first %}inert aria-hidden="true"{% endunless %}
+          {{ block.shopify_attributes }}
+        >
           <div class="ba-layer">
             {%- if block.settings.after != blank -%}
               {{ block.settings.after | image_url: width: 1600 | image_tag: widths: '600,900,1200,1600', loading: 'lazy', alt: 'After' }}

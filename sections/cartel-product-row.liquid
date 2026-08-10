@@ -9,54 +9,67 @@
   if section.settings.card_style == 'kit'
     assign is_kit = true
   endif
+
+  # Fix 2026-08-10. The placeholder arm below exists so the row still has shape
+  # in the theme editor before a collection is picked. On the storefront it was
+  # rendering four fake cards priced $00.00, each an <a href="" aria-label="">,
+  # because templates/index.json's "Kits & sets" row points at a collection that
+  # is currently empty. Placeholders are an editor affordance, so keep them
+  # there and drop the whole section on the storefront instead.
+  assign has_products = false
+  if coll.products.size > 0
+    assign has_products = true
+  endif
 -%}
-<script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
-<cl-carousel class="cl">
-  <section class="sec" style="--cl-pt:{{ section.settings.pad_top }}px;--cl-pb:{{ section.settings.pad_bottom }}px">
-    <div class="wrap sec-head">
-      <div class="sh-l">
-        {%- if section.settings.kicker != blank -%}
-          <span class="kick">{{ section.settings.kicker }}</span>
-        {%- endif -%}
-        {%- if section.settings.title != blank -%}<h2 class="stitle">{{ section.settings.title }}</h2>{%- endif -%}
-      </div>
-      {%- if section.settings.view_all_label != blank -%}
-        <a class="viewlink deskonly" href="{{ section.settings.view_all_link | default: coll.url | default: '/collections/all' }}">
-          {{- section.settings.view_all_label -}}
-          <svg class="ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
-        </a>
-      {%- else -%}
-        <div class="caro-nav deskonly">
-          <button class="caro-btn" type="button" data-caro-prev aria-label="Previous">
-            <svg class="ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg>
-          </button>
-          <button class="caro-btn" type="button" data-caro-next aria-label="Next">
-            <svg class="ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg>
-          </button>
+{%- if has_products or request.design_mode -%}
+  <script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
+  <cl-carousel class="cl">
+    <section class="sec" style="--cl-pt:{{ section.settings.pad_top }}px;--cl-pb:{{ section.settings.pad_bottom }}px">
+      <div class="wrap sec-head">
+        <div class="sh-l">
+          {%- if section.settings.kicker != blank -%}
+            <span class="kick">{{ section.settings.kicker }}</span>
+          {%- endif -%}
+          {%- if section.settings.title != blank -%}<h2 class="stitle">{{ section.settings.title }}</h2>{%- endif -%}
         </div>
-      {%- endif -%}
-    </div>
-    <div class="carousel{% if is_kit %} c-kits{% endif %}">
-      {%- if coll.products.size > 0 -%}
-        {%- for product in coll.products limit: limit -%}
-          {%- if is_kit -%}
-            {%- render 'cartel-card-kit', card_product: product -%}
-          {%- else -%}
-            {%- render 'cartel-card', card_product: product -%}
-          {%- endif -%}
-        {%- endfor -%}
-      {%- else -%}
-        {%- for i in (1..4) -%}
-          {%- if is_kit -%}
-            {%- render 'cartel-card-kit' -%}
-          {%- else -%}
-            {%- render 'cartel-card' -%}
-          {%- endif -%}
-        {%- endfor -%}
-      {%- endif -%}
-    </div>
-  </section>
-</cl-carousel>
+        {%- if section.settings.view_all_label != blank -%}
+          <a class="viewlink deskonly" href="{{ section.settings.view_all_link | default: coll.url | default: '/collections/all' }}">
+            {{- section.settings.view_all_label -}}
+            <svg class="ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+          </a>
+        {%- else -%}
+          <div class="caro-nav deskonly">
+            <button class="caro-btn" type="button" data-caro-prev aria-label="Previous">
+              <svg class="ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg>
+            </button>
+            <button class="caro-btn" type="button" data-caro-next aria-label="Next">
+              <svg class="ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg>
+            </button>
+          </div>
+        {%- endif -%}
+      </div>
+      <div class="carousel{% if is_kit %} c-kits{% endif %}">
+        {%- if has_products -%}
+          {%- for product in coll.products limit: limit -%}
+            {%- if is_kit -%}
+              {%- render 'cartel-card-kit', card_product: product -%}
+            {%- else -%}
+              {%- render 'cartel-card', card_product: product -%}
+            {%- endif -%}
+          {%- endfor -%}
+        {%- else -%}
+          {%- for i in (1..4) -%}
+            {%- if is_kit -%}
+              {%- render 'cartel-card-kit' -%}
+            {%- else -%}
+              {%- render 'cartel-card' -%}
+            {%- endif -%}
+          {%- endfor -%}
+        {%- endif -%}
+      </div>
+    </section>
+  </cl-carousel>
+{%- endif -%}
 
 {% schema %}
 {

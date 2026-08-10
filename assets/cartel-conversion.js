@@ -21,10 +21,21 @@
 (() => {
   'use strict';
 
-  const states = document.querySelectorAll('[data-cl-form-ok], [data-cl-form-msg]');
+  const states = document.querySelectorAll('[data-cl-form-ok], [data-cl-form-msg], [data-cl-form-email]');
   Array.prototype.forEach.call(states, (el) => {
-    const id = el.getAttribute('data-cl-form-ok') || el.getAttribute('data-cl-form-msg');
+    const id =
+      el.getAttribute('data-cl-form-ok') ||
+      el.getAttribute('data-cl-form-msg') ||
+      el.getAttribute('data-cl-form-email');
     if (!id || '#' + id === window.location.hash) return; // this one really did post
+    /* {{ form.email }} echoes the rejected address into EVERY customer form on
+       the page, not just the one that posted — so a typo in the footer showed up
+       prefilled in the popup and both journal bands. Same signal, same fix:
+       blank the field unless this form is the one the fragment points at. */
+    if (el.hasAttribute('data-cl-form-email')) {
+      el.value = '';
+      return;
+    }
     el.remove();
     if (!el.hasAttribute('data-cl-form-ok')) return; // a message, not a replaced form
     const fields = document.querySelectorAll('[data-cl-form-fields="' + id + '"]');

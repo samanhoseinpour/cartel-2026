@@ -59,33 +59,33 @@
                 <div class="frow">
                   <div class="field">
                     <label class="field-l" for="AddressFirstNameNew">First name</label>
-                    <input class="inp" type="text" id="AddressFirstNameNew" name="address[first_name]" value="{{ form.first_name }}" autocomplete="given-name">
+                    <input class="inp" type="text" id="AddressFirstNameNew" name="address[first_name]" value="{{ form.first_name | escape }}" autocomplete="given-name">
                   </div>
                   <div class="field">
                     <label class="field-l" for="AddressLastNameNew">Last name</label>
-                    <input class="inp" type="text" id="AddressLastNameNew" name="address[last_name]" value="{{ form.last_name }}" autocomplete="family-name">
+                    <input class="inp" type="text" id="AddressLastNameNew" name="address[last_name]" value="{{ form.last_name | escape }}" autocomplete="family-name">
                   </div>
                 </div>
                 <div class="field">
                   <label class="field-l" for="AddressCompanyNew">Company / studio (optional)</label>
-                  <input class="inp" type="text" id="AddressCompanyNew" name="address[company]" value="{{ form.company }}" autocomplete="organization">
+                  <input class="inp" type="text" id="AddressCompanyNew" name="address[company]" value="{{ form.company | escape }}" autocomplete="organization">
                 </div>
                 <div class="field">
                   <label class="field-l" for="AddressAddress1New">Address</label>
-                  <input class="inp" type="text" id="AddressAddress1New" name="address[address1]" value="{{ form.address1 }}" autocomplete="address-line1">
+                  <input class="inp" type="text" id="AddressAddress1New" name="address[address1]" value="{{ form.address1 | escape }}" autocomplete="address-line1">
                 </div>
                 <div class="field">
                   <label class="field-l" for="AddressAddress2New">Apartment, suite, etc. (optional)</label>
-                  <input class="inp" type="text" id="AddressAddress2New" name="address[address2]" value="{{ form.address2 }}" autocomplete="address-line2">
+                  <input class="inp" type="text" id="AddressAddress2New" name="address[address2]" value="{{ form.address2 | escape }}" autocomplete="address-line2">
                 </div>
                 <div class="frow">
                   <div class="field">
                     <label class="field-l" for="AddressCityNew">City</label>
-                    <input class="inp" type="text" id="AddressCityNew" name="address[city]" value="{{ form.city }}" autocomplete="address-level2">
+                    <input class="inp" type="text" id="AddressCityNew" name="address[city]" value="{{ form.city | escape }}" autocomplete="address-level2">
                   </div>
                   <div class="field">
                     <label class="field-l" for="AddressZipNew">Postal code</label>
-                    <input class="inp" type="text" id="AddressZipNew" name="address[zip]" value="{{ form.zip }}" autocapitalize="characters" autocomplete="postal-code">
+                    <input class="inp" type="text" id="AddressZipNew" name="address[zip]" value="{{ form.zip | escape }}" autocapitalize="characters" autocomplete="postal-code">
                   </div>
                 </div>
                 <div class="field">
@@ -106,7 +106,7 @@
                 </div>
                 <div class="field">
                   <label class="field-l" for="AddressPhoneNew">Phone (optional)</label>
-                  <input class="inp" type="tel" id="AddressPhoneNew" name="address[phone]" value="{{ form.phone }}" autocomplete="tel">
+                  <input class="inp" type="tel" id="AddressPhoneNew" name="address[phone]" value="{{ form.phone | escape }}" autocomplete="tel">
                 </div>
                 <label class="checkrow">
                   {{ form.set_as_default_checkbox }}
@@ -165,33 +165,33 @@
                         <div class="frow">
                           <div class="field">
                             <label class="field-l" for="AddressFirstName_{{ form.id }}">First name</label>
-                            <input class="inp" type="text" id="AddressFirstName_{{ form.id }}" name="address[first_name]" value="{{ form.first_name }}" autocomplete="given-name">
+                            <input class="inp" type="text" id="AddressFirstName_{{ form.id }}" name="address[first_name]" value="{{ form.first_name | escape }}" autocomplete="given-name">
                           </div>
                           <div class="field">
                             <label class="field-l" for="AddressLastName_{{ form.id }}">Last name</label>
-                            <input class="inp" type="text" id="AddressLastName_{{ form.id }}" name="address[last_name]" value="{{ form.last_name }}" autocomplete="family-name">
+                            <input class="inp" type="text" id="AddressLastName_{{ form.id }}" name="address[last_name]" value="{{ form.last_name | escape }}" autocomplete="family-name">
                           </div>
                         </div>
                         <div class="field">
                           <label class="field-l" for="AddressCompany_{{ form.id }}">Company / studio (optional)</label>
-                          <input class="inp" type="text" id="AddressCompany_{{ form.id }}" name="address[company]" value="{{ form.company }}" autocomplete="organization">
+                          <input class="inp" type="text" id="AddressCompany_{{ form.id }}" name="address[company]" value="{{ form.company | escape }}" autocomplete="organization">
                         </div>
                         <div class="field">
                           <label class="field-l" for="AddressAddress1_{{ form.id }}">Address</label>
-                          <input class="inp" type="text" id="AddressAddress1_{{ form.id }}" name="address[address1]" value="{{ form.address1 }}" autocomplete="address-line1">
+                          <input class="inp" type="text" id="AddressAddress1_{{ form.id }}" name="address[address1]" value="{{ form.address1 | escape }}" autocomplete="address-line1">
                         </div>
                         <div class="field">
                           <label class="field-l" for="AddressAddress2_{{ form.id }}">Apartment, suite, etc. (optional)</label>
-                          <input class="inp" type="text" id="AddressAddress2_{{ form.id }}" name="address[address2]" value="{{ form.address2 }}" autocomplete="address-line2">
+                          <input class="inp" type="text" id="AddressAddress2_{{ form.id }}" name="address[address2]" value="{{ form.address2 | escape }}" autocomplete="address-line2">
                         </div>
                         <div class="frow">
                           <div class="field">
                             <label class="field-l" for="AddressCity_{{ form.id }}">City</label>
-                            <input class="inp" type="text" id="AddressCity_{{ form.id }}" name="address[city]" value="{{ form.city }}" autocomplete="address-level2">
+                            <input class="inp" type="text" id="AddressCity_{{ form.id }}" name="address[city]" value="{{ form.city | escape }}" autocomplete="address-level2">
                           </div>
                           <div class="field">
                             <label class="field-l" for="AddressZip_{{ form.id }}">Postal code</label>
-                            <input class="inp" type="text" id="AddressZip_{{ form.id }}" name="address[zip]" value="{{ form.zip }}" autocapitalize="characters" autocomplete="postal-code">
+                            <input class="inp" type="text" id="AddressZip_{{ form.id }}" name="address[zip]" value="{{ form.zip | escape }}" autocapitalize="characters" autocomplete="postal-code">
                           </div>
                         </div>
                         <div class="field">
@@ -220,7 +220,7 @@
                         </div>
                         <div class="field">
                           <label class="field-l" for="AddressPhone_{{ form.id }}">Phone (optional)</label>
-                          <input class="inp" type="tel" id="AddressPhone_{{ form.id }}" name="address[phone]" value="{{ form.phone }}" autocomplete="tel">
+                          <input class="inp" type="tel" id="AddressPhone_{{ form.id }}" name="address[phone]" value="{{ form.phone | escape }}" autocomplete="tel">
                         </div>
                         <label class="checkrow">
                           {{ form.set_as_default_checkbox }}

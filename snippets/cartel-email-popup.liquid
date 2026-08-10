@@ -20,9 +20,27 @@
           <span class="pop-monogram-sub">Cartel Lash Supply</span>
         </div>
       </div>
+      {%- comment -%}
+        Fix 2026-08-10. This used to render the success arm OR the form arm off
+        form.posted_successfully?, which is scoped to the request's form_type and
+        not to a form id — so a failed footer signup painted this popup's error
+        and prefilled the rejected address, and a successful one replaced the
+        whole popup with "You're in." before the visitor had typed anything.
+        Both halves now render (the form half hidden when a post happened), each
+        tagged with the form id, exactly like the newsletter bands in
+        main-article / main-blog / cartel-email; cartel-conversion.js keeps the
+        half whose id matches the redirect fragment. With JS off this degrades to
+        the previous behaviour.
+      {%- endcomment -%}
+      {%- liquid
+        assign pop_hide = ''
+        if form.posted_successfully?
+          assign pop_hide = ' hidden'
+        endif
+      -%}
       {%- form 'customer', id: 'cl-popup-form', class: 'pop-b' -%}
         {%- if form.posted_successfully? -%}
-          <div class="pop-done-wrap" data-popup-posted>
+          <div class="pop-done-wrap" data-popup-posted data-cl-form-ok="cl-popup-form">
             <div class="pop-done-ic">
               <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>
             </div>
@@ -30,7 +48,8 @@
             <p class="pop-p">Your welcome code is on its way to your inbox. Welcome to the Cartel.</p>
             <button class="btn btn-fill" type="button" data-popup-close>Start shopping</button>
           </div>
-        {%- else -%}
+        {%- endif -%}
+        <div class="pop-offer{{ pop_hide }}" data-cl-form-fields="cl-popup-form">
           <span class="kick">First order treat</span>
           <h2 class="pop-h">Take 10% off your first order.</h2>
           <p class="pop-p">Join the Cartel list for pro tips, restock alerts and early access to drops.</p>
@@ -41,6 +60,7 @@
               type="email"
               name="contact[email]"
               value="{{ form.email }}"
+              data-cl-form-email="cl-popup-form"
               required
               placeholder="Your email address"
               aria-label="Email address"
@@ -51,10 +71,12 @@
             <button class="btn btn-fill w100" type="submit">Claim my 10%</button>
           </div>
           {%- if form.errors -%}
-            <div class="pop-msg-err" role="alert" data-popup-error>Hmm, that email doesn't look right. Try again?</div>
+            <div class="pop-msg-err" role="alert" data-popup-error data-cl-form-msg="cl-popup-form">
+              Hmm, that email doesn't look right. Try again?
+            </div>
           {%- endif -%}
           <button class="pop-skip" type="button" data-popup-close>No thanks, I'll pay full price</button>
-        {%- endif -%}
+        </div>
       {%- endform -%}
     </div>
   </div>

@@ -565,8 +565,14 @@
                         <span aria-hidden="true">
                           {%- comment -%} cl_rating, not the raw metafield: a structured rating prints as an object {%- endcomment -%}
                           <b>{{ cl_rating }}</b>
+                          {%- comment -%}
+                            .value on the comparison: without it this tests a
+                            metafield OBJECT against the integer 1, which is
+                            never equal, so a product with one review read
+                            "1 reviews". Same rule as article-card.liquid:53.
+                          {%- endcomment -%}
                           &middot; {{ product.metafields.reviews.rating_count }} review
-                          {%- if product.metafields.reviews.rating_count != 1 -%}s{%- endif -%}
+                          {%- if product.metafields.reviews.rating_count.value != 1 -%}s{%- endif -%}
                         </span>
                         <span class="visually-hidden">
                           {{- product.metafields.reviews.rating_count }}
@@ -928,7 +934,7 @@
         <modal-dialog id="PopupModal-{{ block.id }}" class="product-popup-modal" {{ block.shopify_attributes }}>
           <div
             role="dialog"
-            aria-label="{{ block.settings.text }}"
+            aria-label="{{ block.settings.text | escape }}"
             aria-modal="true"
             class="product-popup-modal__content"
             tabindex="-1"

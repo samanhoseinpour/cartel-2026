@@ -27,9 +27,17 @@
 
   assign initials = ''
   assign author_words = article.author | strip | split: ' '
-  for w in author_words limit: 2
+  # `split: ' '` on a name with a double space yields an empty token, so
+  # "Joan  Wong" produced the avatar "J". Skip blanks and stop at two.
+  for w in author_words
+    if w == blank
+      continue
+    endif
     assign letter = w | slice: 0, 1 | upcase
     assign initials = initials | append: letter
+    if initials.size >= 2
+      break
+    endif
   endfor
   if initials == blank
     assign initials = 'CL'

@@ -146,7 +146,12 @@
         --font-body-scale: {{ settings.body_scale | divided_by: 100.0 }};
         --font-heading-scale: {{ settings.heading_scale | times: 1.0 | divided_by: settings.body_scale }};
 
-        --media-padding: {{ settings.media_padding }}px;
+        {%- comment -%}
+          --media-padding removed 2026-08-10: `media_padding` is defined in
+          neither settings_schema.json nor settings_data.json, so this emitted
+          the invalid declaration `--media-padding: px;` into the critical inline
+          CSS on every page render. Nothing in assets/*.css reads the variable.
+        {%- endcomment -%}
         --media-border-opacity: {{ settings.media_border_opacity | divided_by: 100.0 }};
         --media-border-width: {{ settings.media_border_thickness }}px;
         --media-radius: {{ settings.media_radius }}px;
@@ -338,7 +343,14 @@
       {%- when 'customers/login', 'customers/register', 'customers/account', 'customers/addresses', 'customers/order', 'customers/reset_password', 'customers/activate_account' -%}
         {{ 'cartel-account.css' | asset_url | stylesheet_tag }}
     {%- endcase -%}
+    {%- comment -%}
+      Deferred with media="print" because most pages never show a cart line —
+      but cart_type is "drawer", so the drawer's .cart-item markup ships on
+      EVERY page, and /cart is nothing but cart lines. Without the noscript
+      fallback the line items stayed unstyled for the whole no-JS session.
+    {%- endcomment -%}
     <link rel="stylesheet" href="{{ 'component-cart-items.css' | asset_url }}" media="print" onload="this.media='all'">
+    <noscript>{{ 'component-cart-items.css' | asset_url | stylesheet_tag }}</noscript>
 
     {%- if settings.cart_type == 'drawer' -%}
       {{ 'component-cart-drawer.css' | asset_url | stylesheet_tag }}

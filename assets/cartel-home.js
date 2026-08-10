@@ -23,9 +23,7 @@
       });
       if (this.playBtn) {
         this.playBtn.addEventListener('click', function () {
-          self.paused = !self.paused;
-          self.syncPlay();
-          self.activate(self.i);
+          self.toggle();
         });
       }
       this.slides.forEach(function (s) {
@@ -63,10 +61,50 @@
       var dot = this.dots[this.i];
       var f = dot && dot.querySelector('.hero-fill');
       if (f && !RM) { f.style.animationDuration = d / 1000 + 's'; }
+      this.schedule(d + 6000);
+    }
+    /* Single owner of the advance timer. Remembers how long is left so toggle()
+       can stop and restart the countdown instead of starting a fresh one. */
+    schedule(ms) {
       clearTimeout(this.t);
-      if (!this.paused) {
-        var self = this;
-        this.t = setTimeout(function () { self.next(); }, d + 6000);
+      this.remaining = ms;
+      this.startedAt = Date.now();
+      if (this.paused) return;
+      var self = this;
+      this.t = setTimeout(function () { self.next(); }, ms);
+    }
+    /* Fix 2026-08-10. The play/pause button used to call activate(this.i), which
+       is the CHANGE SLIDE path: it resets video.currentTime to 0 and restarts
+       the .hero-fill progress animation from scaleX(0). Pausing six seconds into
+       a clip therefore rewound it to frame 0 and emptied the progress bar, and
+       Play replayed from the start. Pause has to be its own path. */
+    toggle() {
+      var self = this;
+      this.paused = !this.paused;
+      this.syncPlay();
+
+      var slide = this.slides[this.i];
+      var v = slide && slide.querySelector('video');
+      if (v) {
+        if (this.paused) {
+          v.pause();
+        } else {
+          var p = v.play();
+          if (p && p.catch) p.catch(function () {});
+        }
+      }
+
+      var dot = this.dots[this.i];
+      var f = dot && dot.querySelector('.hero-fill');
+      if (f && !RM) f.classList.toggle('pz', this.paused); // freeze, don't rewind
+
+      if (this.paused) {
+        clearTimeout(this.t);
+        var spent = Date.now() - (this.startedAt || Date.now());
+        this.remaining = Math.max(0, (this.remaining || 0) - spent);
+      } else {
+        this.startedAt = Date.now();
+        this.t = setTimeout(function () { self.next(); }, Math.max(250, this.remaining || 0));
       }
     }
     activate(i) {
@@ -101,10 +139,7 @@
           if (self.paused) f.classList.add('pz');
         }
       });
-      clearTimeout(this.t);
-      if (!this.paused) {
-        this.t = setTimeout(function () { self.next(); }, hasVid ? d + 6000 : d);
-      }
+      this.schedule(hasVid ? d + 6000 : d);
     }
     next() { if (this.slides.length) this.activate((this.i + 1) % this.slides.length); }
   }
@@ -125,7 +160,14 @@
       var row = this.row;
       if (!row) return;
       var first = row.firstElementChild;
-      var step = first ? first.getBoundingClientRect().width + 20 : 300;
+      /* CLReels inherits this method, and the two rows this class drives do not
+         share a gap — .carousel is 20px, .reelrow 16px (cartel-home.css:103 and
+         :171). The hardcoded 20 over-scrolled the reels row by 8px a click and
+         the drift accumulated, so read the real value. */
+      var cs = getComputedStyle(row);
+      var gap = parseFloat(cs.columnGap || cs.gap);
+      if (!isFinite(gap)) gap = 20;
+      var step = first ? first.getBoundingClientRect().width + gap : 300;
       var max = row.scrollWidth - row.clientWidth;
       row.scrollLeft = Math.max(0, Math.min(max, row.scrollLeft + dir * step * 2));
     }
@@ -318,8 +360,17 @@
       }
       this.chips.forEach(function (c, n) {
         c.addEventListener('click', function () {
-          self.chips.forEach(function (x, i) { x.classList.toggle('on', i === n); });
-          self.pairs.forEach(function (p, i) { p.classList.toggle('on', i === n); });
+          self.chips.forEach(function (x, i) {
+            x.classList.toggle('on', i === n);
+            x.setAttribute('aria-pressed', i === n ? 'true' : 'false');
+          });
+          self.pairs.forEach(function (p, i) {
+            p.classList.toggle('on', i === n);
+            /* the hidden pairs are opacity-only, so keep them out of the
+               accessibility tree and the tab order — same as CLHero.activate */
+            if ('inert' in p) p.inert = i !== n;
+            p.setAttribute('aria-hidden', i === n ? 'false' : 'true');
+          });
         });
       });
       this.set(50);

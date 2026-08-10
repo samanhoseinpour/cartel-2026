@@ -14,16 +14,26 @@
     return true;
   };
 
+  /* The FAQ list ([data-faq], sections/cartel-faq-list.liquid) and the search
+     box ([data-faq-search], sections/cartel-page-hero.liquid) are DIFFERENT
+     sections, so the theme editor can re-render either one alone. Each has to
+     be claimed independently — see the search block below — and the surviving
+     input has to reach whatever list is current, hence this module-scope hop
+     rather than a closure over one init() run. */
+  var faqSetQuery = function () {};
+
   function init() {
     /* ---------- FAQ: live search + category rail ---------- */
     var faqRoot = document.querySelector('[data-faq]');
     if (faqRoot && claim(faqRoot)) {
-      var faqSearch = document.querySelector('[data-faq-search]');
       var faqNavBtns = Array.prototype.slice.call(faqRoot.querySelectorAll('[data-faq-nav]'));
       var faqGroups = Array.prototype.slice.call(faqRoot.querySelectorAll('[data-faq-group]'));
       var faqEmpty = faqRoot.querySelector('[data-faq-empty]');
       var faqCat = '__all__';
-      var faqQuery = '';
+      /* Seed from the live box: on a section re-render the input keeps whatever
+         the merchant had typed, so a fresh index must start filtered to match. */
+      var faqBox = document.querySelector('[data-faq-search]');
+      var faqQuery = faqBox ? faqBox.value.trim().toLowerCase() : '';
 
       /* Indexed ONCE. The old applyFaq re-ran querySelectorAll per group and then
          serialized every item's subtree via textContent and allocated a fresh
@@ -70,18 +80,28 @@
         });
       });
 
-      if (faqSearch) {
-        /* Debounced: a filter pass per keystroke is wasted work while someone is
-           mid-word, and 120ms is below the threshold where the list feels laggy. */
-        var faqTimer = 0;
-        faqSearch.addEventListener('input', function () {
-          clearTimeout(faqTimer);
-          faqTimer = setTimeout(function () {
-            faqQuery = faqSearch.value.trim().toLowerCase();
-            applyFaq();
-          }, 120);
-        });
-      }
+      faqSetQuery = function (q) {
+        faqQuery = q;
+        applyFaq();
+      };
+      applyFaq();
+    }
+
+    /* Claimed on the input itself, not on the FAQ list, and bound outside that
+       block: the two hooks belong to different sections. Guarding the input with
+       the list's claim meant editing the hero killed search until a reload, and
+       editing the list stacked a second listener on the surviving input. */
+    var faqSearch = document.querySelector('[data-faq-search]');
+    if (faqSearch && claim(faqSearch)) {
+      /* Debounced: a filter pass per keystroke is wasted work while someone is
+         mid-word, and 120ms is below the threshold where the list feels laggy. */
+      var faqTimer = 0;
+      faqSearch.addEventListener('input', function () {
+        clearTimeout(faqTimer);
+        faqTimer = setTimeout(function () {
+          faqSetQuery(faqSearch.value.trim().toLowerCase());
+        }, 120);
+      });
     }
 
     /* ---------- Resources: category chips + live count ---------- */
@@ -113,7 +133,15 @@
     var polBody = document.querySelector('[data-pol-body]');
     if (polBody && claim(polBody)) {
       var isPageContent = polBody.getAttribute('data-pol-body') === 'content';
-      var headings = Array.prototype.slice.call(polBody.querySelectorAll('h2'));
+      /* Same guard as cartel-blog.js buildToc: an <h2> holding only an image or
+         a stray space is not a section. Filtering here (not at the link) also
+         keeps the .pol-sec numbering and the [data-pol-count] total honest, and
+         lets a blank heading fall into the preceding section's content sweep. */
+      var headings = Array.prototype.slice
+        .call(polBody.querySelectorAll('h2'))
+        .filter(function (h2) {
+          return h2.textContent.trim() !== '';
+        });
 
       headings.forEach(function (h2, i) {
         if (isPageContent) {

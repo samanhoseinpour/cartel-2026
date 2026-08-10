@@ -297,10 +297,23 @@
   document.addEventListener('keydown', (e) => {
     if (e.key !== 'Enter') return;
     const target = e.target instanceof Element ? e.target : null;
-    if (target && target.matches('[data-promo-input]')) {
+    if (!target) return;
+    if (target.matches('[data-promo-input]')) {
       e.preventDefault();
       applyPromo();
+      return;
     }
+    /* Dawn keeps #checkout in its own <form>; this theme renders the whole cart
+       page from main-cart-items, so #checkout (main-cart-items.liquid:414) is
+       the ONLY type="submit" inside form#cart and is therefore that form's
+       default button. Pressing Enter after editing a quantity performed an
+       implicit submission — the shopper was sent to checkout instead of the line
+       updating (and, with a promo code stored, straight through the interceptor
+       below). Swallow the implicit submit; <cart-items> listens on 'change'
+       (assets/cart.js:25), which Enter still fires, so the edit is applied. */
+    if (!target.closest('form#cart')) return;
+    if (target.closest('button, a, textarea')) return; // let real activations through
+    e.preventDefault();
   });
 
   /* promo → checkout URL (Shopify validates the code at checkout) */
@@ -309,6 +322,8 @@
     if (!form || form.id !== 'cart') return;
     const code = ssGet(PROMO_KEY);
     if (!code) return;
+    /* Only a real activation of #checkout reaches here now — the keydown handler
+       above stops implicit submission from ever naming it as the submitter. */
     const submitter = e.submitter;
     if (submitter && submitter.name === 'checkout') {
       e.preventDefault();
