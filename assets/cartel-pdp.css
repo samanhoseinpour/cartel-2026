@@ -295,6 +295,31 @@
 .cl .shaderow .swatch-input__label:hover{transform:scale(1.12)}
 .cl .shaderow .swatch-input__label .swatch{width:100%;height:100%;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--line);display:block}
 .cl .shaderow .swatch-input__input:checked + .swatch-input__label .swatch{box-shadow:0 0 0 2px var(--bord)}
+/* Two Dawn rules outlived the swatch restyle above (fix 2026-08-10). Both are
+   specificity TIES that Dawn wins on source order — component-*.css is emitted
+   in the body by main-product.liquid:20-22, after every cartel-*.css:
+     component-product-variant-picker.css:141 (0,3,0) ties line 294's (0,3,0)
+       and keeps margin:.7rem 1.2rem .2rem 0 -> swatches sat 21px apart
+       (9px gap + 12px margin) with a 7px/2px vertical stagger, not the 9px
+       grid the row was designed for. The + combinator makes this (0,4,0).
+     component-swatch-input.css:22,28 (0,2,0) add an opaque outline on :checked
+       and :hover, which line 297's box-shadow ring never cleared -> the
+       selected swatch showed a 2px wine ring AND a 1px dark outline 2px
+       outside it; hovering any swatch added a 2px grey ring.
+   Neutralise with outline-COLOR, not `outline:none`. Dawn's base rule
+   (component-swatch-input.css:8-10) deliberately keeps a transparent solid
+   outline on every swatch so forced-colors mode can substitute a system
+   colour — the label also sets forced-color-adjust:none, and forced-colors
+   drops box-shadows, so `outline:none` here would leave High Contrast users
+   with no way to see which swatch is selected. Transparent keeps the shape.
+   These sit ABOVE the :focus-visible rule below on purpose: that rule is the
+   same (0,4,0), so it must come later to win for a checked+focused swatch.
+   --swatch-input--size is pinned to the rendered 30px so the unavailable
+   diagonal (component-swatch-input.css:73, sized size*1.414) matches; Dawn's
+   750px media query otherwise leaves it at 2.8rem against a 30px swatch. */
+.cl .shaderow .swatch-input__input + .swatch-input__label{margin:0;--swatch-input--size:30px}
+.cl .shaderow .swatch-input__input:checked + .swatch-input__label,
+.cl .shaderow .swatch-input__input + .swatch-input__label:hover{outline-color:transparent}
 .cl .shaderow .swatch-input__input:focus-visible + .swatch-input__label{outline:2px solid var(--plum)}
 .cl .shaderow .swatch-input__input.visually-disabled + .swatch-input__label{opacity:.45}
 

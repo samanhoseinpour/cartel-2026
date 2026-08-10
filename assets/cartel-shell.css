@@ -963,6 +963,20 @@
 .header__search .search-modal .search .field:focus-within {
   border-color: rgb(var(--cartel-plum));
 }
+/* Dawn draws its own input chrome on .field's pseudo-elements, which the
+   pill restyle above cannot reach: base.css:1622 paints a 1px
+   rgba(--color-foreground,.55) ring at --inputs-radius (40px) inset 1px, and
+   base.css:1649 thickens it to 2px on hover — a visible second border inside
+   the 1.5px pill. content:none is the only way to switch a pseudo off.
+   Safe for focus: the search input's focus ring is a box-shadow on the INPUT
+   (base.css:1661), never on this pseudo, and Dawn's CSS has no :focus-within
+   rule anywhere. The :before is already inert (inputs_shadow_opacity is 0 and
+   it sits at z-index:-1 behind the field's opaque white) — killed here too so
+   raising that setting in the editor can't reintroduce the problem. */
+.header__search .search-modal .search .field:after,
+.header__search .search-modal .search .field:before {
+  content: none;
+}
 /* leading magnifier (the form's decorative icon span added by the new
    header-search.liquid) */
 .header__search .search-modal .search-lead-icon {
@@ -994,6 +1008,22 @@
 .header__search .search-modal .search__input.field__input:focus-visible {
   box-shadow: none;
   outline: none;
+}
+/* The rule above drops Dawn's focus ring because the pill's :focus-within
+   border (above) is the design's focus affordance — 7.9:1 against the field,
+   which clears WCAG 2.4.7. But at (0,5,0) it also silently outranked
+   base.css:3130, where Dawn puts a `transparent solid 1px` outline behind a
+   forced-colors query specifically so Windows High Contrast Mode substitutes
+   a system colour. Forced colors also normalises border-color, so the
+   :focus-within border cannot stand in — HCM users had no focus indicator on
+   the search field at all. Restore Dawn's affordance for that mode only
+   (2026-08-10). */
+@media (forced-colors: active) {
+  .header__search .search-modal .search__input.field__input:focus,
+  .header__search .search-modal .search__input.field__input:focus-visible {
+    outline: transparent solid 2px;
+    outline-offset: 2px;
+  }
 }
 .header__search .search-modal .field__label {
   display: none;
