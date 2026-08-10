@@ -468,19 +468,23 @@
         </div>
         <div class="rec-grid">
           {%- liquid
+            # The outer loop had no `limit:`, and each iteration ran a FULL nested
+            # scan of cart.items to decide whether to skip the product. If the
+            # shopper's cart happened to contain the first products of the
+            # collection, it kept going to Shopify's 50-item cap — a 15-line cart
+            # against a 50-product collection is 750 comparisons before four cards
+            # render. Hoisting the cart's product ids into one delimited string
+            # turns the per-product test into a single `contains`, and the limit
+            # bounds the fetch. Commas on both ends make it an exact-id match, so
+            # product 123 can't match inside 1234.
+            assign cart_pids = cart.items | map: 'product' | map: 'id' | join: ',' | prepend: ',' | append: ','
             assign rec_shown = 0
-            for rec_product in rec_coll.products
+            for rec_product in rec_coll.products limit: 12
               if rec_shown >= 4
                 break
               endif
-              assign rec_in_cart = false
-              for item in cart.items
-                if item.product.id == rec_product.id
-                  assign rec_in_cart = true
-                  break
-                endif
-              endfor
-              unless rec_in_cart
+              assign rec_id = rec_product.id | prepend: ',' | append: ','
+              unless cart_pids contains rec_id
                 assign rec_shown = rec_shown | plus: 1
                 render 'cartel-card', card_product: rec_product
               endunless
