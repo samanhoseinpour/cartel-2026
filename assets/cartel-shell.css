@@ -266,11 +266,17 @@
     font-weight: 500;
     letter-spacing: 0;
     color: rgb(var(--cartel-bord));
-    transition: background 0.15s ease;
+    transition: color 0.15s ease, transform 0.15s ease;
   }
+  /* Same hover language as the wide panel's links in §4 — plum + a 3px nudge,
+     no chip. A single-level menu renders its items with --level-2, the class
+     the wide panel uses for its non-interactive column headings, so this card
+     had inherited the heading treatment plus a greige pill of its own and was
+     the one place in the nav that highlighted with a background. */
   .header__inline-menu .mega-menu__list--condensed .mega-menu__link--level-2:hover {
-    background: rgb(var(--cartel-greige));
-    color: rgb(var(--cartel-bord));
+    background: none;
+    color: rgb(var(--cartel-plum));
+    transform: translateX(3px);
     text-decoration: none;
   }
 
@@ -283,9 +289,28 @@
   .header__inline-menu details[open]:hover > .header__menu-item {
     text-decoration: none;
   }
-  .header__inline-menu .mega-menu__list .mega-menu__link--level-2:hover {
+  /* Column headings in the WIDE panel stay put on hover — they label a column
+     first and are a link second. Scoped away from the condensed card above,
+     which shares the class but is a list of real destinations; unscoped, this
+     rule's later position undid that card's plum. */
+  .header__inline-menu .mega-menu__list:not(.mega-menu__list--condensed) .mega-menu__link--level-2:hover {
     color: rgb(var(--cartel-bord));
     text-decoration: none;
+  }
+
+  /* ===== 5b. Current route — bold, in the panel's hover colour =====
+     component-mega-menu.css:72 marks it with `text-decoration: underline`.
+     Nothing else in this nav underlines, so state is carried by weight and
+     colour instead. The doubled class outranks the per-tier colour rules
+     above (§4 level-3 links are 0-4-0) without relying on source order. */
+  .header__inline-menu .mega-menu__list .mega-menu__link--active.mega-menu__link--active {
+    color: rgb(var(--cartel-plum));
+    text-decoration: none;
+  }
+  /* Column headings already sit at 800; only the lighter tiers step up. */
+  .header__inline-menu .mega-menu__list > li > ul .mega-menu__link--active,
+  .header__inline-menu .mega-menu__list--condensed .mega-menu__link--active {
+    font-weight: 700;
   }
 }
 
