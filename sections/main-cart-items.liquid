@@ -224,6 +224,26 @@
                         {%- assign can_update_quantity = item.instructions.can_update_quantity
                           | default: true, allow_false: true
                         -%}
+                        {%- comment -%}
+                          Real stock ceiling for the stepper — see cart-drawer.liquid
+                          for the reasoning. quantity_rule.max is Shopify's B2B
+                          quantity rule, not inventory; only variants that track
+                          stock and refuse oversell get a cap, and the server check
+                          in cart.js remains the authority.
+                        {%- endcomment -%}
+                        {%- assign qty_cap = item.variant.quantity_rule.max -%}
+                        {%- if item.variant.inventory_management == 'shopify'
+                          and item.variant.inventory_policy == 'deny'
+                        -%}
+                          {%- assign stock_cap = item.variant.inventory_quantity -%}
+                          {%- comment -%} oversold lines report negative; a max below min is invalid {%- endcomment -%}
+                          {%- if stock_cap < 0 -%}
+                            {%- assign stock_cap = 0 -%}
+                          {%- endif -%}
+                          {%- if qty_cap == null or stock_cap < qty_cap -%}
+                            {%- assign qty_cap = stock_cap -%}
+                          {%- endif -%}
+                        {%- endif -%}
                         <quantity-input class="qty qty-lg">
                           <button class="qbtn quantity__button" name="minus" type="button" {% if can_update_quantity == false %}disabled{% endif %}>
                             <span class="visually-hidden">Decrease quantity for {{ item.product.title | escape }}</span>
@@ -240,8 +260,8 @@
                             data-cart-quantity="{{ cart | item_count_for_variant: item.variant.id }}"
                             min="0"
                             data-min="{{ item.variant.quantity_rule.min }}"
-                            {% if item.variant.quantity_rule.max != null %}
-                              max="{{ item.variant.quantity_rule.max }}"
+                            {% if qty_cap != null %}
+                              max="{{ qty_cap }}"
                             {% endif %}
                             step="{{ item.variant.quantity_rule.increment }}"
                             {% # theme-check-enable %}
