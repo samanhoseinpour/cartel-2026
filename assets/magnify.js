@@ -2,7 +2,11 @@
 function createOverlay(image) {
   const overlayImage = document.createElement('img');
   overlayImage.setAttribute('src', `${image.src}`);
-  overlay = document.createElement('div');
+  // `overlay = ...` with no declaration made this an implicit global: the last
+  // overlay created leaked onto window for the page lifetime, and moveWithHover
+  // read that global rather than its own caller's overlay — so with two
+  // zoom-enabled product sections on one page, hovering one moved the other's.
+  const overlay = document.createElement('div');
   prepareOverlay(overlay, overlayImage);
 
   image.style.opacity = '50%';
@@ -29,7 +33,9 @@ function toggleLoadingSpinner(image) {
   loadingSpinner.classList.toggle('hidden');
 }
 
-function moveWithHover(image, event, zoomRatio) {
+// `overlay` is now a parameter instead of the implicit global it used to read.
+function moveWithHover(image, event, zoomRatio, overlay) {
+  if (!overlay) return;
   // calculate mouse position
   const ratio = image.height / image.width;
   const container = event.target.getBoundingClientRect();
@@ -46,16 +52,33 @@ function moveWithHover(image, event, zoomRatio) {
 function magnify(image, zoomRatio) {
   const overlay = createOverlay(image);
   overlay.onclick = () => overlay.remove();
-  overlay.onmousemove = (event) => moveWithHover(image, event, zoomRatio);
-  overlay.onmouseleave = () => overlay.remove();
+  // rAF-coalesced: mousemove fires well above 60fps and each call does four
+  // layout reads plus two style writes, so unthrottled it was doing that work
+  // several times per rendered frame for no visible benefit.
+  let frame = 0;
+  let lastEvent = null;
+  overlay.onmousemove = (event) => {
+    lastEvent = event;
+    if (frame) return;
+    frame = requestAnimationFrame(() => {
+      frame = 0;
+      moveWithHover(image, lastEvent, zoomRatio, overlay);
+    });
+  };
+  overlay.onmouseleave = () => {
+    if (frame) cancelAnimationFrame(frame);
+    frame = 0;
+    overlay.remove();
+  };
+  return overlay;
 }
 
 function enableZoomOnHover(zoomRatio) {
   const images = document.querySelectorAll('.image-magnify-hover');
   images.forEach((image) => {
     image.onclick = (event) => {
-      magnify(image, zoomRatio);
-      moveWithHover(image, event, zoomRatio);
+      const overlay = magnify(image, zoomRatio);
+      moveWithHover(image, event, zoomRatio, overlay);
     };
   });
 }
