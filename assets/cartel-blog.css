@@ -307,22 +307,44 @@
 .cl .bl-news-formwrap{display:flex;flex-direction:column;gap:11px}
 .cl .bl-news-err{font-size:12.5px;font-weight:700;color:var(--bronze)}
 
-/* §4 Dawn's share-button snippet restyled as the round .bl-share-btn */
+/* §4 Dawn's share-button snippet restyled as the round .bl-share-btn
+   Fix 2026-08-10 (client: "the share button is not actually rounded"):
+   two base.css declarations survived this reskin because overriding
+   width/height does not reach them.
+   1. base.css:1413 .share-button__button{min-height:4.4rem} — min-height
+      beats height unconditionally, so the box was 40x44 and border-radius:50%
+      painted an ELLIPSE (20px/22px radii). Hence min-height:0 below.
+   2. base.css:1432 .share-button__button .icon-share{margin-right:1rem;
+      min-width:1.3rem} — icon-share.svg carries class="icon icon-share", so
+      a 17px svg + 10px margin overflowed the 17px .svg-wrapper; flex-shrink
+      pulled the svg to Dawn's 13px min-width floor, 5px left of centre.
+      margin:0 removes the overflow, which also makes the floor inert. */
 .cl .bl-art-by .bl-share{position:relative}
 .cl .bl-share share-button{display:inline-flex}
 .cl .bl-share details{position:relative}
-.cl .bl-share .share-button__button{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--bord);background:transparent;cursor:pointer;padding:0;font-size:0;line-height:0;transition:.18s}
+.cl .bl-share .share-button__button{width:40px;height:40px;min-height:0;border-radius:50%;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--bord);background:transparent;cursor:pointer;padding:0;font-size:0;line-height:0;transition:.18s}
 .cl .bl-share .share-button__button:hover{background:var(--bord);color:var(--cream);border-color:var(--bord)}
-.cl .bl-share .share-button__button .svg-wrapper,.cl .bl-share .share-button__button svg{width:17px;height:17px;display:inline-flex}
+.cl .bl-share .share-button__button .svg-wrapper,.cl .bl-share .share-button__button svg{width:17px;height:17px;margin:0;min-width:0;display:inline-flex}
 .cl .bl-share summary.share-button__button{list-style:none}
 .cl .bl-share summary.share-button__button::-webkit-details-marker{display:none}
-.cl .bl-share .share-button__fallback{position:absolute;top:calc(100% + 10px);left:50%;transform:translateX(-50%);z-index:40;width:min(340px,86vw);background:#fff;border:1px solid var(--line);border-radius:var(--r-sm);box-shadow:0 20px 48px rgba(74,18,36,.18);padding:12px;display:flex;gap:8px;align-items:center}
+.cl .bl-share .share-button__fallback{position:absolute;top:calc(100% + 10px);left:50%;transform:translateX(-50%);z-index:40;width:min(340px,86vw);min-width:0;background:#fff;border:1px solid var(--line);border-radius:var(--r-sm);box-shadow:0 20px 48px rgba(74,18,36,.18);padding:12px;display:flex;gap:8px;align-items:center}
 .cl .bl-share .share-button__fallback .field{display:flex;flex:1;min-width:0}
-.cl .bl-share .share-button__fallback .field__input{flex:1;min-width:0;border:1px solid var(--line);background:var(--cream);border-radius:100px;padding:10px 14px;font-size:12.5px;color:var(--ink);outline:none}
+.cl .bl-share .share-button__fallback .field__input{flex:1;min-width:0;border:1px solid var(--line);background:var(--cream);border-radius:100px;padding:10px 14px;font-size:12.5px;color:var(--ink)}
 .cl .bl-share .share-button__fallback .field__label{display:none}
 .cl .bl-share .share-button__fallback .share-button__close,.cl .bl-share .share-button__fallback .share-button__copy{flex:none;width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:transparent;color:var(--bord);display:flex;align-items:center;justify-content:center;cursor:pointer}
 .cl .bl-share .share-button__fallback .svg-wrapper{width:15px;height:15px;display:inline-flex}
 .cl .bl-share .share-button__message{font-size:12px;font-weight:700;color:var(--bronze-d);white-space:nowrap}
+/* §4b Dawn leftovers this reskin has to switch off explicitly (2026-08-10).
+   A class-based override cannot reach a pseudo-element, so base.css keeps
+   drawing the popover's own input chrome — a 1px rgba(fg,.55) ring at
+   --inputs-radius (40px, clamps to ~31px on this 62px card) at z-index:1,
+   over the 16px card above. content:none is the only way to stop it.
+   The second rule restores base.css:1501's close-replaces-copy behaviour:
+   that rule is (0,3,0) and line 323's display:flex is (0,4,0), so after
+   clicking Copy BOTH 36px circles were rendering. This is (0,5,0). */
+.cl .bl-share .share-button__fallback:after,
+.cl .bl-share .share-button__fallback:before{content:none}
+.cl .bl-share .share-button__close:not(.hidden) + .share-button__copy{display:none}
 
 /* §5 Journal teaser band (featured-blog section) */
 .cl .bl-tsr-head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:30px;flex-wrap:wrap}
