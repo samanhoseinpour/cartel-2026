@@ -247,11 +247,29 @@ body.cl-noscroll{overflow:hidden}
 /* Dawn pagination snippet restyled to the design's pill controls */
 .cl .pagination-wrapper{padding-top:48px}
 .cl .pagination__list{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px;list-style:none;margin:0;padding:0}
-.cl .pagination__item{display:inline-flex;align-items:center;justify-content:center;min-width:44px;height:44px;padding:0 15px;border:1.5px solid var(--line);border-radius:100px;font-size:13.5px;font-weight:700;color:var(--bord);background:transparent;text-decoration:none;transition:.15s}
+.cl .pagination__item{display:inline-flex;align-items:center;justify-content:center;min-width:44px;width:auto;height:44px;padding:0 15px;border:1.5px solid var(--line);border-radius:100px;font-size:13.5px;font-weight:700;color:var(--bord);background:transparent;text-decoration:none;transition:.15s}
 .cl a.pagination__item:hover{border-color:var(--bronze)}
 .cl .pagination__item--current{background:var(--bord);color:var(--cream);border-color:var(--bord)}
 .cl .pagination__item .svg-wrapper{display:inline-flex}
 .cl .pagination__item svg{width:14px;height:14px}
+/* The restyle above skipped the <li> that pagination.liquid puts between the
+   <ul> and the <a>, so three Dawn rules survived (fix 2026-08-10):
+     component-pagination.css:17 .pagination__list > li{flex:1 0 4.4rem;
+       max-width:4.4rem}  -> every pill clamped to 44px, so min-width/padding
+       above were inert and multi-digit pages crowded an 11px content box;
+     :21 li:not(:last-child){margin-right:1rem} -> stacked on the 8px gap,
+       giving 18px between pills but 8px before the last;
+     :46 .pagination__item--current::after / :hover::after -> a 20x1px
+       currentColor bar 8px above the pill's bottom edge (cream inside the
+       wine current pill, wine inside a hovered one).
+   SPECIFICITY IS THE WHOLE FIX HERE. component-pagination.css is emitted in
+   the BODY by pagination.liquid:14, i.e. after every cartel-*.css, so it wins
+   ties. `.cl .pagination__list > li` (0,2,1) ties Dawn's (0,2,1) and loses;
+   `.cl .pagination__item::after` (0,2,0) ties :hover::after (0,2,0) and loses.
+   The forms below are (0,3,1) and (0,3,0) and win outright. */
+.cl .pagination__list > li{flex:none;max-width:none}
+.cl .pagination__list > li:not(:last-child){margin-right:0}
+.cl .pagination__list .pagination__item::after{content:none}
 @media (max-width:760px){
   .cl .collhead-img{display:none}
   .cl .collhead-row.has-img{display:block}
