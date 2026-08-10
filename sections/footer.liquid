@@ -1,9 +1,23 @@
 {% comment %}theme-check-disable UndefinedObject{% endcomment %}
-{{ 'section-footer.css' | asset_url | stylesheet_tag }}
-{{ 'component-newsletter.css' | asset_url | stylesheet_tag }}
-{{ 'component-list-menu.css' | asset_url | stylesheet_tag }}
-{{ 'component-list-payment.css' | asset_url | stylesheet_tag }}
-{{ 'component-list-social.css' | asset_url | stylesheet_tag }}
+{%- comment -%}
+  These were five plain <link rel="stylesheet"> tags. `stylesheet_tag` emits
+  render-blocking CSS wherever it sits — including here, in the body — so ~12KB
+  of styling for content that is below the fold on every page was blocking paint
+  and delaying `load`. Same media="print" onload swap header.liquid:1-9 uses.
+
+  All five are kept rather than deduped against the header/announcement bar.
+  component-list-menu.css genuinely is a duplicate of header.liquid:1, but
+  component-list-social.css is NOT safely one: announcement-bar.liquid:17-19
+  loads it only when a social link is configured, and header-group.json:49 has
+  show_social:false, so the footer (which does render social-icons at :147/:292)
+  can't rely on it. A duplicate <link> to an already-cached URL costs ~nothing
+  now that neither copy blocks; a missing one costs an unstyled footer.
+{%- endcomment -%}
+<link rel="stylesheet" href="{{ 'section-footer.css' | asset_url }}" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="{{ 'component-newsletter.css' | asset_url }}" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="{{ 'component-list-menu.css' | asset_url }}" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="{{ 'component-list-payment.css' | asset_url }}" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="{{ 'component-list-social.css' | asset_url }}" media="print" onload="this.media='all'">
 
 {%- style -%}
   .footer {

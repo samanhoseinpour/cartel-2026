@@ -1,0 +1,72 @@
+/* ============================================================
+   Cartel Lash Supply — CART DRAWER SKIN
+   The design's .drawer / .dw-* / .ci components over Dawn's
+   component-cart-drawer.css mechanics. That file loads AFTER this
+   one, so the overrides here are deliberately over-specific.
+
+   Extracted from cartel-conversion.css, which loads on EVERY template.
+   settings.cart_type is "notification", so none of this could ever match
+   — it was ~6KB of render-blocking CSS per page skinning a drawer that
+   is never rendered. theme.liquid now loads it inside the existing
+   `{%- if settings.cart_type == 'drawer' -%}` block, next to Dawn's own
+   component-cart-drawer.css, so it arrives exactly when the markup does.
+
+   SCOPE: drawer shell + .dw-* + .qty/.qbtn/.qn only. The .ci / .ci-* cart
+   LINE-ITEM rules deliberately stayed in cartel-conversion.css: cart_type is
+   "notification", and snippets/cart-notification.liquid renders
+   <div id="cart-notification-product" class="ci"> on every add-to-bag, so those
+   rules must load on every page. .qty* is safe here — only the cart page (which
+   has its own copies in cartel-cart.css) and the drawer render that markup.
+   ============================================================ */
+
+/* ---- drawer shell (mechanics stay Dawn's: fixed, visibility, translate) ---- */
+.drawer.drawer{background-color:rgba(40,8,18,.5);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+.drawer .drawer__inner.dw{width:min(440px,94vw);max-width:none;padding:0;border:0;background:var(--cream);border-radius:var(--r-lg) 0 0 var(--r-lg);overflow:hidden}
+cart-drawer.is-empty .drawer__inner.dw{display:flex;flex-direction:column;align-items:stretch;padding:0}
+.drawer .drawer__inner.dw .drawer__inner-empty{display:none}
+cart-drawer.is-empty .drawer__inner.dw .drawer__inner-empty{display:flex;flex-direction:column;flex:1;min-height:0;height:auto;padding:0;overflow-y:auto}
+cart-drawer.is-empty .drawer__inner.dw .dw-ship,
+cart-drawer.is-empty .drawer__inner.dw cart-drawer-items,
+cart-drawer.is-empty .drawer__inner.dw .cart-drawer__footer{display:none}
+.drawer .drawer__inner.dw cart-drawer-items{display:flex;flex-direction:column;flex:1;min-height:0}
+
+/* ---- drawer head ---- */
+.cl .dw-head{display:flex;align-items:center;justify-content:space-between;padding:24px 26px;border-bottom:1px solid var(--line)}
+.cl .dw-title{font-size:24px;color:var(--bord);font-weight:800;letter-spacing:-.02em;margin:0}
+.cl .dw-head .drawer__close.drawer__close{position:static;top:auto;right:auto;min-width:42px;min-height:42px;box-shadow:none}
+
+/* ---- free-shipping strip ---- */
+.cl .dw-ship{padding:16px 26px;background:var(--greige)}
+.cl .dw-ship-t{font-size:13px;font-weight:600;color:var(--bord);margin-bottom:9px}
+.cl .dw-ship-t b{color:var(--bronze-d)}
+.cl .dw-bar{height:7px;background:rgba(74,18,36,.13);border-radius:10px;overflow:hidden}
+/* display:block beats base.css div:empty{display:none} — the fill div is empty by design */
+.cl .dw-bar-f{display:block;height:100%;background:var(--bronze);border-radius:10px;transition:width .45s ease}
+
+/* ---- drawer items ---- */
+.cl .dw-form{display:flex;flex-direction:column;flex:1;min-height:0}
+.cl .dw-items{flex:1;min-height:0;overflow-y:auto;padding:0 26px}
+.cl .qty{display:flex;align-items:center;border:1px solid var(--line);border-radius:100px}
+.cl .qbtn{width:30px;height:32px;display:flex;align-items:center;justify-content:center;color:var(--bord);padding:0}
+.cl .qn{min-width:26px;text-align:center;font-size:13px;font-weight:700}
+.cl .qty input.qn{-webkit-appearance:none;appearance:textfield;-moz-appearance:textfield;border:0;background:transparent;padding:0;min-width:26px;width:34px;color:var(--ink)}
+.cl .qty input.qn::-webkit-inner-spin-button,.cl .qty input.qn::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+/* Drawer +/- also carry Dawn's .quantity__button (global.js:269) — neutralise
+   base.css:1963-1969's first/last-child margins so the pill stays flush. */
+.cl .qty .quantity__button{margin:0;font-size:inherit}
+.cl .dw-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:70px 24px;text-align:center;color:var(--muted)}
+.cl .dw-empty .stitle{font-size:28px;margin-bottom:8px}
+.cl .dw-empty .btn{margin-top:14px}
+.cl .dw-errs{display:none}
+.cl .dw-errs:not(:empty){display:block;padding:8px 26px;color:#9e3543;font-size:12.5px;font-weight:600}
+
+/* ---- drawer footer ---- */
+.cl .dw-foot{padding:24px 26px;border-top:1px solid var(--line)}
+.cl .dw-sub{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.cl .dw-sub-l{font-size:14px;color:var(--bord);font-weight:600}
+.cl .dw-sub-v{font-size:26px;color:var(--bord);font-weight:800;letter-spacing:-.02em}
+.cl .dw-note{font-size:11.5px;color:var(--muted);margin:2px 0 16px}
+.cl .dw-lock{display:flex;gap:9px;align-items:flex-start;background:rgba(124,27,64,.06);border:1px solid rgba(124,27,64,.16);border-radius:var(--r-sm);padding:11px 13px;margin:0 0 14px;font-size:12px;color:var(--bord);font-weight:600;line-height:1.45;text-align:left}
+.cl .dw-lock svg{width:16px;height:16px;color:var(--plum);flex:none;margin-top:1px}
+.cl .dw-cont{display:block;width:100%;text-align:center;margin-top:12px;font-size:13px;font-weight:700;color:var(--bord);padding:8px}
+.cl .dw-cont:hover{color:var(--plum)}

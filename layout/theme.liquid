@@ -11,9 +11,16 @@
       <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
     {%- endif -%}
 
-    {%- unless settings.type_header_font.system? and settings.type_body_font.system? -%}
-      <link rel="preconnect" href="https://fonts.shopifycdn.com" crossorigin>
-    {%- endunless -%}
+    {%- comment -%}
+      No preconnect to fonts.shopifycdn.com: the theme picker is still set to
+      Assistant, but snippets/cartel-fonts.liquid re-points --font-body-family /
+      --font-heading-family at Hanken Grotesk and cartel.css:14-19 forces it with
+      !important on body, buttons, inputs and every heading. Not a single glyph
+      is ever rendered in Assistant, so warming that connection (and the
+      @font-face + preload blocks that used to sit below) only stole bandwidth
+      from the Google Fonts request that actually paints text.
+      cartel-fonts.liquid carries its own preconnects.
+    {%- endcomment -%}
 
     <title>
       {{ page_title }}
@@ -52,8 +59,16 @@
     <script src="{{ 'constants.js' | asset_url }}" defer="defer"></script>
     <script src="{{ 'pubsub.js' | asset_url }}" defer="defer"></script>
     <script src="{{ 'global.js' | asset_url }}" defer="defer"></script>
-    <script src="{{ 'cart-disclosure-modal.js' | asset_url }}" defer="defer"></script>
-    <script src="{{ 'cart-disclosure-tooltip.js' | asset_url }}" defer="defer"></script>
+    {%- comment -%}
+      cart-disclosure-modal.js and cart-disclosure-tooltip.js were loaded here on
+      every page. snippets/cart-disclosure-indicator.liquid — the only thing that
+      emits `.cart-item__disclosure` / `<cart-disclosure-modal>` — is never rendered
+      by any section or snippet, so both were pure overhead. The tooltip one
+      also installed `pointerover`/`pointerout` on `document`, which fire on every
+      element boundary crossing (hundreds/sec while the mouse moves) and ran a
+      `closest()` ancestor walk each time, for a selector that never matches.
+      Re-add these next to the cart templates if the disclosure feature is wired up.
+    {%- endcomment -%}
     <script src="{{ 'details-disclosure.js' | asset_url }}" defer="defer"></script>
     <script src="{{ 'details-modal.js' | asset_url }}" defer="defer"></script>
     <script src="{{ 'search-form.js' | asset_url }}" defer="defer"></script>
@@ -65,18 +80,15 @@
 
     {{ content_for_header }}
 
-    {%- liquid
-      assign body_font_bold = settings.type_body_font | font_modify: 'weight', 'bold'
-      assign body_font_italic = settings.type_body_font | font_modify: 'style', 'italic'
-      assign body_font_bold_italic = body_font_bold | font_modify: 'style', 'italic'
-    %}
-
     {% style %}
-      {{ settings.type_body_font | font_face: font_display: 'swap' }}
-      {{ body_font_bold | font_face: font_display: 'swap' }}
-      {{ body_font_italic | font_face: font_display: 'swap' }}
-      {{ body_font_bold_italic | font_face: font_display: 'swap' }}
-      {{ settings.type_header_font | font_face: font_display: 'swap' }}
+      {%- comment -%}
+        The five Assistant @font-face blocks that used to open this file are
+        gone — see the note by the removed preconnect above. They declared a
+        family nothing in the theme ever asks for, so they only added ~1KB of
+        inline HTML to every page. The --font-body-family / --font-heading-family
+        vars below still name Assistant; cartel-fonts.liquid (rendered after
+        this block) overrides both, and cartel.css enforces them.
+      {%- endcomment -%}
 
       {% for scheme in settings.color_schemes -%}
         {% assign scheme_classes = scheme_classes | append: ', .color-' | append: scheme.id %}
@@ -336,18 +348,21 @@
       {{ 'component-totals.css' | asset_url | stylesheet_tag }}
       {{ 'component-price.css' | asset_url | stylesheet_tag }}
       {{ 'component-discounts.css' | asset_url | stylesheet_tag }}
+      {%- comment -%}
+        Cartel's drawer skin. Must load AFTER component-cart-drawer.css — the
+        overrides in it are written to win against that file.
+      {%- endcomment -%}
+      {{ 'cartel-cart-drawer.css' | asset_url | stylesheet_tag }}
     {%- endif -%}
 
-    {%- unless settings.type_body_font.system? -%}
-      {% comment %}theme-check-disable AssetPreload{% endcomment %}
-      <link rel="preload" as="font" href="{{ settings.type_body_font | font_url }}" type="font/woff2" crossorigin>
-      {% comment %}theme-check-enable AssetPreload{% endcomment %}
-    {%- endunless -%}
-    {%- unless settings.type_header_font.system? -%}
-      {% comment %}theme-check-disable AssetPreload{% endcomment %}
-      <link rel="preload" as="font" href="{{ settings.type_header_font | font_url }}" type="font/woff2" crossorigin>
-      {% comment %}theme-check-enable AssetPreload{% endcomment %}
-    {%- endunless -%}
+    {%- comment -%}
+      Two `rel=preload as=font` links for Assistant used to sit here. preload is
+      an unconditional highest-priority fetch — unlike @font-face it does not
+      wait for a glyph match — so the theme was pulling ~50-70KB of woff2 for a
+      family it never paints, inside the LCP window, on every page, competing
+      with the Hanken Grotesk request that does. Deleted with the @font-face
+      blocks above. If Hanken is ever self-hosted, preload it here instead.
+    {%- endcomment -%}
 
     {%- if localization.available_countries.size > 1 or localization.available_languages.size > 1 -%}
       {{ 'component-localization-form.css' | asset_url | stylesheet_tag: preload: true }}
