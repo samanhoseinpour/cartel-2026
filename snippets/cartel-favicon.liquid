@@ -1,0 +1,35 @@
+{%- comment -%}
+  Tab icon + iOS home-screen icon. Rendered from theme.liquid, password.liquid
+  and gift_card.liquid so all three heads stay identical.
+
+  The bundled assets/ files are the default. settings.favicon (Theme editor →
+  Logo → Favicon) still overrides them, but it was pointed at logo-dark.avif —
+  a 1345x543 wordmark that Shopify served through `crop=center&height=32`, so
+  the live tab icon was a 32px-tall slice out of the middle of the logo. That
+  value is cleared in settings_data.json; the block below is what ships.
+
+  Three files from the favicon package are deliberately not used:
+
+    favicon.svg   Not a vector — a single <image> wrapping a base64 PNG in a
+                  1345x543 shell. 147KB (28x the 96px PNG) and the wrong aspect
+                  ratio, so browsers letterbox it into the square tab slot.
+
+    favicon.ico   Only legacy IE/Edge ever read it, and they read it from
+                  /favicon.ico at the site root — a path no Shopify theme can
+                  occupy. Every browser that honours <link rel="icon"> is
+                  already covered by the PNG.
+
+    site.webmanifest + web-app-manifest-192/512.png
+                  Would need Liquid to emit absolute CDN URLs (the generated
+                  file uses root-relative paths that 404 here), and both icons
+                  declare purpose:"maskable" while the wordmark spans ~80% of
+                  the canvas, so Android's circular mask would clip both ends.
+                  Worth revisiting only alongside a real PWA pass.
+{%- endcomment -%}
+{%- if settings.favicon != blank -%}
+  <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 96, height: 96 }}">
+  <link rel="apple-touch-icon" href="{{ settings.favicon | image_url: width: 180, height: 180 }}">
+{%- else -%}
+  <link rel="icon" type="image/png" sizes="96x96" href="{{ 'favicon-96x96.png' | asset_url }}">
+  <link rel="apple-touch-icon" sizes="180x180" href="{{ 'apple-touch-icon.png' | asset_url }}">
+{%- endif -%}
