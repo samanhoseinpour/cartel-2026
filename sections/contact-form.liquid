@@ -2,8 +2,9 @@
   Cartel contact — full .ct-hero band from Contact.dc.html (lane 7E rewrite of
   Dawn's contact-form): intro + channel links on the left, the real Shopify
   contact form card on the right. Success replaces the card; errors render
-  in-card above the fields. Email + phone live in section settings — the mock's
-  hello@cartellash.ca / (604) 555-0142 are placeholders (see REPORT.md).
+  in-card above the fields. Email + phone live in section settings; the mock's
+  hello@cartellash.ca / (604) 555-0142 placeholders were replaced with the
+  client's real details on 2026-08-10.
 {% endcomment %}
 <div class="cl">
   {%- if section.settings.show_breadcrumbs -%}
@@ -170,15 +171,15 @@
       "type": "text",
       "id": "contact_email",
       "label": "Email address",
-      "info": "The mock shows hello@cartellash.ca; the live store uses info@cartellash.ca — confirm with the client before launch.",
-      "default": "info@cartellash.ca"
+      "info": "Confirmed by the client 2026-08-10. Also set on the footer contact block (footer-group.json) and the wholesale card on the contact page.",
+      "default": "kireilashco@gmail.com"
     },
     {
       "type": "text",
       "id": "contact_phone",
       "label": "Phone number",
-      "info": "The mock's (604) 555-0142 is a placeholder — confirm the real number.",
-      "default": "(604) 555-0142"
+      "info": "Confirmed by the client 2026-08-10. Use a plain ASCII hyphen — the tel: href is built by stripping ( ) - space, so a typographic hyphen would survive into the link and break it.",
+      "default": "+1 (778) 251-5550"
     },
     { "type": "header", "content": "Form card" },
     { "type": "text", "id": "form_heading", "label": "Card heading", "default": "Send us a message" },
