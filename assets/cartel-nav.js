@@ -19,9 +19,17 @@
      mode a level-2 disclosure opened inside a menu that had just been closed,
      and its level-3 links were unreachable by click OR hover (hover is bound to
      top-level <li> only, and the summary handler preventDefault()s the native
-     toggle). Nested <details> now keep Dawn's own behaviour untouched. */
+     toggle). Nested <details> now keep Dawn's own behaviour untouched.
+
+     Both header snippets wrap that top-level <details> in Dawn's <header-menu>
+     custom element, so the child combinator has to step through it. Without the
+     second branch this list came back EMPTY: closeAll() was a silent no-op, the
+     hovered panel stayed open until it was clicked shut, and two menus could be
+     open at once. */
+  var TOP_MENUS = ':scope > ul > li > details, :scope > ul > li > header-menu > details';
+
   function menus(nav) {
-    return Array.prototype.slice.call(nav.querySelectorAll(':scope > ul > li > details'));
+    return Array.prototype.slice.call(nav.querySelectorAll(TOP_MENUS));
   }
 
   /* global.js gives these summaries role="button" + aria-expanded and only
@@ -83,21 +91,19 @@
        trapped keyboard users (Enter on a <summary> dispatches a click).
        Setting details.open fires the native toggle event, so Dawn's own
        DetailsDisclosure close logic still runs. */
-    Array.prototype.forEach.call(
-      nav.querySelectorAll(':scope > ul > li > details > summary'),
-      function (summary) {
-        summary.addEventListener('click', function (event) {
-          if (!canHover()) return;
-          event.preventDefault();
-          var details = summary.parentElement;
-          if (details && details.open) {
-            setOpen(details, false);
-          } else {
-            open(nav, details);
-          }
-        });
-      }
-    );
+    menus(nav).forEach(function (details) {
+      var summary = details.querySelector(':scope > summary');
+      if (!summary) return;
+      summary.addEventListener('click', function (event) {
+        if (!canHover()) return;
+        event.preventDefault();
+        if (details.open) {
+          setOpen(details, false);
+        } else {
+          open(nav, details);
+        }
+      });
+    });
 
     var bar = nav.closest('.header-wrapper') || nav;
     /* mouseleave ignores descendants, and the panel IS a descendant,
