@@ -86,9 +86,22 @@ body.cl-noscroll .cl .offtab{display:none}
 .cl .ci .cart-item__error-text{color:#9e3543;font-size:12px;font-weight:600}
 
 /* ---- cart notification (active cart_type) ---- */
-.cart-notification.cart-notification{background:var(--cream);border:1px solid var(--line);border-width:0 1px 1px;border-radius:0 0 var(--r) var(--r);padding:20px 22px;box-shadow:0 28px 60px rgba(74,18,36,.18);color:var(--ink);font-family:'Hanken Grotesk',system-ui,sans-serif}
+/* These four values MUST come from the :root --cartel-* tokens, not the .cl
+   ones (fix 2026-08-10). #cart-notification is a Dawn element and
+   cart-notification.liquid:27 puts .cl on its CHILD, so --cream/--line/--r/
+   --ink (defined only under .cl, cartel-home.css:6) do not resolve here.
+   An unresolved var makes the whole declaration invalid-at-computed-value-
+   time: background fell back to transparent, `border` to border-style:none
+   (so the border-width below painted nothing), and the radius to 0 — leaving
+   a square, borderless, transparent card with the drop shadow drawn around
+   the invisible box. Dormant today (settings cart_type is "drawer" and
+   header.liquid:308 gates the render) but the Dawn preset in
+   settings_data.json:376 ships cart_type "notification", one editor click
+   away. Values are identical: --cream #FAF6F0, --line rgba(74,18,36,.12),
+   --ink #3a2226, --r 24px. */
+.cart-notification.cart-notification{background:rgb(var(--cartel-cream));border:1px solid rgba(var(--cartel-bord),.12);border-width:0 1px 1px;border-radius:0 0 24px 24px;padding:20px 22px;box-shadow:0 28px 60px rgba(74,18,36,.18);color:rgb(var(--cartel-ink));font-family:'Hanken Grotesk',system-ui,sans-serif}
 @media screen and (min-width:750px){
-  .cart-notification.cart-notification{border-width:1px;border-radius:var(--r);margin-top:10px}
+  .cart-notification.cart-notification{border-width:1px;border-radius:24px;margin-top:10px}
 }
 .cl .notif-head{display:flex;align-items:center;gap:11px}
 /* Dawn pulls its close button out of the card with negative margins */
