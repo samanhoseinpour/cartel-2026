@@ -16,6 +16,18 @@
           if block.settings.video != blank
             assign has_video = true
           endif
+
+          # Only slide 1 is visible on load (the rest are opacity:0 + inert below).
+          # Marking all four eager/high made them compete for bandwidth AHEAD of
+          # the stylesheets and fonts, so the real LCP image got a fraction of the
+          # pipe — the classic way to make your own LCP worse. Slide 1 keeps the
+          # priority; the others load lazily as the hero cycles to them.
+          assign hero_loading = 'lazy'
+          assign hero_priority = 'low'
+          if forloop.first
+            assign hero_loading = 'eager'
+            assign hero_priority = 'high'
+          endif
         -%}
         {%- comment -%}
           Inactive slides are only opacity:0 + pointer-events:none, which stops
@@ -40,15 +52,22 @@
                 | video_tag: image_size: '1600x', class: photo_class, autoplay: false, loop: false, muted: true, controls: false, preload: 'metadata'
               }}
             {%- elsif block.settings.image != blank -%}
+              {%- comment -%}
+                `sizes: '100vw'` was a lie: .herowrap is max-width:1280px with
+                40px of padding (cartel-home.css:56, 272), so the image slot is
+                never wider than 1200px — every viewport was told to pick a
+                candidate a full step or two too large. The ladder keeps 2400
+                because a DPR-2 desktop genuinely lands there.
+              {%- endcomment -%}
               {{
                 block.settings.image
                 | image_url: width: 2400
                 | image_tag:
                   class: photo_class,
                   widths: '760,1100,1600,2000,2400',
-                  sizes: '100vw',
-                  loading: 'eager',
-                  fetchpriority: 'high',
+                  sizes: '(min-width: 1360px) 1200px, (min-width: 750px) calc(100vw - 80px), calc(100vw - 24px)',
+                  loading: hero_loading,
+                  fetchpriority: hero_priority,
                   alt: block.settings.image.alt
               }}
             {%- endif -%}

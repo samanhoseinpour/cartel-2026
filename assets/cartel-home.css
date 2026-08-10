@@ -29,7 +29,9 @@
 .cl .ic-sm{width:18px;height:18px;display:block}
 .cl .icbtn{width:42px;height:42px;display:inline-flex;align-items:center;justify-content:center;color:var(--bord);border-radius:50%;transition:.2s}
 .cl .icbtn:hover{background:rgba(74,18,36,.07)}
-.cl .btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;font-weight:700;font-size:15px;letter-spacing:-.01em;padding:15px 26px;border-radius:100px;transition:.22s;line-height:1;white-space:nowrap}
+/* Enumerated: bare `transition:.22s` = `transition:all`, which animated the hover
+   box-shadow (26px blur) through ~13 repaint frames on the site's most-hovered element. */
+.cl .btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;font-weight:700;font-size:15px;letter-spacing:-.01em;padding:15px 26px;border-radius:100px;transition:transform .22s ease,background-color .22s ease,color .22s ease,border-color .22s ease;line-height:1;white-space:nowrap}
 .cl .btn:hover{transform:translateY(-2px)}
 .cl .btn-sm{padding:12px 18px;font-size:13px}
 .cl .btn-fill{background:var(--bord);color:var(--cream)}
@@ -72,13 +74,14 @@
 .cl .hero-dots{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);z-index:6;display:flex;align-items:center;gap:9px;background:rgba(18,4,9,.4);backdrop-filter:blur(16px);border:1px solid rgba(250,246,240,.18);padding:8px 10px;border-radius:100px}
 .cl .hero-dot{position:relative;width:22px;height:6px;border-radius:100px;background:rgba(250,246,240,.34);overflow:hidden;transition:width .45s ease;flex:none}
 .cl .hero-dot.on{width:48px;background:rgba(250,246,240,.26)}
-.cl .hero-fill{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--cream);border-radius:100px}
+.cl .hero-fill{position:absolute;left:0;top:0;bottom:0;width:100%;transform:scaleX(0);transform-origin:left center;background:var(--cream);border-radius:100px}
 .cl .hero-fill.go{animation:fillbar 6s linear forwards}
 .cl .hero-fill.pz{animation-play-state:paused}
 .cl .hero-play{width:27px;height:27px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--cream);background:rgba(250,246,240,.16);margin-left:5px;flex:none;transition:.2s}
 .cl .hero-play:hover{background:rgba(250,246,240,.3)}
 .cl .ic-xs{width:13px;height:13px}
-@keyframes fillbar{from{width:0}to{width:100%}}
+/* scaleX not width: width is layout, so this ran ~360 main-thread frames per slide, forever. */
+@keyframes fillbar{from{transform:scaleX(0)}to{transform:scaleX(1)}}
 .cl .vpwrap{padding-top:0;padding-bottom:92px}
 .cl .vprops{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:#fff}
 .cl .vp{padding:22px 24px;display:flex;align-items:center;gap:14px;border-left:1px solid var(--line)}
@@ -89,8 +92,11 @@
 .cl .sec{padding-top:92px;padding-bottom:92px}
 .cl .sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:38px}
 .cl .sh-l{display:flex;flex-direction:column;gap:13px}
-.cl .viewlink{font-size:13px;font-weight:700;letter-spacing:-.01em;color:var(--plum);display:inline-flex;align-items:center;gap:7px;transition:.2s;white-space:nowrap}
-.cl .viewlink:hover{gap:11px}
+/* gap 7->11px on hover was a flex reflow every frame; nudge the icon with transform instead.
+   Bare `transition:.2s` also meant `transition:all`. */
+.cl .viewlink{font-size:13px;font-weight:700;letter-spacing:-.01em;color:var(--plum);display:inline-flex;align-items:center;gap:7px;transition:color .2s ease;white-space:nowrap}
+.cl .viewlink svg{transition:transform .2s ease}
+.cl .viewlink:hover svg{transform:translateX(4px)}
 .cl .caro-nav{display:flex;gap:9px}
 .cl .caro-btn{width:46px;height:46px;border-radius:50%;border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--bord);transition:.2s}
 .cl .caro-btn:hover{background:var(--bord);color:var(--cream);border-color:var(--bord)}
@@ -181,8 +187,28 @@
 .cl .hero-slide.on .hero-media{animation:none}
 .cl .hero-slide.on .hero-media-vid{animation:none}
 .cl .hero-slide.on .hero-media-prod{animation:none}
+/* cartel-home.js toggles this off-screen: `infinite` + mask-image = a layer recomposited forever. */
+.cl .marquee-track.cl-mq-off,
+.cl .reviewtrack.cl-mq-off,
+.cl .ab-mq-track.cl-mq-off{animation-play-state:paused}
+
+/* Was a no-op (re-set animation:none, already set above). The marquees and fill bar are
+   pure CSS, so cartel-home.js's RM flag cannot reach them — they need guarding here. */
 @media (prefers-reduced-motion:reduce){
-  .cl .hero-slide.on .hero-media{animation:none}
+  /* .ab-mq-track is doubled deliberately. cartel-page-about.css:115 declares
+     `.cl .ab-mq-track{...animation:marq 44s linear infinite}` at the SAME
+     specificity (0,2,0) and theme.liquid loads the per-template stylesheet
+     after this one, so a single-class guard here loses on source order and the
+     About marquee kept scrolling under reduced motion. Media queries add no
+     specificity, so the selector itself has to win. */
+  .cl .marquee-track,
+  .cl .reviewtrack,
+  .cl .ab-mq-track.ab-mq-track{animation:none;transform:none}
+  .cl .hero-fill.go{animation:none;transform:scaleX(1)}
+  .cl .toast,
+  .cl .reelbox,
+  .cl .ov{animation:none}
+  .cl .hero-dot{transition:none}
 }
 .cl .marquee:hover .marquee-track{animation-play-state:paused}
 .cl .kit-img{overflow:hidden}
@@ -206,8 +232,10 @@
 .cl .res-img{position:relative;aspect-ratio:16/10;border-radius:var(--r);overflow:hidden;margin-bottom:16px}
 .cl .res-tag{position:absolute;top:14px;left:14px;z-index:2;background:var(--bronze);color:var(--bord);font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:5px 12px;border-radius:100px}
 .cl .res-t{font-size:21px;color:var(--bord);font-weight:800;line-height:1.2;letter-spacing:-.02em}
-.cl .res-cta{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:700;color:var(--plum);margin-top:10px;transition:.2s}
-.cl .rescard:hover .res-cta{gap:11px}
+/* same gap -> transform swap as .viewlink above */
+.cl .res-cta{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:700;color:var(--plum);margin-top:10px;transition:color .2s ease}
+.cl .res-cta svg{transition:transform .2s ease}
+.cl .rescard:hover .res-cta svg{transform:translateX(4px)}
 .cl .ondark{color:var(--cream)}
 .cl .ondark .stitle{color:var(--cream)}
 .cl .ondark .kick{color:var(--bronze)}
