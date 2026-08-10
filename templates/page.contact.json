@@ -1,3 +1,12 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "contact": {
@@ -19,13 +28,47 @@
             "url": "https://www.instagram.com/cartel.lash/"
           }
         },
-        "t1": { "type": "topic", "settings": { "label": "Order help" } },
-        "t2": { "type": "topic", "settings": { "label": "Product question" } },
-        "t3": { "type": "topic", "settings": { "label": "Wholesale & trade" } },
-        "t4": { "type": "topic", "settings": { "label": "Training" } },
-        "t5": { "type": "topic", "settings": { "label": "Something else" } }
+        "t1": {
+          "type": "topic",
+          "settings": {
+            "label": "Order help"
+          }
+        },
+        "t2": {
+          "type": "topic",
+          "settings": {
+            "label": "Product question"
+          }
+        },
+        "t3": {
+          "type": "topic",
+          "settings": {
+            "label": "Wholesale & trade"
+          }
+        },
+        "t4": {
+          "type": "topic",
+          "settings": {
+            "label": "Training"
+          }
+        },
+        "t5": {
+          "type": "topic",
+          "settings": {
+            "label": "Something else"
+          }
+        }
       },
-      "block_order": ["ch-email", "ch-ig", "t1", "t2", "t3", "t4", "t5"]
+      "block_order": [
+        "ch-email",
+        "ch-ig",
+        "t1",
+        "t2",
+        "t3",
+        "t4",
+        "t5"
+      ],
+      "settings": {}
     },
     "cards": {
       "type": "cartel-contact-cards",
@@ -81,8 +124,18 @@
           }
         }
       },
-      "block_order": ["help-faq", "help-wholesale", "help-advice", "loc-wv", "loc-bby"]
+      "block_order": [
+        "help-faq",
+        "help-wholesale",
+        "help-advice",
+        "loc-wv",
+        "loc-bby"
+      ],
+      "settings": {}
     }
   },
-  "order": ["contact", "cards"]
+  "order": [
+    "contact",
+    "cards"
+  ]
 }
