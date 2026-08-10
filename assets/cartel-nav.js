@@ -9,6 +9,8 @@
 (function () {
   var CLOSE_DELAY = 140;
   var closeTimer = null;
+  var resizeHandler = null;
+  var resizeTimer = null;
 
   function canHover() {
     return window.matchMedia('(hover: hover) and (pointer: fine)').matches && window.innerWidth >= 990;
@@ -51,13 +53,29 @@
     });
   }
 
-  /* centre a single-level dropdown (About) under its own pill */
+  /* centre a single-level dropdown (About) under its own pill.
+
+     The old version wrote --cl-pop-x to 0px and then immediately read
+     list.offsetLeft — a write followed by a read of the same subtree, which
+     forces a synchronous relayout of the header every time. It ran on every
+     hover-open, not just on resize.
+
+     `base` (the list's un-offset position) only changes when the header is laid
+     out again, so it is measured once per element and cached, and the cache is
+     dropped on resize. Steady-state hovering now does reads only. */
+  var BASE = new WeakMap();
+
   function positionCondensed(details) {
     var list = details.querySelector('.mega-menu__list--condensed');
     var summary = details.querySelector('summary');
     if (!list || !summary || !list.offsetParent) return;
-    list.style.setProperty('--cl-pop-x', '0px');
-    var base = list.offsetLeft;
+
+    var base = BASE.get(list);
+    if (base === undefined) {
+      list.style.setProperty('--cl-pop-x', '0px');
+      base = list.offsetLeft;
+      BASE.set(list, base);
+    }
     var parent = list.offsetParent.getBoundingClientRect();
     var rect = summary.getBoundingClientRect();
     var center = rect.left + rect.width / 2 - parent.left;
@@ -118,11 +136,26 @@
       clearTimeout(closeTimer);
     });
 
-    window.addEventListener('resize', function () {
-      menus(nav).forEach(function (d) {
-        if (d.open) positionCondensed(d);
-      });
-    });
+    /* init() runs again on every shopify:section:load. The nav.dataset.clHover
+       guard above protects the NEW nav, but the window listener added by the
+       previous run was never removed and its closure pinned the whole detached
+       header tree — one leaked listener and one leaked DOM tree per header edit
+       in the theme editor. Track it at module scope and drop the old one first.
+
+       Also debounced: resize fires continuously during a window drag, and the
+       old handler ran nav.querySelectorAll on every single event even when no
+       menu was open. */
+    if (resizeHandler) window.removeEventListener('resize', resizeHandler);
+    resizeHandler = function () {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(function () {
+        BASE = new WeakMap(); // layout changed — cached offsets are stale
+        menus(nav).forEach(function (d) {
+          if (d.open) positionCondensed(d);
+        });
+      }, 150);
+    };
+    window.addEventListener('resize', resizeHandler);
   }
 
   if (document.readyState === 'loading') {

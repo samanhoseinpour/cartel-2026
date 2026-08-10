@@ -25,19 +25,34 @@
       var faqCat = '__all__';
       var faqQuery = '';
 
+      /* Indexed ONCE. The old applyFaq re-ran querySelectorAll per group and then
+         serialized every item's subtree via textContent and allocated a fresh
+         lowercased copy — per item, per keystroke. On a 60-item FAQ, typing
+         "eyelash extension" meant ~1000 subtree serializations and ~1000 string
+         allocations. The text can't change, so it's cached on the node. */
+      var faqIndex = faqGroups.map(function (group) {
+        return {
+          el: group,
+          cat: group.getAttribute('data-faq-group'),
+          items: Array.prototype.map.call(group.querySelectorAll('[data-faq-item]'), function (item) {
+            return { el: item, text: item.textContent.toLowerCase() };
+          }),
+        };
+      });
+
       var applyFaq = function () {
         var visibleTotal = 0;
-        faqGroups.forEach(function (group) {
-          var groupCat = group.getAttribute('data-faq-group');
+        faqIndex.forEach(function (group) {
+          var catOk = faqCat === '__all__' || group.cat === faqCat;
           var groupVisible = 0;
-          Array.prototype.forEach.call(group.querySelectorAll('[data-faq-item]'), function (item) {
-            var catOk = faqCat === '__all__' || groupCat === faqCat;
-            var textOk = !faqQuery || item.textContent.toLowerCase().indexOf(faqQuery) !== -1;
-            var show = catOk && textOk;
-            item.hidden = !show;
+          group.items.forEach(function (item) {
+            var show = catOk && (!faqQuery || item.text.indexOf(faqQuery) !== -1);
+            /* only touch the DOM when the state actually flips — otherwise every
+               keystroke invalidated style for every item, visible or not */
+            if (item.el.hidden === show) item.el.hidden = !show;
             if (show) groupVisible++;
           });
-          group.hidden = groupVisible === 0;
+          if (group.el.hidden !== (groupVisible === 0)) group.el.hidden = groupVisible === 0;
           visibleTotal += groupVisible;
         });
         if (faqEmpty) faqEmpty.hidden = visibleTotal !== 0;
@@ -56,9 +71,15 @@
       });
 
       if (faqSearch) {
+        /* Debounced: a filter pass per keystroke is wasted work while someone is
+           mid-word, and 120ms is below the threshold where the list feels laggy. */
+        var faqTimer = 0;
         faqSearch.addEventListener('input', function () {
-          faqQuery = faqSearch.value.trim().toLowerCase();
-          applyFaq();
+          clearTimeout(faqTimer);
+          faqTimer = setTimeout(function () {
+            faqQuery = faqSearch.value.trim().toLowerCase();
+            applyFaq();
+          }, 120);
         });
       }
     }
@@ -154,24 +175,47 @@
       var before = root.querySelector('[data-cmp-before]');
       var handle = root.querySelector('[data-cmp-handle]');
       if (!range || !before || !handle) return;
-      var setPos = function (v) {
+      /* rAF-coalesced for the same reason as cartel-pdp.js: pointermove fires
+         far above 60fps, and measuring the container after writing `left` on the
+         previous event forced a synchronous relayout on every pointer sample.
+         The handler now only records clientX; paint() measures once per frame,
+         before it writes. */
+      var frame = 0;
+      var lastX = null;
+      var pendingPos = null;
+
+      var paint = function () {
+        frame = 0;
+        var v = pendingPos;
+        pendingPos = null;
+        if (lastX !== null) {
+          var rect = root.getBoundingClientRect();
+          if (!rect.width) { lastX = null; return; }
+          v = ((lastX - rect.left) / rect.width) * 100;
+          lastX = null;
+        }
+        if (v === null) return;
         v = Math.max(0, Math.min(100, v));
         before.style.clipPath = 'inset(0 ' + (100 - v) + '% 0 0)';
         handle.style.left = v + '%';
+        if (parseFloat(range.value) !== v) range.value = v;
       };
+      var schedule = function () {
+        if (!frame) frame = requestAnimationFrame(paint);
+      };
+
       range.addEventListener('input', function () {
-        setPos(parseFloat(range.value));
+        pendingPos = parseFloat(range.value);
+        lastX = null;
+        schedule();
       });
       root.addEventListener('pointermove', function (e) {
         /* Mouse only — on touch, pointermove fires while the page is being
            scrolled over the image (and again while dragging the range itself),
            which scrubbed the reveal underneath the reader. Matches cartel-pdp.js. */
         if (e.pointerType !== 'mouse') return;
-        var rect = root.getBoundingClientRect();
-        if (!rect.width) return;
-        var v = ((e.clientX - rect.left) / rect.width) * 100;
-        range.value = v;
-        setPos(v);
+        lastX = e.clientX;
+        schedule();
       });
     });
 

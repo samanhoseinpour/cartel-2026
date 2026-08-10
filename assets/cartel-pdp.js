@@ -24,20 +24,54 @@
     var range = cmp.querySelector('.cmp-range');
     if (!before || !handle || !range) return;
 
-    function setPos(pos) {
+    /* pointermove fires at pointer sample rate — 120-1000Hz on a high-refresh
+       trackpad, far above 60fps. The old handler measured the container and
+       wrote styles on EVERY sample, so each event's getBoundingClientRect had
+       to flush the layout the previous event's `left` write had just
+       invalidated: a forced synchronous reflow per pointer sample.
+
+       Now the handler only records clientX and asks for a frame. All the work
+       happens once per frame in paint(), which does its single measurement
+       BEFORE any write. Intermediate samples are dropped, which is exactly
+       right — only the last position in a frame is visible.
+
+       `left` stays (rather than transform) because the handle is 2px wide and a
+       percentage translateX resolves against the element's own width, not the
+       container's. It is one layout write per frame on an absolutely positioned
+       2px child of an overflow:hidden box — cheap, and contained. */
+    var frame = 0;
+    var lastX = null;
+    var pendingPos = null;
+
+    function paint() {
+      frame = 0;
+      var pos = pendingPos;
+      pendingPos = null;
+      if (lastX !== null) {
+        var rect = cmp.getBoundingClientRect();
+        if (rect.width) pos = ((lastX - rect.left) / rect.width) * 100;
+        lastX = null;
+      }
+      if (pos === null) return;
       pos = Math.max(0, Math.min(100, pos));
       before.style.clipPath = 'inset(0 ' + (100 - pos) + '% 0 0)';
       handle.style.left = pos + '%';
       if (parseFloat(range.value) !== pos) range.value = pos;
     }
 
+    function schedule() {
+      if (!frame) frame = requestAnimationFrame(paint);
+    }
+
     range.addEventListener('input', function () {
-      setPos(parseFloat(range.value) || 0);
+      pendingPos = parseFloat(range.value) || 0;
+      lastX = null;
+      schedule();
     });
     cmp.addEventListener('pointermove', function (event) {
       if (event.pointerType !== 'mouse') return; // touch drags the range itself
-      var rect = cmp.getBoundingClientRect();
-      if (rect.width) setPos(((event.clientX - rect.left) / rect.width) * 100);
+      lastX = event.clientX;
+      schedule();
     });
   }
   document.querySelectorAll('.cl .cmp').forEach(initCompare);

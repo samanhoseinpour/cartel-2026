@@ -180,6 +180,17 @@ class PredictiveSearch extends SearchForm {
 
     const searchDeferred = this.dispatchSearchUpdateEvent(searchTerm);
 
+    // Cancel whatever is still in flight before starting the next one. The
+    // controller was created once in the constructor and only replaced on form
+    // reset, so nothing ever aborted between keystrokes: the 300ms debounce in
+    // search-form.js only thins the requests out, and a normal typist pauses
+    // past it several times mid-query, leaving 4-6 concurrent section fetches.
+    // Each one parses a full section with DOMParser and writes innerHTML, so a
+    // slow early response could also land AFTER a fast later one and overwrite
+    // fresh results with stale ones. Same pattern product-info.js:119 uses.
+    this.abortController?.abort();
+    this.abortController = new AbortController();
+
     fetch(`${routes.predictive_search_url}?q=${encodeURIComponent(searchTerm)}&section_id=predictive-search`, {
       signal: this.abortController.signal,
     })
