@@ -14,6 +14,16 @@
   %}
 {% endcomment %}
 
+{%- comment -%}
+  The srcset below used to end with a bare `| image_url` (no width:), which
+  resolves to the ORIGINAL upload — routinely 3000-5760px and several MB — and
+  offered it to the browser as a legitimate candidate, so any high-DPR viewport
+  would pick it. The final candidate is now capped: it asks for at most 2048px,
+  or the image's own width if that is smaller, and the `w` descriptor matches
+  what is actually served. The 2890 and 4096 steps went with it — `sizes` here
+  tops out around the page width, so neither was ever selectable.
+{%- endcomment -%}
+{%- assign media_cap = media.preview_image.width | at_most: 2048 -%}
 {%- if media.media_type == 'image' -%}
   <img
     class="global-media-settings global-media-settings--no-shadow{% if variant_image %} product__media-item--variant{% endif %}"
@@ -22,11 +32,7 @@
       {%- if media.preview_image.width >= 1100 -%}{{ media.preview_image | image_url: width: 1100 }} 1100w,{%- endif -%}
       {%- if media.preview_image.width >= 1445 -%}{{ media.preview_image | image_url: width: 1445 }} 1445w,{%- endif -%}
       {%- if media.preview_image.width >= 1680 -%}{{ media.preview_image | image_url: width: 1680 }} 1680w,{%- endif -%}
-      {%- if media.preview_image.width >= 2048 -%}{{ media.preview_image | image_url: width: 2048 }} 2048w,{%- endif -%}
-      {%- if media.preview_image.width >= 2200 -%}{{ media.preview_image | image_url: width: 2200 }} 2200w,{%- endif -%}
-      {%- if media.preview_image.width >= 2890 -%}{{ media.preview_image | image_url: width: 2890 }} 2890w,{%- endif -%}
-      {%- if media.preview_image.width >= 4096 -%}{{ media.preview_image | image_url: width: 4096 }} 4096w,{%- endif -%}
-      {{ media.preview_image | image_url }} {{ media.preview_image.width }}w
+      {{ media.preview_image | image_url: width: media_cap }} {{ media_cap }}w
     "
     sizes="(min-width: 750px) calc(100vw - 22rem), 1100px"
     src="{{ media.preview_image | image_url: width: 1445 }}"
@@ -65,7 +71,13 @@
         {% if media.preview_image.width >= 576 %}{{ media.preview_image | image_url: width: 576 }} 576w,{% endif %}
         {% if media.preview_image.width >= 550 %}{{ media.preview_image | image_url: width: 550 }} 550w,{% endif %}
         {% if media.preview_image.width >= 1100 %}{{ media.preview_image | image_url: width: 1100 }} 1100w,{% endif %}
-        {{ media.preview_image | image_url }} {{ media.preview_image.width }}w
+        {%- comment -%}
+          Same unsized-original fix as the main image above. The 1100w rung above
+          must stay: this poster's sizes resolves to ~550 CSS px, so a DPR-2
+          display needs ~1100px — without that step the next candidate up is
+          media_cap (2048) and the browser would fetch ~3.5x the pixels it needs.
+        {%- endcomment -%}
+        {{ media.preview_image | image_url: width: media_cap }} {{ media_cap }}w
       "
       src="{{ media | image_url: width: 550, height: 550 }}"
       sizes="(min-width: 1200px) calc((1200px - 10rem) / 2), (min-width: 750px) calc((100vw - 11.5rem) / 2), calc(100vw - 4rem)"

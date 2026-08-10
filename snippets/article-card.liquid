@@ -35,8 +35,32 @@
     assign initials = 'CL'
   endif
 
-  assign word_count = article.content | strip_html | split: ' ' | size
-  assign read_mins = word_count | divided_by: 200 | at_least: 1
+  # ONE strip_html pass over the body, reused for BOTH the read-time estimate and
+  # the excerpt fallback below.
+  #
+  # The expensive part of the original was never strip_html — it was `split: ' '`
+  # allocating a multi-thousand-element word array and then discarding all of it
+  # except `.size`, once per card (24 times on a 12-card index). strip_html is a
+  # single string pass with no array allocation, so dropping only the split keeps
+  # nearly all of the win.
+  #
+  # Divide STRIPPED TEXT, not raw HTML: these posts were imported from Word and
+  # wrap every text run in <span style="font-weight: 400;">, which works out at
+  # ~10.9 HTML chars per word against ~5.5 for clean prose. Dividing raw markup
+  # over-reported all 70 articles by 1.7-3.5x (one 1,826-word post read "22 min"
+  # instead of 9). On stripped text ~1100 chars ≈ 200 words ≈ 1 minute holds.
+  # Set custom.read_minutes on an article to pin an exact figure; `.value` is
+  # required or the comparison silently comes back an object and never fires.
+  assign body_text = article.content | strip_html
+  assign read_mins = article.metafields.custom.read_minutes.value
+  unless read_mins > 0
+    assign read_mins = body_text.size | divided_by: 1100 | at_least: 1
+  endunless
+
+  assign card_excerpt = article.excerpt | strip_html
+  if card_excerpt == blank
+    assign card_excerpt = body_text
+  endif
 
   assign show_cat_pill = true
   if show_cat == false or cat_label == blank
@@ -64,7 +88,13 @@
     </a>
   </div>
   <h3 class="bl-card-h"><a href="{{ article.url }}">{{ article.title | escape }}</a></h3>
-  <p class="bl-card-x">{{ article.excerpt_or_content | strip_html | truncate: 150 }}</p>
+  {%- comment -%}
+    excerpt_or_content falls back to the FULL body when an article has no excerpt
+    — and the imported posts have none — so this used to be a SECOND whole-body
+    strip_html per card. card_excerpt above reuses the single pass already done
+    for the read-time estimate.
+  {%- endcomment -%}
+  <p class="bl-card-x">{{ card_excerpt | truncate: 150 }}</p>
   <div class="bl-card-meta">
     <div class="bl-avatar sm" aria-hidden="true">{{ initials }}</div>
     <div class="bl-meta-txt">

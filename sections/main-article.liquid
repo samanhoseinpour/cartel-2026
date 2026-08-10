@@ -33,8 +33,14 @@
     assign initials = 'CL'
   endif
 
-  assign word_count = article.content | strip_html | split: ' ' | size
-  assign read_mins = word_count | divided_by: 200 | at_least: 1
+  # Same expression as snippets/article-card.liquid — deliberately identical, or
+  # a post's own page would print a different number from the card that links to
+  # it. Drops the split-into-a-word-array; see the note in article-card.liquid.
+  assign read_mins = article.metafields.custom.read_minutes.value
+  unless read_mins > 0
+    assign read_txt = article.content | strip_html
+    assign read_mins = read_txt.size | divided_by: 1100 | at_least: 1
+  endunless
 
   assign stand = article.excerpt | strip_html | strip
   if stand == blank
@@ -203,8 +209,16 @@
           assign rel_ids = ''
           assign pc_d = primary_cat | downcase
         -%}
+        {%- comment -%}
+          Both passes are capped at 12. Unbounded, the worst case (no article
+          shares this one's category tag) walked all 50 articles Liquid can see,
+          running `tags | join | downcase` on each and rendering nothing, then
+          walked all 50 again in the fallback pass. Three related posts are
+          effectively always inside the 12 most recent, and every article that
+          IS rendered additionally pays article-card's per-card cost.
+        {%- endcomment -%}
         {%- if primary_cat != blank -%}
-          {%- for a in blog.articles -%}
+          {%- for a in blog.articles limit: 12 -%}
             {%- if rel_count >= 3 -%}{%- break -%}{%- endif -%}
             {%- if a.id == article.id -%}{%- continue -%}{%- endif -%}
             {%- assign a_tags_d = a.tags | join: ',' | downcase -%}
@@ -216,7 +230,7 @@
           {%- endfor -%}
         {%- endif -%}
         {%- if rel_count < 3 -%}
-          {%- for a in blog.articles -%}
+          {%- for a in blog.articles limit: 12 -%}
             {%- if rel_count >= 3 -%}{%- break -%}{%- endif -%}
             {%- if a.id == article.id -%}{%- continue -%}{%- endif -%}
             {%- assign needle = ',' | append: a.id | append: ',' -%}

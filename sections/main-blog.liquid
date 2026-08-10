@@ -14,23 +14,14 @@
   assign c_education = 0
   assign c_business = 0
   assign c_supplies = 0
-  if current_tags == blank
-    for a in blog.articles
-      for t in a.tags
-        assign td = t | downcase
-        case td
-          when 'technique'
-            assign c_technique = c_technique | plus: 1
-          when 'education'
-            assign c_education = c_education | plus: 1
-          when 'business'
-            assign c_business = c_business | plus: 1
-          when 'supplies'
-            assign c_supplies = c_supplies | plus: 1
-        endcase
-      endfor
-    endfor
-  endif
+  # The nested `blog.articles x a.tags` scan that used to sit here is gone. It
+  # ran OUTSIDE the paginate below, so it triggered a second, separate article
+  # fetch (Shopify caps it at 50) and walked up to ~250 iterations doing a
+  # downcase + 4-way case each — to produce four integers for the filter chips.
+  # It was also wrong by construction: the header comment above already notes it
+  # undercounts past 50 articles, and there are 70 posts. The metafield overrides
+  # below are the accurate source; where one is unset the chip simply renders
+  # without a count, which the markup already handles.
   # .value is required: without it these are metafield OBJECTS, and `object > 0`
   # at the chip-count test below is always false, so the override silently did nothing.
   if blog.metafields.custom.count_technique.value != blank
@@ -141,8 +132,14 @@
           if feat_initials == blank
             assign feat_initials = 'CL'
           endif
-          assign feat_wc = feat.content | strip_html | split: ' ' | size
-          assign feat_mins = feat_wc | divided_by: 200 | at_least: 1
+          # Same expression as snippets/article-card.liquid — the featured post
+          # sits directly above the card grid, so a different formula here would
+          # show two read times for comparable articles side by side.
+          assign feat_mins = feat.metafields.custom.read_minutes.value
+          unless feat_mins > 0
+            assign feat_txt = feat.content | strip_html
+            assign feat_mins = feat_txt.size | divided_by: 1100 | at_least: 1
+          endunless
         -%}
         <article class="bl-feat">
           <div class="bl-feat-img">

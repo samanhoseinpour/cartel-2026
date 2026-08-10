@@ -9,17 +9,11 @@
 <script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
 
 {%- liquid
-  assign any_active = 0
-  for f in collection.filters
-    if f.type == 'price_range'
-      if f.min_value.value != null or f.max_value.value != null
-        assign any_active = any_active | plus: 1
-      endif
-    else
-      assign any_active = any_active | plus: f.active_values.size
-    endif
-  endfor
-
+  # `any_active` used to be counted here, on every collection page view. It is
+  # read in exactly one place — the empty-state copy below, which only renders
+  # when the grid comes back with zero products — so the pass over
+  # collection.filters moved down into that branch. On a normal PLP (the
+  # overwhelmingly common case) it no longer runs at all.
   assign show_rail = false
   if section.settings.enable_filtering and collection.filters != empty
     assign show_rail = true
@@ -83,6 +77,19 @@
         <div class="plpmain">
           <div id="ProductGridContainer">
             {%- if collection.products.size == 0 -%}
+              {%- liquid
+                # only needed to word the empty state — see the note at the top
+                assign any_active = 0
+                for f in collection.filters
+                  if f.type == 'price_range'
+                    if f.min_value.value != null or f.max_value.value != null
+                      assign any_active = any_active | plus: 1
+                    endif
+                  else
+                    assign any_active = any_active | plus: f.active_values.size
+                  endif
+                endfor
+              -%}
               <div class="collection" id="product-grid" data-id="{{ section.id }}">
                 <div class="emptywrap">
                   <div class="empty-ic">
