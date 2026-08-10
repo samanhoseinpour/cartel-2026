@@ -3459,8 +3459,11 @@ details-disclosure > details {
   }
 
   :root {
+    /* --sparkle: url('./sparkle.gif') lived here. --easter-egg (used at :3410)
+       is never set to anything but `none`, so the custom property was never
+       substituted and the 179KB GIF was never fetched — but it was still the
+       largest file in the theme bundle. Both deleted. */
     --easter-egg: none;
-    --sparkle: url('./sparkle.gif');
   }
 
   .animate--hover-vertical-lift .button:not(.button--tertiary),

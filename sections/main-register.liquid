@@ -18,14 +18,18 @@
         <div class="ab-glow2"></div>
         <span class="ab-ghost" aria-hidden="true">C</span>
         <div class="ab-top">
+          {%- comment -%}
+            See main-login.liquid — same asset, same reasoning: asset_url does no
+            CDN resizing, so the file itself is display-sized (224x90 for a ~69x28
+            slot at DPR 3), and it is the LCP candidate here so it is not lazy.
+          {%- endcomment -%}
           <img
             class="ab-logo"
             src="{{ 'logo-cream.png' | asset_url }}"
             alt="{{ shop.name | escape }}"
-            width="1367"
-            height="552"
-            loading="lazy"
-            style="filter: none"
+            width="224"
+            height="90"
+            fetchpriority="high"
           >
           <span class="ab-kick">Create your account</span>
           <h2 class="ab-h">Unlock Thuya pro pricing.</h2>
