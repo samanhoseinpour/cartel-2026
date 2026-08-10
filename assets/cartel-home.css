@@ -120,7 +120,9 @@
 .cl .plock{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:700;color:var(--plum)}
 .cl .marqsec{padding:64px 0;text-align:center}
 .cl .marquee{overflow:hidden;max-width:1280px;margin:26px auto 0;-webkit-mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent);mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent)}
-.cl .marquee-track{display:flex;width:max-content;animation:marq 32s linear infinite}
+/* --mq-dur is set inline by cartel-marquee.liquid: item count x 5333ms, so adding
+   brands lengthens the loop instead of speeding it up. 32s is the 6-brand value. */
+.cl .marquee-track{display:flex;width:max-content;animation:marq var(--mq-dur,32s) linear infinite}
 .cl .mq-group{display:flex;gap:60px;padding-right:60px;flex:none}
 .cl .marquee:hover .marquee-track{animation-play-state:paused}
 .cl .brandname{font-weight:800;font-size:30px;color:var(--bord);opacity:.42;letter-spacing:-.025em;white-space:nowrap;transition:.2s;cursor:pointer}
@@ -180,7 +182,9 @@
 .cl .reel-cap{position:absolute;left:15px;right:15px;bottom:14px;z-index:2;color:var(--cream);font-size:13px;font-weight:600;line-height:1.3}
 .cl .reel-like{display:flex;align-items:center;gap:5px;font-size:11px;margin-top:7px;color:rgba(250,246,240,.85);font-weight:500}
 .cl .reviewmarq{margin-top:52px;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
-.cl .reviewtrack{display:flex;width:max-content;animation:marq 48s linear infinite}
+/* --rev-dur is set inline by cartel-reels.liquid: card count x 12000ms, so adding
+   reviews lengthens the loop instead of speeding it up. 48s is the 4-review value. */
+.cl .reviewtrack{display:flex;width:max-content;animation:marq var(--rev-dur,48s) linear infinite}
 .cl .reviewmarq:hover .reviewtrack{animation-play-state:paused}
 @keyframes kb{from{transform:scale(1.008) translate(0,0)}to{transform:scale(1.085) translate(-1.4%,-1%)}}
 @keyframes kbp{from{transform:scale(1.004)}to{transform:scale(1.06)}}

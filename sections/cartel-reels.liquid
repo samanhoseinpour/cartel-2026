@@ -89,24 +89,50 @@
       {%- if block.type == 'review' -%}{%- assign review_count = review_count | plus: 1 -%}{%- endif -%}
     {%- endfor -%}
     {%- if review_count > 0 -%}
+      {%- comment -%}
+        Same seam rule as cartel-marquee.liquid: each .rev-group half must be wider
+        than the visible window or the tail clears the right edge before the loop
+        resets and a blank sliver flashes past. The window here is .sec.wrap —
+        1280px capped, minus 2x40px padding = 1200px. A card is 344px + 20px gap
+        (cartel-home.css:222-223), so 4 cards = 1456px is the smallest half that
+        clears it. Below 4 reviews the list repeats to reach that floor. Duration
+        scales with the card count so the pace stays at the designed ~30px/s.
+      {%- endcomment -%}
+      {%- assign rev_repeats = 4 | divided_by: review_count -%}
+      {%- assign rev_remainder = 4 | modulo: review_count -%}
+      {%- if rev_remainder > 0 -%}{%- assign rev_repeats = rev_repeats | plus: 1 -%}{%- endif -%}
+      {%- if rev_repeats < 1 -%}{%- assign rev_repeats = 1 -%}{%- endif -%}
+      {%- assign rev_duration = review_count | times: rev_repeats | times: 12000 -%}
       <div class="reviewmarq">
-        <div class="reviewtrack">
+        <div class="reviewtrack" style="--rev-dur:{{ rev_duration }}ms">
           {%- for i in (1..2) -%}
-            <div class="rev-group"{% if forloop.last %} aria-hidden="true"{% endif %}>
-              {%- for block in section.blocks -%}
-                {%- if block.type == 'review' -%}
-                  <div class="review" {{ block.shopify_attributes }}>
-                    <div class="stars">★★★★★</div>
-                    <p class="rq">{{ block.settings.quote }}</p>
-                    <div class="rmeta">
-                      <span class="ravatar">{{ block.settings.initials }}</span>
-                      <div>
-                        <div class="rname">{{ block.settings.name }}</div>
-                        <div class="rrole">{{ block.settings.role }}</div>
+            {%- assign rev_first_half = forloop.first -%}
+            <div class="rev-group"{% unless forloop.first %} aria-hidden="true"{% endunless %}>
+              {%- for r in (1..rev_repeats) -%}
+                {%- assign rev_first_pass = forloop.first -%}
+                {%- for block in section.blocks -%}
+                  {%- if block.type == 'review' -%}
+                    {%- comment -%}
+                      shopify_attributes only on the canonical copy, or the theme
+                      editor gets several targets for one block.
+                    {%- endcomment -%}
+                    {%- assign rev_editor_attrs = '' -%}
+                    {%- if rev_first_half and rev_first_pass -%}
+                      {%- assign rev_editor_attrs = block.shopify_attributes -%}
+                    {%- endif -%}
+                    <div class="review" {{ rev_editor_attrs }}>
+                      <div class="stars">★★★★★</div>
+                      <p class="rq">{{ block.settings.quote }}</p>
+                      <div class="rmeta">
+                        <span class="ravatar">{{ block.settings.initials }}</span>
+                        <div>
+                          <div class="rname">{{ block.settings.name }}</div>
+                          <div class="rrole">{{ block.settings.role }}</div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                {%- endif -%}
+                  {%- endif -%}
+                {%- endfor -%}
               {%- endfor -%}
             </div>
           {%- endfor -%}

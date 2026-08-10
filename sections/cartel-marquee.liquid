@@ -1,22 +1,49 @@
 {% comment %}
   Cartel brand marquee — 1:1 with the approved prototype (.marqsec in Home.dc.html).
   Two identical .mq-group halves keep the loop seamless (translateX 0 → -50%).
+
+  The halves must each be at least as wide as the visible .marquee window (capped
+  at 1280px), or the tail of half 2 clears the right edge before the animation
+  resets and a blank sliver flashes through. Six brands only measure ~991px, so
+  the brand list is repeated inside each half until it carries MIN_ITEMS names.
+  Duration scales with the item count so the scroll speed stays at the designed
+  ~31px/s no matter how many brands the client adds.
 {% endcomment %}
+{%- assign brand_count = section.blocks.size -%}
+{%- assign repeats = 1 -%}
+{%- assign duration = 32000 -%}
+{%- if brand_count > 0 -%}
+  {%- assign repeats = 12 | divided_by: brand_count -%}
+  {%- assign remainder = 12 | modulo: brand_count -%}
+  {%- if remainder > 0 -%}{%- assign repeats = repeats | plus: 1 -%}{%- endif -%}
+  {%- if repeats < 1 -%}{%- assign repeats = 1 -%}{%- endif -%}
+  {%- assign duration = brand_count | times: repeats | times: 5333 -%}
+{%- endif -%}
 <div class="cl">
   <section class="marqsec">
     {%- if section.settings.kicker != blank -%}<span class="kick">{{ section.settings.kicker }}</span>{%- endif -%}
     <div class="marquee">
-      <div class="marquee-track">
+      <div class="marquee-track" style="--mq-dur:{{ duration }}ms">
         {%- for i in (1..2) -%}
-          <div class="mq-group"{% if forloop.last %} aria-hidden="true"{% endif %}>
-            {%- for block in section.blocks -%}
-              {%- if block.settings.link != blank -%}
-                <a class="brandname" href="{{ block.settings.link }}" {{ block.shopify_attributes }}>
-                  {{- block.settings.name -}}
-                </a>
-              {%- else -%}
-                <span class="brandname" {{ block.shopify_attributes }}>{{ block.settings.name }}</span>
-              {%- endif -%}
+          {%- assign first_half = forloop.first -%}
+          <div class="mq-group"{% unless forloop.first %} aria-hidden="true"{% endunless %}>
+            {%- for r in (1..repeats) -%}
+              {%- assign first_pass = forloop.first -%}
+              {%- for block in section.blocks -%}
+                {%- comment -%}
+                  shopify_attributes only goes on the canonical copy — repeating it
+                  would give the theme editor several targets for one block.
+                {%- endcomment -%}
+                {%- assign editor_attrs = '' -%}
+                {%- if first_half and first_pass -%}{%- assign editor_attrs = block.shopify_attributes -%}{%- endif -%}
+                {%- if block.settings.link != blank -%}
+                  <a class="brandname" href="{{ block.settings.link }}" {{ editor_attrs }}>
+                    {{- block.settings.name -}}
+                  </a>
+                {%- else -%}
+                  <span class="brandname" {{ editor_attrs }}>{{ block.settings.name }}</span>
+                {%- endif -%}
+              {%- endfor -%}
             {%- endfor -%}
           </div>
         {%- endfor -%}
