@@ -58,10 +58,8 @@
 /* ============================================================
    2. HEADER BAR — design .hdr / .hdr-in (74px, translucent cream)
    ============================================================ */
+/* Fill lives on the ::before in §11a; this copy was dead (overridden 720 lines below). */
 .header-wrapper {
-  background: rgba(250, 246, 240, 0.82);
-  -webkit-backdrop-filter: blur(16px);
-  backdrop-filter: blur(16px);
   border-bottom: 1px solid rgba(var(--cartel-bord), 0.12);
 }
 .header-wrapper .header {
@@ -772,25 +770,25 @@
 .section-header.shopify-section-group-header-group {
   z-index: 45;
 }
-/* §2's backdrop-filter on .header-wrapper makes it the CONTAINING BLOCK
-   for every position:fixed descendant (filters do that) — the search
-   modal below could never cover the viewport: its dim started at the
-   header's bottom edge and the announcement bar stayed crisp. Move the
-   translucent blur onto a ::before pseudo so the wrapper itself stops
-   trapping fixed children. Visually identical. */
+/* A backdrop-filter on .header-wrapper makes it the CONTAINING BLOCK for
+   every position:fixed descendant (filters do that) — the search modal
+   could never cover the viewport: its dim started at the header's bottom
+   edge and the announcement bar stayed crisp. The fill lives on a ::before
+   so the wrapper itself never traps fixed children.
+
+   The blur is gone: sticky_header_type is "always", so a 100vw x 74px
+   backdrop-filter re-blurred the viewport every scroll frame of every page.
+   The page under it is cream, so 0.95 opacity reads the same. The ::before
+   stays — free, and it keeps the fixed-descendant bug from returning. */
 .header-wrapper {
   background: transparent;
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
 }
 .header-wrapper::before {
   content: '';
   position: absolute;
   inset: 0;
   z-index: -1;
-  background: rgba(250, 246, 240, 0.82);
-  -webkit-backdrop-filter: blur(16px);
-  backdrop-filter: blur(16px);
+  background: rgba(250, 246, 240, 0.95);
   pointer-events: none;
 }
 

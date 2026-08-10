@@ -148,7 +148,8 @@
           v.muted = true; v.defaultMuted = true; v.loop = true; v.playsInline = true;
           v.setAttribute('playsinline', '');
           v.removeAttribute('controls');
-          if (!RM) { var pr = v.play(); if (pr && pr.catch) pr.catch(function () {}); }
+          /* No init play() — the observer below starts whatever is on screen.
+             Playing all of them here is what kept N decoders alive at once. */
           ['play', 'pause', 'volumechange'].forEach(function (ev) {
             v.addEventListener(ev, function () { self.icons(reel); });
           });
@@ -156,7 +157,15 @@
         if (play && v) {
           play.addEventListener('click', function (e) {
             e.stopPropagation(); e.preventDefault();
-            if (v.paused) { var pr = v.play(); if (pr && pr.catch) pr.catch(function () {}); } else { v.pause(); }
+            if (v.paused) {
+              /* an explicit play clears the manual-pause flag, so scrolling
+                 away and back resumes the reel the shopper actually wanted */
+              delete v.dataset.clPaused;
+              var pr = v.play(); if (pr && pr.catch) pr.catch(function () {});
+            } else {
+              v.dataset.clPaused = '1';
+              v.pause();
+            }
           });
         }
         if (mute && v) {
@@ -177,17 +186,35 @@
         if (open) open.addEventListener('click', function () { self.openBox(reel); });
         self.icons(reel);
       });
+      /* This observer owns reel playback. It used to only MUTE on exit, which
+         left every video decoding for the life of the page — 8 blocks ship in
+         templates/index.json, and a horizontal carousel means most are off
+         screen at any moment. Pausing is the part that actually frees the
+         decoder. */
       if ('IntersectionObserver' in window) {
         var io = new IntersectionObserver(function (es) {
           es.forEach(function (en) {
             var v = en.target;
-            if (!en.isIntersecting && !v.muted) {
-              v.muted = true;
-              self.reels.forEach(function (r) { self.icons(r); });
+            if (en.isIntersecting) {
+              /* don't fight the shopper's own pause, reduced motion, or the
+                 lightbox — openBox() pauses the tile and resumes it on close */
+              if (RM || v.dataset.clPaused || self.boxOpen) return;
+              var pr = v.play(); if (pr && pr.catch) pr.catch(function () {});
+            } else {
+              if (!v.muted) {
+                v.muted = true;
+                self.reels.forEach(function (r) { self.icons(r); });
+              }
+              v.pause();
             }
           });
         }, { threshold: 0.25 });
         this.querySelectorAll('.reel video').forEach(function (v) { io.observe(v); });
+      } else if (!RM) {
+        /* no IO support — fall back to the old behaviour so the row isn't dead */
+        this.querySelectorAll('.reel video').forEach(function (v) {
+          var pr = v.play(); if (pr && pr.catch) pr.catch(function () {});
+        });
       }
     }
     icons(reel) {
@@ -206,7 +233,11 @@
       }
     }
     openBox(reel) {
+      var self = this;
       var v = reel.querySelector('video');
+      /* the observer checks this so it can't restart the tile underneath
+         the lightbox when the row happens to scroll into view */
+      this.boxOpen = true;
       var wrap = document.createElement('div');
       wrap.className = 'cl';
       wrap.innerHTML =
@@ -231,9 +262,12 @@
       wrap.querySelector('.reelbox-cap').textContent = reel.getAttribute('data-caption') || '';
       var close = function () {
         wrap.remove();
+        self.boxOpen = false;
         document.body.classList.remove('cartel-noscroll');
         document.removeEventListener('keydown', esc);
-        if (v && !RM) { var pr2 = v.play(); if (pr2 && pr2.catch) pr2.catch(function () {}); }
+        if (v && !RM && !v.dataset.clPaused) {
+          var pr2 = v.play(); if (pr2 && pr2.catch) pr2.catch(function () {});
+        }
       };
       var esc = function (e) { if (e.key === 'Escape') close(); };
       wrap.querySelector('.reelbox-close').addEventListener('click', close);
@@ -299,8 +333,36 @@
     }
   }
 
+  /* ---------------- marquee pause ----------------
+     Both homepage marquees (and the About page's) animate `infinite`. That
+     holds a composited layer and keeps the compositor working for as long as
+     the page is open, including while the row is scrolled far out of view —
+     and each track sits inside a mask-image container, which forces its own
+     rasterized layer to be recomposited every frame. Pause them off-screen. */
+  var MQ_SEL = '.cl .marquee-track, .cl .reviewtrack, .cl .ab-mq-track';
+  function marquees(root) {
+    if (!('IntersectionObserver' in window)) return;
+    var tracks = Array.prototype.slice.call((root || document).querySelectorAll(MQ_SEL));
+    if (!tracks.length) return;
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (en) {
+        en.target.classList.toggle('cl-mq-off', !en.isIntersecting);
+      });
+    }, { rootMargin: '120px 0px' });
+    tracks.forEach(function (t) {
+      if (t.__clMq) return;
+      t.__clMq = 1;
+      io.observe(t);
+    });
+  }
+
   /* ---------------- scroll reveal ---------------- */
   var REVEAL_SEL = '.cl .sec-head, .cl .vprops, .cl .carousel, .cl .reelrow, .cl .resgrid, .cl .reviewmarq, .cl .brandspot, .cl .abhome, .cl .news, .cl .ba-chips, .cl .ba-cmp';
+  /* Tracked at module scope so the beforeprint handler can be registered ONCE.
+     It used to be added inside reveal(), which runs again on every
+     shopify:section:load — each call leaked another listener holding its whole
+     `els` array alive. */
+  var revealed = [];
   function reveal(root) {
     if (RM || !('IntersectionObserver' in window)) return;
     if (window.Shopify && window.Shopify.designMode) return;
@@ -319,16 +381,27 @@
         }
       });
     }, { rootMargin: '0px 0px -8% 0px', threshold: 0.05 });
-    els.forEach(function (el) {
-      if (el.__clReveal) return;
+
+    var fresh = els.filter(function (el) {
+      if (el.__clReveal) return false;
       el.__clReveal = 1;
-      if (el.getBoundingClientRect().top > window.innerHeight * 1.15) el.style.opacity = '0';
+      return true;
+    });
+    /* Read every rect FIRST, then write. Interleaving them meant each
+       style.opacity write dirtied layout and the next getBoundingClientRect
+       forced a synchronous re-layout — N forced layouts in one block, at load,
+       on the LCP critical path. */
+    var limit = window.innerHeight * 1.15;
+    var below = fresh.map(function (el) { return el.getBoundingClientRect().top > limit; });
+    fresh.forEach(function (el, i) {
+      if (below[i]) el.style.opacity = '0';
+      revealed.push(el);
       io.observe(el);
     });
-    window.addEventListener('beforeprint', function () {
-      els.forEach(function (el) { el.style.opacity = ''; });
-    });
   }
+  window.addEventListener('beforeprint', function () {
+    revealed.forEach(function (el) { el.style.opacity = ''; });
+  });
 
   var def = function (n, C) { if (!customElements.get(n)) customElements.define(n, C); };
   def('cl-hero', CLHero);
@@ -337,8 +410,13 @@
   def('cl-spotlight', CLSpotlight);
   def('cl-ba', CLBa);
 
+  function start(root) {
+    reveal(root);
+    marquees(root);
+  }
+
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function () { reveal(); });
-  } else { reveal(); }
-  document.addEventListener('shopify:section:load', function (e) { reveal(e.target); });
+    document.addEventListener('DOMContentLoaded', function () { start(); });
+  } else { start(); }
+  document.addEventListener('shopify:section:load', function (e) { start(e.target); });
 })();
