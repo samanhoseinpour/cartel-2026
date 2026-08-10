@@ -84,7 +84,21 @@
     var list = document.querySelector('[data-cl-toc-list]');
     if (!body || !card || !list) return;
 
-    var headings = Array.prototype.slice.call(body.querySelectorAll('h2'));
+    /* Fix 2026-08-10 (client: "the number 6 of the toc is missing"). The posts
+       were imported from Word and 5 of the 70 wrap something that isn't a
+       heading in an <h2> — an <img> on its own, or a <span> holding a single
+       space. textContent.trim() is '' for those, so the row below rendered as a
+       bare counter ("06") linking to the slugify fallback '#section-6'. A
+       heading with no text is not a section, so it never belongs in the TOC:
+       drop it here rather than at the render site, or the counter, the injected
+       ids and the `links`/`headings` index pairing below all drift apart.
+       Ids are derived from text, not position, so every real heading keeps the
+       anchor it already has. */
+    var headings = Array.prototype.slice
+      .call(body.querySelectorAll('h2'))
+      .filter(function (h) {
+        return h.textContent.trim() !== '';
+      });
     if (!headings.length) return; // card stays hidden
 
     var used = {};

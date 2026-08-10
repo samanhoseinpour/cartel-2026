@@ -37,6 +37,22 @@
     assign c_supplies = blog.metafields.custom.count_supplies.value
   endif
   assign curtags_d = current_tags | join: ',' | downcase
+
+  # Fix 2026-08-10. The four category chips used to render unconditionally from
+  # cl_cats above, but Shopify only routes /blogs/<blog>/tagged/<handle> for tags
+  # that some article actually carries — and none of the 70 imported posts is
+  # tagged yet, so all four chips were dead links returning a 404 page. Gate each
+  # chip on the tag existing. Comma-wrapping both sides makes `contains` an exact
+  # match, so an "Education" chip is not satisfied by an "Educational" tag.
+  assign all_tags_d = blog.all_tags | join: ',' | downcase
+  assign all_tags_d = ',' | append: all_tags_d | append: ','
+  assign cat_chips = 0
+  for c in cl_cats
+    assign needle = ',' | append: c | downcase | append: ','
+    if all_tags_d contains needle
+      assign cat_chips = cat_chips | plus: 1
+    endif
+  endfor
 -%}
 <div class="cl">
   <section class="wrap">
@@ -53,49 +69,64 @@
         {%- endif -%}
       </header>
 
-      <div class="bl-filters" id="bl-top">
-        <a
-          class="bl-fchip{% if current_tags == blank %} on{% endif %}"
-          href="{{ blog.url }}"
-        >
-          All
-          {%- if blog.articles_count > 0 -%}
-            <span class="bl-fchip-n">{{ blog.articles_count }}</span>
-          {%- endif -%}
-        </a>
-        {%- for c in cl_cats -%}
-          {%- liquid
-            assign cd = c | downcase
-            assign chip_count = 0
-            case cd
-              when 'technique'
-                assign chip_count = c_technique
-              when 'education'
-                assign chip_count = c_education
-              when 'business'
-                assign chip_count = c_business
-              when 'supplies'
-                assign chip_count = c_supplies
-            endcase
-            assign chip_on = false
-            if curtags_d contains cd
-              assign chip_on = true
-              if chip_count == 0
-                assign chip_count = paginate.items
-              endif
-            endif
-          -%}
+      {%- comment -%}
+        No renderable category chip means the whole row is just a lone "All"
+        pointing at the page you are already on — hide it until the posts carry
+        the tags. The row comes back on its own once they do.
+      {%- endcomment -%}
+      {%- if cat_chips > 0 -%}
+        <div class="bl-filters" id="bl-top">
           <a
-            class="bl-fchip{% if chip_on %} on{% endif %}"
-            href="{{ blog.url }}/tagged/{{ c | handle }}"
+            class="bl-fchip{% if current_tags == blank %} on{% endif %}"
+            href="{{ blog.url }}"
           >
-            {{ c }}
-            {%- if chip_count > 0 -%}
-              <span class="bl-fchip-n">{{ chip_count }}</span>
+            All
+            {%- if blog.articles_count > 0 -%}
+              <span class="bl-fchip-n">{{ blog.articles_count }}</span>
             {%- endif -%}
           </a>
-        {%- endfor -%}
-      </div>
+          {%- for c in cl_cats -%}
+            {%- liquid
+              assign cd = c | downcase
+              assign needle = ',' | append: cd | append: ','
+              assign chip_live = false
+              if all_tags_d contains needle
+                assign chip_live = true
+              endif
+              assign chip_count = 0
+              case cd
+                when 'technique'
+                  assign chip_count = c_technique
+                when 'education'
+                  assign chip_count = c_education
+                when 'business'
+                  assign chip_count = c_business
+                when 'supplies'
+                  assign chip_count = c_supplies
+              endcase
+              assign chip_on = false
+              if curtags_d contains cd
+                assign chip_on = true
+                assign chip_live = true
+                if chip_count == 0
+                  assign chip_count = paginate.items
+                endif
+              endif
+            -%}
+            {%- if chip_live -%}
+              <a
+                class="bl-fchip{% if chip_on %} on{% endif %}"
+                href="{{ blog.url }}/tagged/{{ c | handle }}"
+              >
+                {{ c }}
+                {%- if chip_count > 0 -%}
+                  <span class="bl-fchip-n">{{ chip_count }}</span>
+                {%- endif -%}
+              </a>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
 
       {%- liquid
         assign grid_offset = 0
@@ -125,9 +156,17 @@
           endfor
           assign feat_initials = ''
           assign feat_words = feat.author | strip | split: ' '
-          for w in feat_words limit: 2
+          # `split: ' '` on a name with a double space yields an empty token, so
+          # "Joan  Wong" produced the avatar "J". Skip blanks and stop at two.
+          for w in feat_words
+            if w == blank
+              continue
+            endif
             assign letter = w | slice: 0, 1 | upcase
             assign feat_initials = feat_initials | append: letter
+            if feat_initials.size >= 2
+              break
+            endif
           endfor
           if feat_initials == blank
             assign feat_initials = 'CL'
@@ -296,6 +335,7 @@
                 type="email"
                 name="contact[email]"
                 value="{{ form.email }}"
+                data-cl-form-email="{{ news_form_id }}"
                 aria-label="Email address"
                 placeholder="Your email address"
                 autocomplete="email"

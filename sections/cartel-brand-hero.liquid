@@ -118,7 +118,7 @@
             {%- if block.type == 'chip' -%}
               <a
                 class="bchip{% if block.settings.link == collection.url %} on{% endif %}"
-                href="{{ block.settings.link }}"
+                href="{{ block.settings.link | default: routes.all_products_collection_url }}"
                 {{ block.shopify_attributes }}
               >{{ block.settings.label | escape }}</a>
             {%- endif -%}

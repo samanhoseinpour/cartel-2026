@@ -189,14 +189,30 @@
         </section>
 
       {%- when 'instagram' -%}
+        {%- comment -%}
+          The url setting has no default and the preset adds this block with no
+          settings at all, so both the button and all six tiles rendered
+          href="" target="_blank" — a new tab of the page you are already on.
+          Derive the profile from the handle when the url is unset, and fall back
+          to plain (unlinked) tiles when there is neither.
+        {%- endcomment -%}
+        {%- liquid
+          assign ig_url = block.settings.url
+          if ig_url == blank
+            assign ig_handle = block.settings.handle | remove: '@' | strip
+            if ig_handle != blank
+              assign ig_url = 'https://www.instagram.com/' | append: ig_handle | append: '/'
+            endif
+          endif
+        -%}
         <section class="wrap ab-sec" style="--cl-pt:{{ block.settings.pad_top }}px;--cl-pb:{{ block.settings.pad_bottom }}px" {{ block.shopify_attributes }}>
           <div class="ab-ig-head">
             <div class="ab-sechead" style="margin-bottom:0">
               {%- if block.settings.kick != blank -%}<span class="kick">{{ block.settings.kick }}</span>{%- endif -%}
               {%- if block.settings.heading != blank -%}<h2 class="stitle">{{ block.settings.heading }}</h2>{%- endif -%}
             </div>
-            {%- if block.settings.btn_label != blank -%}
-              <a class="btn btn-out" href="{{ block.settings.url }}" target="_blank" rel="noopener">{{ block.settings.btn_label }}</a>
+            {%- if block.settings.btn_label != blank and ig_url != blank -%}
+              <a class="btn btn-out" href="{{ ig_url }}" target="_blank" rel="noopener">{{ block.settings.btn_label }}</a>
             {%- endif -%}
           </div>
           <div class="ab-ig-wrap">
@@ -210,14 +226,18 @@
                   assign tile = block.settings[tile_key]
                 -%}
                 {%- if tile -%}
-                  <a class="ab-ig-cell" href="{{ block.settings.url }}" target="_blank" rel="noopener">
-                    {{ tile | image_url: width: 520 | image_tag: widths: '300,520', loading: 'lazy', alt: block.settings.handle }}
-                    <div class="ab-ig-shade"></div>
-                    <span class="ab-ig-user">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="5"></rect><circle cx="12" cy="12" r="3.6"></circle><circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none"></circle></svg>
-                      {{- block.settings.handle -}}
-                    </span>
-                  </a>
+                  {%- if ig_url != blank -%}
+                    <a class="ab-ig-cell" href="{{ ig_url }}" target="_blank" rel="noopener">
+                  {%- else -%}
+                    <div class="ab-ig-cell">
+                  {%- endif -%}
+                  {{ tile | image_url: width: 520 | image_tag: widths: '300,520', loading: 'lazy', alt: block.settings.handle }}
+                  <div class="ab-ig-shade"></div>
+                  <span class="ab-ig-user">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="5"></rect><circle cx="12" cy="12" r="3.6"></circle><circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none"></circle></svg>
+                    {{- block.settings.handle -}}
+                  </span>
+                  {%- if ig_url != blank -%}</a>{%- else -%}</div>{%- endif -%}
                 {%- endif -%}
               {%- endfor -%}
             </div>

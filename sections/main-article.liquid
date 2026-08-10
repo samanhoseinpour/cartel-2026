@@ -25,9 +25,17 @@
 
   assign initials = ''
   assign author_words = article.author | strip | split: ' '
-  for w in author_words limit: 2
+  # `split: ' '` on a name with a double space yields an empty token, so
+  # "Joan  Wong" produced the avatar "J". Skip blanks and stop at two.
+  for w in author_words
+    if w == blank
+      continue
+    endif
     assign letter = w | slice: 0, 1 | upcase
     assign initials = initials | append: letter
+    if initials.size >= 2
+      break
+    endif
   endfor
   if initials == blank
     assign initials = 'CL'
@@ -174,9 +182,17 @@
               {%- liquid
                 assign bio_initials = ''
                 assign bio_words = block.settings.name | strip | split: ' '
-                for w in bio_words limit: 2
+                # `split: ' '` on a name with a double space yields an empty token, so
+                # "Joan  Wong" produced the avatar "J". Skip blanks and stop at two.
+                for w in bio_words
+                  if w == blank
+                    continue
+                  endif
                   assign letter = w | slice: 0, 1 | upcase
                   assign bio_initials = bio_initials | append: letter
+                  if bio_initials.size >= 2
+                    break
+                  endif
                 endfor
                 if bio_initials == blank
                   assign bio_initials = 'CL'
@@ -278,6 +294,7 @@
               type="email"
               name="contact[email]"
               value="{{ form.email }}"
+              data-cl-form-email="{{ news_form_id }}"
               aria-label="Email address"
               placeholder="Your email address"
               autocomplete="email"

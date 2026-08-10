@@ -39,7 +39,7 @@
               class="nf-input"
               type="email"
               name="contact[email]"
-              placeholder="{{ section.settings.placeholder }}"
+              placeholder="{{ section.settings.placeholder | escape }}"
               autocomplete="email"
               required
               aria-label="Email address"
@@ -47,7 +47,15 @@
             <button class="nf-btn" type="submit">{{ section.settings.btn_label }}</button>
           </div>
           {%- if form.errors -%}
-            <div class="news-fine" data-cl-form-msg="{{ news_form_id }}">{{ form.errors.messages['email'] }}</div>
+            {%- comment -%}
+              The guard fires for ANY error key but only the email message was
+              printed, so a form-level failure (throttled, already subscribed)
+              rendered a styled, empty box. Fall back to the generic string the
+              journal bands already use.
+            {%- endcomment -%}
+            <div class="news-fine" data-cl-form-msg="{{ news_form_id }}">
+              {{- form.errors.messages['email'] | default: 'Please enter a valid email address.' -}}
+            </div>
           {%- endif -%}
           {%- if section.settings.fine != blank -%}
             <div class="news-fine{{ news_hide }}" data-cl-form-fields="{{ news_form_id }}">

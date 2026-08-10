@@ -182,7 +182,12 @@
             {%- endfor -%}
             {%- for tax_line in order.tax_lines -%}
               <div class="trow">
-                <span class="trow-l">Tax · {{ tax_line.title | escape }} {{ tax_line.rate | times: 100 }}%</span>
+                {%- comment -%}
+                  rate_percentage, not `rate | times: 100`: rate is a decimal, and
+                  Liquid's times on a float keeps the float, so GST printed as
+                  "5.0%".
+                {%- endcomment -%}
+                <span class="trow-l">Tax · {{ tax_line.title | escape }} {{ tax_line.rate_percentage }}%</span>
                 <span class="trow-v">{{ tax_line.price | money }}</span>
               </div>
             {%- endfor -%}

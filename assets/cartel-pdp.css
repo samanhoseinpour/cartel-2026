@@ -214,14 +214,18 @@
 .cl .kick{text-transform:uppercase;letter-spacing:.18em;font-size:12px;font-weight:700;color:var(--plum)}
 .cl .stitle{font-weight:800;font-size:44px;line-height:1.0;letter-spacing:-.035em;color:var(--bord)}
 .cl .stars{color:var(--bronze);letter-spacing:1px}
-.cl .sec{padding-top:88px}
+/* .sec.sec, not .sec: cartel-shell.css:548 sets padding from --cl-pt/--cl-pb and
+   is loaded FIRST (theme.liquid:295 vs :315), so an equal-specificity rule here
+   won this tie on the product template and killed every section's padding
+   control. Same doubling trick as cartel-shell.css:1152 and cartel-home.css:200. */
+.cl .sec.sec{padding-top:88px}
 .cl .sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:34px}
 .cl .sh-l{display:flex;flex-direction:column;gap:12px}
 .cl .review{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:28px 30px}
 .cl .ravatar{width:46px;height:46px;border-radius:50%;background:var(--greige);color:var(--bord);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;flex:none}
 .cl .rq{font-size:14.5px;line-height:1.6;color:var(--ink)}
 @media (max-width:760px){
-  .cl .sec{padding-top:60px}
+  .cl .sec.sec{padding-top:60px}
   .cl .sec-head{margin-bottom:24px}
 }
 
