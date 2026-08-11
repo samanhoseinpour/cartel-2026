@@ -19,6 +19,15 @@
 .cl a.button{color:rgb(var(--color-button-text))}
 .cl input{font:inherit;color:inherit}
 .cl h1,.cl h2,.cl h3{font-weight:800;letter-spacing:-.03em}
+/* base.css colours every h1-h6 with --color-foreground via an ELEMENT selector,
+   and any matching rule beats inheritance. The prototype had no Dawn to fight, so
+   its dark panels — `.bl-news`, `.ab-cta`, `.faqcta`, all `background:var(--bord);
+   color:var(--cream)` — just let their headings inherit cream. Under Dawn those
+   headings came out ink-on-wine: the blog and every article rendered "New guides,
+   in your inbox" at 1.02:1, i.e. invisible. Restore inheritance theme-wide; every
+   cartel heading that names its own colour is (0,2,0) and still wins over this.
+   (--color-foreground and --ink are both #3a2226, so light panels are unchanged.) */
+.cl h1,.cl h2,.cl h3,.cl h4,.cl h5,.cl h6{color:inherit}
 .cl .m0{margin:0}
 .cl .deskonly{display:flex}
 /* spotlight: panels are pre-rendered and stacked, JS toggles [hidden] */
