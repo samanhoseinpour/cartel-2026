@@ -1478,3 +1478,39 @@
 product-recommendations {
   display: block;
 }
+
+/* ============================================================
+   14. .page-width INSIDE A .cl SECTION LOST ITS CENTRING
+   (2026-08-11)
+
+   base.css:84-88 centres every content band with
+   `.page-width{max-width:…;margin:0 auto}`. cartel-home.css:8
+   then lays down the design's reset, `.cl *{margin:0;padding:0}`.
+   Both selectors are (0,1,0), and cartel-home.css loads after
+   base.css (theme.liquid:297-299), so inside a .cl section the
+   reset wins and the auto margins collapse to 0. §0 above
+   re-declares max-width and padding on .page-width but never
+   margin, so the box keeps the right size and gutters and is
+   simply pinned to the left edge of the viewport.
+
+   Header, footer and announcement bar are outside .cl and stayed
+   centred, so on any viewport wider than 1280px they sat on a
+   different axis from the bands below them. Measured live at
+   vw=1512 on cartel-2026/master before this rule:
+
+     header / footer .page-width   left=116  w=1280  m=116/116
+     PDP hero .page-width          left=0    w=1280  m=0/0
+     .rec-wrap ("You may also like")  left=0 w=1280  m=0/0
+     404 body .page-width          left=0    w=1280  m=0/0
+
+   Restored at (0,2,0) rather than by weakening the reset, which
+   every ported .cl section depends on. This also covers the
+   account templates (main-account / -login / -register /
+   -addresses / -order / -activate-account / -reset-password),
+   which use the same wrapper but cannot render on the storefront
+   while the store is on new customer accounts.
+   ============================================================ */
+.cl .page-width {
+  margin-left: auto;
+  margin-right: auto;
+}
