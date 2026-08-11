@@ -168,6 +168,10 @@ h1,.h0,.h1{ font-weight:900; letter-spacing:-.04em; }
 .cartel-gate__btn.button{
   --color-button: var(--cartel-bord);
   --color-button-text: var(--cartel-cream);
+  /* stated literally, not just as a var: this is an <a>, and cartel-home.css's
+     `.cl a{color:inherit}` reset outranks the base.css `.button` rule that would
+     otherwise read --color-button-text. (0,2,0) wins whichever loads last. */
+  color:rgb(var(--cartel-cream));
   border-radius:100px !important;
 }
 .cartel-gate__note{ font-size:1.3rem; color:rgb(var(--cartel-ink)); }
