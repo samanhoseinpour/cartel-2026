@@ -1448,3 +1448,33 @@
 .menu-drawer.menu-drawer .menu-drawer__account {
   letter-spacing: 0;
 }
+
+/* ============================================================
+   13. <product-recommendations> — the element's missing display
+   (2026-08-11)
+
+   Dawn's custom element has no default display, and nothing in
+   any loaded stylesheet gives it one: the only CSS naming it is
+   component-complementary-products.css, which is emitted from
+   inside the complementary block (main-product.liquid:726) and
+   never by theme.liquid. An unknown element computes to
+   display:inline, which makes `page-width` inert on it — an
+   inline box ignores max-width and margin:0 auto, and its block
+   children are laid out against the nearest block ancestor
+   instead, i.e. the full-bleed .cl wrapper.
+
+   That is why the PDP "Complete the kit" grid ran edge to edge.
+   Measured at a 1440px viewport with the real rule set:
+
+     today   display:inline   .rec-grid x=0    w=1440   card 345
+     fixed   display:block    .rec-grid x=120  w=1200   card 285
+
+   Bare element selector on purpose — this is the element's
+   missing default, not a page style — so it also covers the
+   identical latent defect on the PDP complementary block
+   (main-product.liquid:585), which is not in templates/
+   product.json today but would break the day a merchant adds it.
+   ============================================================ */
+product-recommendations {
+  display: block;
+}
