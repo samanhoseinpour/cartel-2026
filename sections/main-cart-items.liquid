@@ -249,6 +249,12 @@
                             <span class="visually-hidden">Decrease quantity for {{ item.product.title | escape }}</span>
                             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 12h14"></path></svg>
                           </button>
+                          {%- comment -%}
+                            min="0" is load-bearing — see snippets/cart-drawer.liquid for the full
+                            reasoning. Short version: stepDown() clamps at min, so min="1" would
+                            make "−" a no-op at the last unit and the "0 removes the line"
+                            behaviour in cart.js:validateQuantity could never fire.
+                          {%- endcomment -%}
                           <input
                             class="qn"
                             type="number"
