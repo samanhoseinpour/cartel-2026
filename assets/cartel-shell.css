@@ -909,6 +909,34 @@
   align-items: flex-start;
   padding: 11vh 20px 20px;
   overflow-y: auto;
+  /* base.css L2678 sets `.search-modal{min-height:calc(100% + margin-offset +
+     2*border-width)}` for Dawn's inline band. This rule overrides `height` but
+     NOT `min-height`, so the fixed overlay stayed ~2px taller than its own box
+     — a permanent scrollbar. (0,3,0) beats base's (0,1,0). */
+  min-height: 0;
+}
+/* Dawn's <div class="modal-overlay"> is 0px tall and position:static, and
+   base.css L2665 hangs its dimming scrim off `::after{top:100%;height:100vh}`.
+   In stock Dawn that scrim dims the page below a short header band. Here the
+   nearest positioned ancestor is the full-viewport fixed overlay above, so
+   `top:100%` lands at the bottom edge and the scrim becomes a second screenful
+   of scrollable content INSIDE an overflow-y:auto box — the reported bug: the
+   search panel scrolls off the top and the scrim's edge slides through frame.
+   The overlay already dims and blurs on its own, so drop the scrim entirely
+   and give the div the viewport instead: details-modal.js closes on
+   `event.target.classList.contains('modal-overlay')`, which a 0px-tall div
+   could never satisfy, so this also makes click-outside close the search.
+   position:fixed resolves against the blurred ancestor (a backdrop-filter
+   element is a containing block for fixed descendants) — same geometry, and it
+   stays put if a tall predictive dropdown scrolls the overlay. */
+.header__search .search-modal .modal-overlay {
+  display: block;
+  position: fixed;
+  inset: 0;
+  background: none;
+}
+.header__search .search-modal .modal-overlay::after {
+  content: none;
 }
 .header__search .search-modal__content {
   /* the design's .search-panel is border-box (.cl * reset), so min(680px,100%)
@@ -928,6 +956,7 @@
   box-shadow: 0 40px 90px rgba(40, 8, 18, 0.4);
   position: relative;
   min-height: 0;
+  z-index: 1; /* above the now full-viewport .modal-overlay sibling */
 }
 .header__search .search-modal__form {
   width: 100%;
