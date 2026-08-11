@@ -1,0 +1,77 @@
+{% comment %}
+  Compact horizontal product card for the cart drawer's "You may also like"
+  strip.
+
+  Deliberately NOT snippets/cartel-card.liquid:
+    - that snippet is frozen (docs/lane-reports/7c-cart.md);
+    - it is vertical and carries class="card", which cartel-home.css:105 pins at
+      flex:0 0 296px on EVERY template — two thirds of a 440px drawer;
+    - it derives its form id from section.id (:25), and `section` is nil in the
+      drawer, so ids would collapse to `cartel-add--{product id}` and collide.
+
+  No <form> and no <product-form> here, on purpose:
+    - assets/product-form.js is loaded per SECTION (main-product:43,
+      featured-product:510, the three grids, cartel-product-row:25,
+      main-cart-items:15) and never by layout/theme.liquid, so a <product-form>
+      in the always-rendered drawer would be inert on /blogs, /pages, /404 and
+      the account templates;
+    - a <form> anywhere under #CartDrawer-Form would be dropped by the HTML
+      parser, taking product-form.js's unguarded this.form with it.
+  The button is driven by the delegated handler in assets/cartel-conversion.js.
+
+  Accepts:
+    - card_product: {product} required. The caller has already excluded products
+      that are in the bag, sold out, $0 "price on request" or Thuya-gated.
+
+  Usage:
+    {% render 'cartel-drawer-upsell-card', card_product: p %}
+{% endcomment %}
+{%- liquid
+  assign p = card_product
+  assign v = p.selected_or_first_available_variant
+-%}
+<li class="uc">
+  {%- comment -%}
+    ONE link around image, name and price. cartel-card.liquid uses two (:30 and
+    :43); here that would be 3 cards x 3 stops = 9 tab stops before Checkout.
+    alt is empty on purpose — the link's accessible name is the title inside it,
+    and a duplicated name is announced twice.
+  {%- endcomment -%}
+  <a class="uc-link" href="{{ p.url }}">
+    {%- if p.featured_media -%}
+      {{
+        p.featured_media
+        | image_url: width: 160
+        | image_tag: class: 'uc-photo', widths: '52,104,156', sizes: '52px', loading: 'lazy', alt: ''
+      }}
+    {%- else -%}
+      {{ 'product-1' | placeholder_svg_tag: 'uc-photo' }}
+    {%- endif -%}
+    <span class="uc-txt">
+      <span class="uc-name">{{ p.title | escape }}</span>
+      <span class="uc-price">{{ v.price | money }}</span>
+    </span>
+  </a>
+  {%- if p.variants_count > 1 -%}
+    {%- comment -%}
+      Multiple variants cannot be quick-added without a picker, so this one
+      leaves the bag for the product page.
+    {%- endcomment -%}
+    <a class="btn btn-out uc-add" href="{{ p.url }}">Options</a>
+  {%- else -%}
+    {%- comment -%}
+      type="button" and no form= attribute: this sits outside #CartDrawer-Form,
+      and with JS off it must do nothing rather than POST /cart and lose the bag.
+    {%- endcomment -%}
+    <button
+      type="button"
+      class="btn btn-fill uc-add"
+      data-uc-add="{{ v.id }}"
+      data-uc-title="{{ p.title | escape }}"
+      aria-label="Add {{ p.title | escape }} to your bag"
+    >
+      <span class="uc-add-t">+ Add</span>
+      {%- render 'loading-spinner' -%}
+    </button>
+  {%- endif -%}
+</li>
