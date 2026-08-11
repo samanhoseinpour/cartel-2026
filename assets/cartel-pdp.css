@@ -243,8 +243,21 @@
 .cl .p-save{font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--bord);background:var(--bronze);border-radius:100px;padding:6px 12px}
 
 /* ---- hero grid wrappers ---- */
-.cl .phero > .product__media-wrapper{min-width:0}
+/* align-self:stretch is what makes `.cl .gallery{position:sticky}` (L44) actually
+   stick. In the prototype .gallery WAS the grid child, so its grid area spanned
+   the whole row and it had room to travel. Dawn wraps it in this div, and
+   `.phero{align-items:start}` shrink-wraps the wrapper to the gallery's own
+   height — a sticky box whose containing block is exactly its own size never
+   moves. Stretched to the row, the gallery pins under the sticky header and
+   rides the taller info column down, releasing when the hero ends.
+   Inert below 900px, where L181 already returns .gallery to position:static. */
+.cl .phero > .product__media-wrapper{min-width:0;align-self:stretch}
 .cl .phero > .product__info-wrapper{padding:0;min-width:0;max-width:none;width:auto}
+/* product.json has enable_sticky_info:true, which puts Dawn's
+   .product__column-sticky on BOTH columns. On the info column it is inert today
+   (its wrapper is not stretched, so zero travel) — pin that shut so a future
+   layout change can't start floating the right column against the design. */
+.cl .phero .product__info-container.product__column-sticky{position:static}
 .cl .product .product__view-details{display:none}
 
 /* ---- gallery: media-gallery.gallery > GalleryViewer.gal-main + GalleryThumbnails.gal-rail ---- */
