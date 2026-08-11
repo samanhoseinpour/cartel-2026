@@ -247,7 +247,30 @@
           </div>
           <div id="CartDrawer-CartErrors" class="dw-errs" role="alert"></div>
         </form>
+        {%- comment -%}
+          "You may also like" strip. This exact node — inside <cart-drawer-items>,
+          outside #CartDrawer-Form — is the only one every re-render path rebuilds:
+            qty / remove   cart.js:223 + cart-drawer.js:129 -> .drawer__inner.innerHTML
+            add from a PDP cart-drawer.js:83                -> #CartDrawer.innerHTML
+            cartUpdate     cart.js:118                      -> replaceWith cart-drawer-items
+            + Add          cartel-conversion.js             -> replaceWith cart-drawer-items
+          A sibling BETWEEN </cart-drawer-items> and .cart-drawer__footer misses the
+          third path and would keep offering a product already in the bag. Inside
+          #CartDrawer-CartItems it would scroll away with the line items, and a
+          <form> cannot nest inside #CartDrawer-Form.
+        {%- endcomment -%}
+        {%- render 'cartel-drawer-upsell' -%}
       </cart-drawer-items>
+
+      {%- comment -%}
+        Announces quick-adds from the strip. It has to live out here:
+        #CartDrawer-LiveRegionText sits inside #CartDrawer-CartItems, which every
+        add destroys and recreates, and a live region that is removed and
+        re-inserted already holding its text is not reliably announced. This node
+        is a direct child of .drawer__inner, which the quick-add path never
+        replaces, so it is in the accessibility tree before the text changes.
+      {%- endcomment -%}
+      <p id="CartDrawer-UpsellStatus" class="visually-hidden" role="status" aria-live="polite"></p>
 
       <div class="cart-drawer__footer dw-foot">
         {%- if cart != empty -%}

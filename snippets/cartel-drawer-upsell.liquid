@@ -1,0 +1,119 @@
+{% comment %}
+  Cart-drawer "You may also like" strip. Rendered from snippets/cart-drawer.liquid
+  INSIDE <cart-drawer-items>, after </form> — see that file for why that node and
+  no other survives every one of the drawer's re-render paths.
+
+  There is no `section` object here: layout/theme.liquid:404 renders the drawer
+  snippet straight into <body>, so section.settings and section.id are nil.
+  Everything below comes from the cart or from settings.*.
+
+  Cost, on EVERY template:
+    - cart.item_count == 0 (most sessions) exits before any lookup;
+    - a bag of 5+ lines exits too: the strip would leave under one cart line
+      visible in the scroller, and a 5-line shopper is already converted;
+    - the cart PAGE exits: it owns this job already (main-cart-items.liquid .rec),
+      and a drawer add there would leave the page's own <cart-items> stale;
+    - then <=3 cartel-pick-collection calls (handle + all_products_count only,
+      never .products), and exactly ONE collection.products fetch, iterated at
+      most 12 times, 3 cards maximum.
+
+  Usage:
+    {% render 'cartel-drawer-upsell' %}
+{% endcomment %}
+{%- if cart.item_count > 0 and cart.items.size <= 4 and request.page_type != 'cart' -%}
+  {%- liquid
+    assign up_want = 3
+    assign up_deny = 'all, frontpage, best-sellers, best-selling-collection, new-collection, clearance'
+    assign up_handle = ''
+
+    # settings.cart_drawer_collection already exists in settings_schema.json
+    # (Dawn ships it, this theme never referenced it) — a merchant override that
+    # is already visible in the theme editor. A collection-type setting resolves
+    # to a collection object, so read .handle and fall back to the raw value.
+    assign up_prefer = settings.cart_drawer_collection.handle | default: settings.cart_drawer_collection
+    if up_prefer != blank
+      assign up_handle = up_prefer
+    else
+      # cart.items is ordered by first-add, so reversing puts the newest line
+      # first and the strip follows what the shopper most recently chose.
+      assign up_recent = cart.items | reverse
+      for up_item in up_recent limit: 3
+        if up_handle != blank
+          break
+        endif
+        capture up_try
+          render 'cartel-pick-collection', source: up_item.product, count: up_want, deny: up_deny
+        endcapture
+        assign up_handle = up_try | strip
+      endfor
+    endif
+
+    # Two steps: a filter cannot be applied inside a bracket lookup.
+    assign up_key = up_handle | strip
+    assign up_coll = collections[up_key]
+  -%}
+  {%- if up_coll != blank -%}
+    {%- liquid
+      # One delimited string instead of a nested scan per candidate — same trick
+      # as main-cart-items.liquid:497. Commas on both ends make it an exact id
+      # match, so 123 cannot match inside 1234.
+      assign up_pids = cart.items | map: 'product' | map: 'id' | join: ',' | prepend: ',' | append: ','
+      assign up_n = 0
+    -%}
+    {%- comment -%}
+      Captured because the wrapper must not be emitted when nothing qualifies —
+      an empty bordered strip with a heading is worse than no strip.
+    {%- endcomment -%}
+    {%- capture up_cards -%}
+      {%- for up_p in up_coll.products limit: 12 -%}
+        {%- if up_n >= up_want -%}
+          {%- break -%}
+        {%- endif -%}
+        {%- liquid
+          assign up_pid = up_p.id | prepend: ',' | append: ','
+          assign up_v = up_p.selected_or_first_available_variant
+          assign up_ok = true
+
+          # already in the bag
+          if up_pids contains up_pid
+            assign up_ok = false
+          endif
+          # nothing to add
+          if up_p.available == false
+            assign up_ok = false
+          endif
+          # "Price on request" SKUs route to /pages/contact (cartel-card.liquid:75).
+          # That is an enquiry, not an impulse add — it cannot pay for a slot here.
+          if up_v.price == 0
+            assign up_ok = false
+          endif
+          # Thuya is login-gated. A card that can only say "Log in to see price"
+          # cannot convert, and the footer's .dw-lock already explains the gate.
+          if up_p.vendor == 'Thuya' and customer == nil
+            assign up_ok = false
+          endif
+
+          if up_ok
+            assign up_n = up_n | plus: 1
+            render 'cartel-drawer-upsell-card', card_product: up_p
+          endif
+        -%}
+      {%- endfor -%}
+    {%- endcapture -%}
+    {%- if up_n > 0 -%}
+      <div class="dw-up">
+        {%- comment -%}
+          h3, not h2: the dialog's own name is the h2.dw-title "Your bag (n)".
+          Card names below are spans, not headings — three more headings would
+          bury "Your bag" in a screen reader's heading list. role="list" is
+          explicit because display:flex on a list-style:none <ul> drops list
+          semantics in Safari/VoiceOver.
+        {%- endcomment -%}
+        <h3 class="dw-up-h" id="CartDrawer-UpsellHeading">You may also like</h3>
+        <ul class="dw-up-rail" role="list" aria-labelledby="CartDrawer-UpsellHeading">
+          {{ up_cards }}
+        </ul>
+      </div>
+    {%- endif -%}
+  {%- endif -%}
+{%- endif -%}

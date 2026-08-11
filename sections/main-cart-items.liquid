@@ -485,7 +485,37 @@
       <div class="saved-grid" data-saved-grid></div>
     </section>
 
-    {%- assign rec_coll = collections[section.settings.rec_collection] -%}
+    {%- comment -%}
+      2026-08-11: rec_collection has never been set in templates/cart.json (only
+      rec_title and rec_sub are), so this whole block rendered NOTHING on the live
+      cart page. It now falls back to the same bag-derived pick the drawer strip
+      uses, and the merchant's own choice still wins when they set one.
+
+      Cost, on /cart only: <=3 cartel-pick-collection calls, which read handle and
+      all_products_count and never touch .products. The single collection.products
+      fetch below is unchanged — the block already did that.
+    {%- endcomment -%}
+    {%- liquid
+      assign rec_deny = 'all, frontpage, best-sellers, best-selling-collection, new-collection, clearance'
+      assign rec_handle = section.settings.rec_collection.handle | default: section.settings.rec_collection
+
+      if rec_handle == blank
+        assign rec_recent = cart.items | reverse
+        for rec_item in rec_recent limit: 3
+          if rec_handle != blank
+            break
+          endif
+          capture rec_try
+            render 'cartel-pick-collection', source: rec_item.product, count: 4, deny: rec_deny
+          endcapture
+          assign rec_handle = rec_try | strip
+        endfor
+      endif
+
+      # Two steps: a filter cannot be applied inside a bracket lookup.
+      assign rec_key = rec_handle | strip
+      assign rec_coll = collections[rec_key]
+    -%}
     {%- if rec_coll.products.size > 0 or request.design_mode -%}
       <section class="rec">
         <div class="rec-head">

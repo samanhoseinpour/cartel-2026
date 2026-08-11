@@ -167,3 +167,162 @@
     }
   }
 })();
+
+/* ---------- cart-drawer "You may also like" quick add (2026-08-11) ----------
+   Markup: snippets/cartel-drawer-upsell*.liquid, inside <cart-drawer-items>.
+   The handler lives here because this is the file theme.liquid already loads on
+   every template, and the drawer is rendered on every template.
+
+   Why not Dawn's <product-form>:
+   1. assets/product-form.js is loaded per SECTION (main-product:43,
+      featured-product:510, the three grids, cartel-product-row:25,
+      main-cart-items:15) and never by layout/theme.liquid. A <product-form> in
+      the always-rendered drawer would be inert on /blogs, /pages, /404 and the
+      account templates. Loading it from the drawer snippet would add a request
+      to EVERY page for a control most sessions never see.
+   2. It double-renders. product-form.js publishes cartUpdate with source
+      'product-form', which cart.js:38-41 turns into a SECOND
+      `?section_id=cart-drawer` fetch plus a replaceWith of cart-drawer-items and
+      .cart-drawer__footer; then it calls cart-drawer.js renderContents, which
+      rewrites all of #CartDrawer. Two round trips and two full rebuilds a click.
+   3. It leaves focus on <body>: renderContents destroys the clicked button and
+      its open() early-returns, so trapFocus never re-runs.
+   4. It needs a <form>, which cannot be nested inside #CartDrawer-Form.
+
+   One POST, three surgical swaps, focus and the focus trap both restored.
+   Modelled on assets/cartel-cart.js:219 moveToBag(). */
+(() => {
+  'use strict';
+
+  /* .dw-head carries the "Your bag (n)" count and is a direct child of
+     .drawer__inner, so it is NOT one of the two nodes cart.js:118 refreshes —
+     it has to be swapped explicitly or the count goes stale. */
+  const SWAP = ['.dw-head', 'cart-drawer-items', '.cart-drawer__footer'];
+  let busy = false;
+
+  const drawer = () => document.getElementById('CartDrawer');
+
+  function announce(msg) {
+    const live = document.getElementById('CartDrawer-UpsellStatus');
+    if (!live) return;
+    /* Clear first, then set on a tick, so two adds worded identically still
+       register as a change for assistive tech. */
+    live.textContent = '';
+    window.setTimeout(() => {
+      live.textContent = msg;
+    }, 60);
+  }
+
+  function applyDrawer(html) {
+    const root = drawer();
+    if (!root) return;
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    SWAP.forEach((sel) => {
+      const src = doc.querySelector(sel);
+      const dst = root.querySelector(sel);
+      /* replaceWith adopts the parsed node, which upgrades <cart-drawer-items>
+         and runs its connectedCallback (re-subscribing to cartUpdate) while the
+         old one's disconnectedCallback unsubscribes — the same mechanism
+         cart.js:118 relies on. */
+      if (src && dst) dst.replaceWith(src);
+    });
+  }
+
+  function applyBubble(html) {
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    const src = doc.querySelector('.shopify-section');
+    const dst = document.getElementById('cart-icon-bubble');
+    if (src && dst) dst.innerHTML = src.innerHTML;
+  }
+
+  function restoreFocus() {
+    const root = drawer();
+    if (!root) return;
+    const next =
+      root.querySelector('[data-uc-add]') ||
+      document.getElementById('CartDrawer-Checkout') ||
+      root.querySelector('.drawer__close');
+    if (!next) return;
+    /* trapFocus snapshots first/last at call time (global.js:90-92) and ours are
+       detached now. This one call re-arms the trap AND moves focus. */
+    if (typeof trapFocus === 'function') trapFocus(root, next);
+    else next.focus();
+  }
+
+  function reset(btn, spinner) {
+    busy = false;
+    btn.disabled = false;
+    btn.removeAttribute('aria-disabled');
+    if (spinner) spinner.classList.add('hidden');
+  }
+
+  function fail(btn, spinner, msg) {
+    reset(btn, spinner);
+    /* Nothing is swapped on failure, so #CartDrawer-CartErrors (role="alert")
+       is still the same node and its text change fires. */
+    const errs = document.getElementById('CartDrawer-CartErrors');
+    if (errs) errs.textContent = msg;
+    else announce(msg);
+  }
+
+  function quickAdd(btn) {
+    const id = btn.getAttribute('data-uc-add');
+    if (!id || busy) return;
+    const title = btn.getAttribute('data-uc-title') || 'Item';
+    const spinner = btn.querySelector('.loading__spinner');
+
+    busy = true;
+    btn.disabled = true;
+    btn.setAttribute('aria-disabled', 'true');
+    if (spinner) spinner.classList.remove('hidden');
+    const errs = document.getElementById('CartDrawer-CartErrors');
+    if (errs) errs.textContent = '';
+
+    const url = ((window.routes && window.routes.cart_add_url) || '/cart/add') + '.js';
+    fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/javascript' },
+      body: JSON.stringify({
+        items: [{ id: Number(id), quantity: 1 }],
+        sections: ['cart-drawer', 'cart-icon-bubble'].join(','),
+        sections_url: window.location.pathname,
+      }),
+    })
+      .then((res) => res.json().then((data) => ({ ok: res.ok, data: data })))
+      .then(({ ok, data }) => {
+        if (!ok || data.status) {
+          fail(btn, spinner, data.description || data.message || 'Sorry, that could not be added.');
+          return;
+        }
+        const sections = data.sections || {};
+        if (sections['cart-drawer']) applyDrawer(sections['cart-drawer']);
+        if (sections['cart-icon-bubble']) applyBubble(sections['cart-icon-bubble']);
+        busy = false;
+
+        /* 'cart-items' is the one source cart.js:39 skips. The drawer has already
+           rendered itself from the sections in THIS response, so a second
+           `?section_id=cart-drawer` fetch would be pure waste — every other
+           cartUpdate subscriber still hears the event. PUB_SUB_EVENTS is a
+           top-level const in constants.js, so it is a global BINDING, not a
+           window property. */
+        if (typeof publish === 'function' && typeof PUB_SUB_EVENTS !== 'undefined') {
+          publish(PUB_SUB_EVENTS.cartUpdate, { source: 'cart-items', cartData: data, productVariantId: id });
+        }
+
+        restoreFocus();
+        announce(title + ' added to your bag.');
+      })
+      .catch(() => {
+        fail(btn, spinner, 'Sorry, that could not be added. Try again.');
+      });
+  }
+
+  /* Delegated so the drawer's re-render paths cannot detach it. */
+  document.addEventListener('click', (event) => {
+    const target = event.target instanceof Element ? event.target : null;
+    const btn = target && target.closest('[data-uc-add]');
+    if (!btn) return;
+    event.preventDefault();
+    quickAdd(btn);
+  });
+})();
