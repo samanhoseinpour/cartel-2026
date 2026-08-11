@@ -9,6 +9,14 @@
 .cl img{display:block;max-width:100%}
 .cl button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .cl a{color:inherit;text-decoration:none;cursor:pointer}
+/* ...but the reset above is meant for the design's own bare links, and it also
+   catches every Dawn .button rendered as an <a>: `.cl a` (0,1,1) beats base.css
+   `.button{color:rgb(var(--color-button-text))}` (0,1,0) and loads after it, so
+   those buttons inherited the surrounding body colour — that is what painted the
+   Thuya "Log in to view pricing" pill wine-on-wine. Opt anchor-buttons back out.
+   (0,2,1), so cartel's own deliberate skins — all (0,3,0)+, e.g. cartel-pdp.css
+   `.cl .cartel-enquire.button` — still win. */
+.cl a.button{color:rgb(var(--color-button-text))}
 .cl input{font:inherit;color:inherit}
 .cl h1,.cl h2,.cl h3{font-weight:800;letter-spacing:-.03em}
 .cl .m0{margin:0}
