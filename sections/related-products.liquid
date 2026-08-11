@@ -1,7 +1,31 @@
 {% comment %}
-  Cartel related products — .rec-grid of cartel-card renders inside Dawn's
-  <product-recommendations> element (global.js fetches the recommendations endpoint
-  and swaps this element's innerHTML, so the grid must live inside it).
+  Cartel related products — "Complete the kit".
+
+  Sourcing (2026-08-11): the row is built from the product's own most specific
+  collection, not Shopify's algorithmic picks, and only tops up from
+  `recommendations.products` when that collection cannot fill the row. The
+  picker lives in snippets/cartel-pick-collection.liquid so the cart page and
+  the cart drawer share one rule.
+
+  Still inside Dawn's <product-recommendations> fetch contract (global.js:1201
+  swaps this element's innerHTML with the same section re-rendered by
+  /recommendations/products). Three consequences shape this file:
+
+  1. `recommendations` exists ONLY on that endpoint render, so on the first page
+     render this element ships EMPTY. `product` IS populated there from
+     ?product_id=, which is what makes product.collections available. The bare
+     `collection` object is NOT — Liquid cannot read query params — so the row
+     cannot know which collection the shopper arrived from; the size heuristic
+     in the picker is the substitute.
+  2. Only innerHTML is swapped. page-width and the padding class therefore sit
+     on the inner .rec-wrap, which only exists when there are cards: with them
+     on the element, a dead row painted an 88px blank band (measured) instead of
+     collapsing to 0.
+  3. The cards are captured before the heading is written, so a row with nothing
+     in it renders no heading and no wrapper at all.
+
+  The element itself is given `display:block` by cartel-shell.css §13 — without
+  it page-width is inert, because an unknown element is display:inline.
 {% endcomment %}
 {%- style -%}
   .section-{{ section.id }}-padding {
@@ -17,26 +41,53 @@
   }
 {%- endstyle -%}
 
+{%- liquid
+  # Ask the endpoint for a few extra candidates so the fill still has something
+  # left after duplicates with the collection are dropped. 10 is Shopify's cap.
+  assign rec_limit = section.settings.products_to_show | plus: 4 | at_most: 10
+
+  # Storefront: build only on the endpoint render, so a plain PDP response does
+  # no collection work at all. Editor: build on the section render too, or the
+  # merchant sees an empty band.
+  assign rec_build = false
+  if recommendations.performed
+    assign rec_build = true
+  elsif request.design_mode
+    assign rec_build = true
+  endif
+-%}
+{%- capture rec_cards -%}
+  {%- if rec_build -%}
+    {%- render 'cartel-related-cards',
+      source: product,
+      count: section.settings.products_to_show,
+      deny: section.settings.exclude_collections,
+      fill: recommendations.products,
+      stub: request.design_mode
+    -%}
+  {%- endif -%}
+{%- endcapture -%}
+
 <div class="cl color-{{ section.settings.color_scheme }} gradient">
   <product-recommendations
-    class="related-products page-width section-{{ section.id }}-padding isolate"
-    data-url="{{ routes.product_recommendations_url }}?limit={{ section.settings.products_to_show }}"
+    class="related-products isolate"
+    data-url="{{ routes.product_recommendations_url }}?limit={{ rec_limit }}"
     data-section-id="{{ section.id }}"
     data-product-id="{{ product.id }}"
   >
-    {% if recommendations.performed and recommendations.products_count > 0 %}
-      <div class="sec-head">
-        <div class="sh-l">
-          <span class="kick">Complete the kit</span>
-          <h2 class="stitle">{{ section.settings.heading }}</h2>
+    {%- if rec_cards != blank -%}
+      <div class="rec-wrap page-width section-{{ section.id }}-padding">
+        <div class="sec-head">
+          <div class="sh-l">
+            {%- if section.settings.kicker != blank -%}
+              <span class="kick">{{ section.settings.kicker }}</span>
+            {%- endif -%}
+            <h2 class="stitle">{{ section.settings.heading }}</h2>
+          </div>
         </div>
+        <div class="rec-grid">{{ rec_cards }}</div>
       </div>
-      <div class="rec-grid">
-        {% for recommendation in recommendations.products %}
-          {% render 'cartel-card', card_product: recommendation %}
-        {% endfor %}
-      </div>
-    {% endif %}
+    {%- endif -%}
   </product-recommendations>
 </div>
 
@@ -48,7 +99,14 @@
   "settings": [
     {
       "type": "paragraph",
-      "content": "t:sections.related-products.settings.paragraph__1.content"
+      "content": "Shows other products from the same collection as the product being viewed — the smallest collection it belongs to that is not in the ignore list. If that collection cannot fill the row, Shopify's own recommendations top it up."
+    },
+    {
+      "type": "text",
+      "id": "kicker",
+      "default": "Complete the kit",
+      "label": "Eyebrow",
+      "info": "Small line above the heading. Leave blank to hide it."
     },
     {
       "type": "inline_richtext",
@@ -64,6 +122,13 @@
       "step": 1,
       "default": 4,
       "label": "t:sections.related-products.settings.products_to_show.label"
+    },
+    {
+      "type": "text",
+      "id": "exclude_collections",
+      "default": "all, frontpage, best-sellers, best-selling-collection, new-collection, clearance",
+      "label": "Collections to ignore",
+      "info": "Comma-separated handles. Catch-all collections belong here so the row never sources from them."
     },
     {
       "type": "color_scheme",

@@ -1,0 +1,74 @@
+{% comment %}
+  Picks ONE collection to draw "you may also like" products from, given a
+  product to find neighbours for. Echoes a collection HANDLE, or nothing.
+
+  {% render %} cannot assign into its caller, so callers capture the output:
+
+    {%- capture cl_h -%}
+      {%- render 'cartel-pick-collection', source: product, count: 4 -%}
+    {%- endcapture -%}
+    {%- assign cl_key = cl_h | strip -%}
+    {%- assign cl_coll = collections[cl_key] -%}
+
+  Note the two steps: a filter cannot be applied inside a bracket lookup, so
+  `collections[cl_h | strip]` is a Liquid syntax error.
+
+  Accepts:
+    - source: {product} the product to find neighbours for. Required.
+    - count:  {number}  how many cards the caller wants. Default 4.
+    - deny:   {string}  comma-separated handles to never pick. Optional.
+
+  The rule — "most specific collection" made deterministic:
+    - skip anything in the denylist;
+    - need = count + 1, because `source` is almost always in its own collection;
+    - among candidates with all_products_count >= need, take the SMALLEST;
+    - if none qualifies, take the LARGEST with >= 2 (a count of 1 means it holds
+      only `source`) and let the caller's fill cover the shortfall;
+    - ties keep the first collection Shopify returns, so the row is stable
+      between renders.
+
+  Cost: this reads handle and all_products_count ONLY. It never touches
+  .products, so no candidate collection's products are loaded — resolving the
+  handle is the caller's job and the caller does it exactly once. That matters
+  because the cart drawer calls this on every template.
+
+  Why size and not position: the store's catch-alls are large (all 89,
+  best-selling-collection 86, new-collection 86) and its real categories are
+  small (eyelash-extensions 11, accessories 10, brushes 2), so the size rule
+  demotes the catch-alls on its own. The denylist is belt-and-braces and is
+  merchant-editable, deliberately: this theme already hardcodes four collection
+  handles that do not exist on the live store (templates/index.json,
+  main-cart-items.liquid:108-111), so nothing here hardcodes one.
+{% endcomment %}
+{%- liquid
+  assign cl_want = count | default: 4
+  assign cl_need = cl_want | plus: 1
+  assign cl_deny = deny | default: '' | downcase | strip_newlines | replace: ' ', '' | prepend: ',' | append: ','
+
+  assign cl_best = ''
+  assign cl_best_n = 0
+  assign cl_part = ''
+  assign cl_part_n = 1
+
+  for cl_c in source.collections
+    assign cl_key = cl_c.handle | prepend: ',' | append: ','
+    unless cl_deny contains cl_key
+      assign cl_n = cl_c.all_products_count
+      if cl_n >= cl_need
+        if cl_best_n == 0 or cl_n < cl_best_n
+          assign cl_best = cl_c.handle
+          assign cl_best_n = cl_n
+        endif
+      elsif cl_n > cl_part_n
+        assign cl_part = cl_c.handle
+        assign cl_part_n = cl_n
+      endif
+    endunless
+  endfor
+
+  if cl_best != ''
+    echo cl_best
+  else
+    echo cl_part
+  endif
+-%}
