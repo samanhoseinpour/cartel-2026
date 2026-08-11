@@ -1,0 +1,85 @@
+{% comment %}
+  Cartel "same collection" card list. Renders CARDS ONLY — the caller owns the
+  grid element and the {% capture %} — so the PDP row and the cart page can
+  share one picker without sharing a wrapper.
+
+  Accepts:
+    - source: {product} the product to find neighbours for. Required.
+    - count:  {number}  how many cards to render. Default 4.
+    - deny:   {string}  comma-separated collection handles to never pick.
+    - fill:   {array}   optional top-up list, e.g. recommendations.products.
+    - skip:   {string}  extra product ids to exclude, comma-delimited with a
+                        leading AND trailing comma (e.g. ",1,2,"). Optional —
+                        the cart page passes what is already in the bag.
+    - stub:   {boolean} when true and nothing matched, render `count` blank
+                        cartel-cards. THEME EDITOR ONLY: on the storefront a
+                        blank card is a $00.00 link to nowhere.
+
+  {% render %} does not inherit the caller's assigns, so every input is a
+  parameter; `section` (which cartel-card uses for its form id) and `customer`
+  (the Thuya gate) still resolve as globals.
+{% endcomment %}
+{%- liquid
+  assign rc_want = count | default: 4
+
+  capture rc_handle
+    render 'cartel-pick-collection', source: source, count: rc_want, deny: deny
+  endcapture
+  # Two steps on purpose: a filter cannot be applied inside a bracket lookup
+  # (`collections[x | strip]` is a Liquid syntax error).
+  assign rc_key = rc_handle | strip
+  assign rc_coll = collections[rc_key]
+
+  # Delimited id string, same trick as main-cart-items.liquid:497 — commas on
+  # both ends so product 123 cannot match inside 1234.
+  assign rc_used = source.id | prepend: ',' | append: ','
+  if skip != blank
+    assign rc_used = rc_used | append: skip | append: ','
+  endif
+  assign rc_shown = 0
+
+  # `limit` bounds the only product fetch in this snippet. want + 1 covers the
+  # one slot `source` itself occupies in its own collection. Precomputed because
+  # a for-tag argument takes a variable, not a filter expression.
+  assign rc_scan = rc_want | plus: 1
+  if rc_coll != blank
+    for rc_p in rc_coll.products limit: rc_scan
+      if rc_shown >= rc_want
+        break
+      endif
+      assign rc_id = rc_p.id | prepend: ',' | append: ','
+      unless rc_used contains rc_id
+        assign rc_used = rc_used | append: rc_p.id | append: ','
+        assign rc_shown = rc_shown | plus: 1
+        render 'cartel-card', card_product: rc_p
+      endunless
+    endfor
+  endif
+
+  # Smart fill: Shopify's algorithmic picks, minus the current product and
+  # anything the collection already supplied. `fill` may be nil — a for loop
+  # over nil renders nothing.
+  if rc_shown < rc_want
+    for rc_p in fill
+      if rc_shown >= rc_want
+        break
+      endif
+      assign rc_id = rc_p.id | prepend: ',' | append: ','
+      unless rc_used contains rc_id
+        assign rc_used = rc_used | append: rc_p.id | append: ','
+        assign rc_shown = rc_shown | plus: 1
+        render 'cartel-card', card_product: rc_p
+      endunless
+    endfor
+  endif
+
+  # Availability is deliberately NOT filtered: 26 of the store's 30 published
+  # products are sold out, and cartel-card renders a proper "Sold out" state.
+  # Filtering would empty the row on nearly every product.
+
+  if rc_shown == 0 and stub
+    for i in (1..rc_want)
+      render 'cartel-card'
+    endfor
+  endif
+-%}
