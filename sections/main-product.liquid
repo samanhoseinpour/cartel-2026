@@ -754,7 +754,27 @@
               details[name] gives native one-open-at-a-time behaviour where supported.
             {%- endcomment -%}
             {%- liquid
+              # Cartel batch 11: the CSV importer does create a real list metafield
+              # (type list.single_line_text_field) but writes the WHOLE JSON array
+              # into a single row — verified live, the value is ["[\"a\",\"b\"]"].
+              # join → re-split normalises every shape this can arrive in: a proper
+              # multi-row list, that one-row JSON blob, a bare string of JSON, or a
+              # ' · '-delimited string. There is no shape test to branch on —
+              # `.first` and `.size` answer on a String as readily as on a list —
+              # so the joined text is inspected instead, '~~~' first because only a
+              # real multi-row list can produce it.
               assign cl_acc_benefits = product.metafields.custom.benefits.value
+              assign cl_ben_raw = cl_acc_benefits | join: '~~~' | strip
+              assign cl_ben_sep = '~~~'
+              unless cl_ben_raw contains '~~~'
+                if cl_ben_raw contains '["'
+                  assign cl_ben_raw = cl_ben_raw | remove_first: '["' | remove_last: '"]' | replace: '", "', '","'
+                  assign cl_ben_sep = '","'
+                elsif cl_ben_raw contains ' · '
+                  assign cl_ben_sep = ' · '
+                endif
+              endunless
+              assign cl_acc_benefits = cl_ben_raw | split: cl_ben_sep
               assign cl_acc_ing = product.metafields.custom.ingredients.value
               assign cl_acc_ing_label = product.metafields.custom.ingredients_label.value | default: 'Ingredients'
               assign cl_acc_howto = product.metafields.custom.how_to_use.value
@@ -837,7 +857,19 @@
         keeps the honest "essentials" PDP (deliberate split in the design).
       {%- endcomment -%}
       {%- liquid
+        # Same list-metafield normalisation as the Key benefits accordion above.
         assign cl_features = product.metafields.custom.features.value
+        assign cl_feat_raw = cl_features | join: '~~~' | strip
+        assign cl_feat_sep = '~~~'
+        unless cl_feat_raw contains '~~~'
+          if cl_feat_raw contains '["'
+            assign cl_feat_raw = cl_feat_raw | remove_first: '["' | remove_last: '"]' | replace: '", "', '","'
+            assign cl_feat_sep = '","'
+          elsif cl_feat_raw contains ' · '
+            assign cl_feat_sep = ' · '
+          endif
+        endunless
+        assign cl_features = cl_feat_raw | split: cl_feat_sep
         assign cl_feature_image = product.metafields.custom.feature_image.value
         assign cl_feat_title = product.metafields.custom.features_title.value
         if cl_feat_title == blank
