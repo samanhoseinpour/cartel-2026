@@ -172,6 +172,16 @@
                         <span class="visually-hidden">Decrease quantity for {{ item.product.title | escape }}</span>
                         <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 12h14"></path></svg>
                       </button>
+                      {%- comment -%}
+                        min="0" is load-bearing, not sloppiness. stepDown() clamps at min, so
+                        min="1" would make "−" a no-op at the last unit — no value change, no
+                        change event, no removal — and cart.js:validateQuantity routes 0 to the
+                        same /cart/change delete that <cart-remove-button> posts. It is also the
+                        native guard that keeps the spinner and ArrowDown out of negatives, and
+                        validateQtyRules (global.js) reads input.min, so raising it to data-min
+                        would additionally dim "−" at qty 1 and advertise a dead control. The real
+                        quantity rule stays in data-min and is still enforced above 0.
+                      {%- endcomment -%}
                       <input
                         class="qn"
                         type="number"
