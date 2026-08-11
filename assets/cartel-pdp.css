@@ -453,3 +453,43 @@
 @media screen and (max-width:760px){
   .cl .gal-rail .thumbnail-list .thumbnail-list__item.slider__slide{width:60px;flex-basis:60px}
 }
+
+/* ===== Batch 11: no-photo PDP keeps the designed two-column hero =====
+   Dawn adds .product--no-media to the hero div when product.media.size == 0, and
+   stock section-main-product.css then caps it at 57rem, centres the type and
+   stacks the buy form. Every rule below is scoped .cl .phero.product--no-media so
+   it wins only inside our PDP, only on products with no media. */
+.cl .phero.product--no-media{max-width:none;margin:0}
+.cl .phero.product--no-media .product__title,
+.cl .phero.product--no-media .product__text,
+.cl .phero.product--no-media .product__tax,
+.cl .phero.product--no-media .product__sku,
+.cl .phero.product--no-media shopify-payment-terms{text-align:left}
+.cl .phero.product--no-media .product-form,
+.cl .phero.product--no-media .product-form__quantity,
+.cl .phero.product--no-media .product__pickup-availabilities,
+.cl .phero.product--no-media .share-button{display:block;text-align:left;justify-content:flex-start;align-items:stretch}
+.cl .phero.product--no-media .product-form{flex-direction:row}
+.cl .phero.product--no-media .product-form > .form{max-width:none;width:100%}
+.cl .phero.product--no-media .product-form__quantity{flex-direction:row;max-width:none}
+.cl .phero.product--no-media .share-button{max-width:none}
+.cl .phero.product--no-media .price{text-align:left}
+/* the empty media panel still needs to hold the column open */
+.cl .phero.product--no-media .product__media-wrapper{min-width:0}
+/* .product__view-details is deliberately display:none on every non-featured
+   product (section-main-product.css:1164, specificity 0,3,0), so it is kept OUT
+   of the display:block group above: a 0,4,0 display there would un-hide the
+   "View full details" self-link on exactly the photo-less PDPs. */
+.cl .phero.product--no-media .product__view-details{text-align:left}
+/* the no-media centring is not confined to section-main-product.css — these are
+   the rules in the component sheets that reach blocks this template renders
+   (rating, variant_picker picker_type=button, quantity_selector, inventory). */
+.cl .phero.product--no-media .product__inventory{justify-content:flex-start}
+.cl .phero.product--no-media .rating-wrapper{text-align:left}
+.cl .phero.product--no-media .product-form__input--pill,
+.cl .phero.product--no-media .product-form__input--swatch,
+.cl .phero.product--no-media .product-form__input--dropdown{display:block;text-align:left;max-width:44rem}
+.cl .phero.product--no-media .product-form__input.product-form__input--pill,
+.cl .phero.product--no-media .product-form__input.product-form__input--swatch{margin:0 0 1.2rem 0}
+.cl .phero.product--no-media .volume-pricing-note{text-align:left}
+.cl .phero.product--no-media volume-pricing{width:auto}
