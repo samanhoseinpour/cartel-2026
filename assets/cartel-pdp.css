@@ -512,3 +512,36 @@
 .cl .phero.product--no-media .product-form__input.product-form__input--swatch{margin:0 0 1.2rem 0}
 .cl .phero.product--no-media .volume-pricing-note{text-align:left}
 .cl .phero.product--no-media volume-pricing{width:auto}
+
+/* ==========================================================================
+   Cartel batch 13 — photo-less PDP media panel (audit finding 4)
+   Image Src is empty on all 98 import rows, so every product lands with no
+   media and 18 stay that way. .gal-main already carries aspect-ratio:1 +
+   background:var(--prodbg) (line ~49), which without this rendered as an
+   empty half-page tinted square. product-media-gallery.liquid now emits one
+   .gal-ph-item <li> when product.media.size == 0; this sizes it.
+   Scoped .cl and to the placeholder item only — nothing here can reach a
+   product that has photos.
+   ========================================================================== */
+.cl .gal-main .gal-ph-item {
+  display: block;
+  width: 100%;
+  margin: 0;
+  list-style: none;
+}
+
+.cl .gal-main .gal-ph-item .gal-ph {
+  display: block;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 1;
+  border-radius: var(--r);
+  background: var(--prodbg);
+  fill: rgba(74, 18, 36, 0.16);
+}
+
+@media screen and (max-width: 749px) {
+  .cl .gal-main .gal-ph-item .gal-ph {
+    border-radius: var(--r-sm);
+  }
+}
