@@ -477,6 +477,15 @@
       </p>
     </form>
 
+    {%- comment -%}
+      Cartel batch 13: cartel-cart.js clones this for saved-for-later cards whose
+      product has no image — keeps the saved grid on the same placeholder as the
+      cart lines and the cards. It sits outside .js-contents (the only node
+      cart.js/cartel-cart.js re-render) and outside the empty/has-items branch,
+      because a shopper can empty the bag with items still saved.
+    {%- endcomment -%}
+    <template id="cl-saved-placeholder">{{ 'product-1' | placeholder_svg_tag: 'card-photo' }}</template>
+
     <section class="saved" data-saved-zone hidden>
       <div class="saved-head">
         <span class="saved-h">Saved for later</span>
