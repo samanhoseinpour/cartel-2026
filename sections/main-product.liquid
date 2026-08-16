@@ -798,7 +798,7 @@
                   <div class="acc-b">
                     <ul>
                       {%- for cl_benefit in cl_acc_benefits -%}
-                        <li>{{ cl_benefit }}</li>
+                        <li>{{ cl_benefit | escape }}</li>
                       {%- endfor -%}
                     </ul>
                   </div>
@@ -807,10 +807,14 @@
               {%- if cl_acc_ing != blank -%}
                 <details class="acc" name="cl-acc-{{ section.id }}">
                   <summary class="acc-h">
-                    {{ cl_acc_ing_label }}
+                    {{ cl_acc_ing_label | escape }}
                     <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><path d="M6 9.5l6 6 6-6"></path></svg>
                   </summary>
-                  <div class="acc-b acc-ing">{{ cl_acc_ing | newline_to_br }}</div>
+                  {%- comment -%}
+                    Cartel batch 13: escape BEFORE newline_to_br, never after —
+                    afterwards it would escape the <br> tags it just inserted.
+                  {%- endcomment -%}
+                  <div class="acc-b acc-ing">{{ cl_acc_ing | escape | newline_to_br }}</div>
                 </details>
               {%- endif -%}
               {%- if cl_acc_howto != blank -%}
@@ -821,7 +825,14 @@
                   </summary>
                   <div class="acc-b">
                     <ul>
-                      {%- assign cl_howto_steps = cl_acc_howto | newline_to_br | split: '<br' -%}
+                      {%- comment -%}
+                        Cartel batch 13: escape at the source, before newline_to_br
+                        inserts the <br> the split depends on. strip_html at :826
+                        removes tags but does NOT decode entities, so the &amp; that
+                        escape produced survives to the output below — which is why
+                        {{ cl_step_text }} must NOT be escaped a second time.
+                      {%- endcomment -%}
+                      {%- assign cl_howto_steps = cl_acc_howto | escape | newline_to_br | split: '<br' -%}
                       {%- for cl_step in cl_howto_steps -%}
                         {%- assign cl_step_text = cl_step | remove_first: '/>' | remove_first: '>' | strip_html | strip -%}
                         {%- if cl_step_text != blank -%}
@@ -898,7 +909,14 @@
                   -%}
                   <div class="pfl">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 13l4 4L19 7"></path></svg>
-                    <div><b>{{ cl_ft_lead }}{% if cl_ft_rest != blank %}.{% endif %}</b> {{ cl_ft_rest }}</div>
+                    {%- comment -%}
+                      Cartel batch 13: the packet expected a single {{ cl_ft }} here;
+                      this loop splits it into a lead sentence and a remainder, so the
+                      escape goes on both OUTPUTS — one each, never on cl_ft itself
+                      (escaping before the split would break `remove_first: cl_ft_lead`,
+                      which matches against the raw string).
+                    {%- endcomment -%}
+                    <div><b>{{ cl_ft_lead | escape }}{% if cl_ft_rest != blank %}.{% endif %}</b> {{ cl_ft_rest | escape }}</div>
                   </div>
                 {%- endfor -%}
               </div>
