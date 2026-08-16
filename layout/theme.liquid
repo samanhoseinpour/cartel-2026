@@ -24,7 +24,12 @@
       {{ page_title }}
       {%- if current_tags %} &ndash; tagged "{{ current_tags | join: ', ' }}"{% endif -%}
       {%- if current_page != 1 %} &ndash; Page {{ current_page }}{% endif -%}
-      {%- unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}
+      {%- comment -%}
+        Cartel batch 13: product pages ship a hand-authored SEO Title of ≤60 chars
+        (all 65 in the import), so appending the store name only buys truncation.
+        Every other template still gets the suffix.
+      {%- endcomment -%}
+      {%- unless page_title contains shop.name or template.name == 'product' %} &ndash; {{ shop.name }}{% endunless -%}
     </title>
 
     {% if page_description %}
