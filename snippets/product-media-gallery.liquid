@@ -88,6 +88,15 @@
       class="product__media-list contains-media grid grid--peek list-unstyled slider slider--mobile"
       role="list"
     >
+      {%- if product.media.size == 0 -%}
+        {%- comment -%}
+          Cartel batch 13: no media at all. Match the card fallback rather than
+          leaving .gal-main as an empty tinted square.
+        {%- endcomment -%}
+        <li class="product__media-item grid__item slider__slide is-active product__media-item--single gal-ph-item">
+          {{ 'product-1' | placeholder_svg_tag: 'gal-ph' }}
+        </li>
+      {%- endif -%}
       {%- if product.selected_or_first_available_variant.featured_media != null -%}
         {%- assign featured_media = product.selected_or_first_available_variant.featured_media -%}
         <li
