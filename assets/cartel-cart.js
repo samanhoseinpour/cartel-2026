@@ -129,10 +129,20 @@
   }
 
   /* ---------- save for later ---------- */
+  /* JS cannot call placeholder_svg_tag, so main-cart-items.liquid stashes one in
+     #cl-saved-placeholder and we clone its markup. That keeps the saved grid on
+     the SAME placeholder as the cart lines and the cards instead of a second,
+     slightly different one. Read at call time, not at load: the template is
+     outside .js-contents, but the lookup is cheap and cannot go stale. */
+  function savedPh() {
+    const t = document.getElementById('cl-saved-placeholder');
+    return t ? t.innerHTML : '';
+  }
+
   function savedCardHTML(it) {
     const img = it.image
       ? '<img class="card-photo" src="' + esc(it.image) + '" alt="' + esc(it.title) + '" loading="lazy">'
-      : '';
+      : savedPh();
     /* Empty data-price = login-gated. "0" is a truthy string, so zero-priced
        (enquire-only) products must be tested numerically, not for truthiness. */
     const cents = it.price === '' || it.price == null ? null : parseInt(it.price, 10);
