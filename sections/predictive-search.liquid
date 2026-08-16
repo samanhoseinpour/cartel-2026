@@ -26,7 +26,7 @@
     .cl .psr-row mark{background:transparent;color:var(--plum);font-weight:800}
     .cl .psr-thumb{flex:none;width:44px;height:44px;border-radius:10px;background:var(--prodbg);overflow:hidden;display:flex}
     .cl .psr-thumb img{width:100%;height:100%;object-fit:cover}
-    .cl .psr-thumb .psr-ph{width:100%;height:100%;display:block;fill:rgba(74,18,36,.18)}
+    .cl .psr-thumb .psr-ph{width:100%;height:100%}
     .cl .psr-b{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}
     .cl .psr-vendor{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--bronze-d);font-weight:700}
     .cl .psr-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -91,7 +91,7 @@
                             loading="lazy"
                           >
                         {%- else -%}
-                          {{ 'product-1' | placeholder_svg_tag: 'psr-ph' }}
+                          {% render 'cartel-photo-placeholder', ph_size: 'xs', ph_class: 'psr-ph' %}
                         {%- endif -%}
                       </span>
                       <span class="psr-b">

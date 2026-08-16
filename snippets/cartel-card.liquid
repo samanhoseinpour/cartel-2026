@@ -35,7 +35,7 @@
           | image_tag: class: 'card-photo', widths: '300,450,600,800', loading: 'lazy', alt: p.title
         }}
       {%- else -%}
-        {{ 'product-1' | placeholder_svg_tag: 'card-photo' }}
+        {% render 'cartel-photo-placeholder', ph_size: 'md', ph_class: 'card-photo' %}
       {%- endif -%}
     </a>
   </div>

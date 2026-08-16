@@ -531,13 +531,14 @@
 }
 
 .cl .gal-main .gal-ph-item .gal-ph {
-  display: block;
+  /* Geometry only. Display, background and ink belong to the shared .clph tile
+     in cartel-home.css — and this selector is (0,4,0), so anything set here
+     would silently outrank it. That is exactly how `display:block` broke the
+     tile's flex centring the first time. */
   width: 100%;
   height: 100%;
   aspect-ratio: 1;
   border-radius: var(--r);
-  background: var(--prodbg);
-  fill: rgba(74, 18, 36, 0.16);
 }
 
 @media screen and (max-width: 749px) {

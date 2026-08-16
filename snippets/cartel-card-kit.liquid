@@ -38,7 +38,7 @@
           | image_tag: class: 'kit-photo', widths: '360,540,720,900', loading: 'lazy', alt: p.title
         }}
       {%- else -%}
-        {{ 'product-2' | placeholder_svg_tag: 'kit-photo' }}
+        {% render 'cartel-photo-placeholder', ph_size: 'md', ph_class: 'kit-photo' %}
       {%- endif -%}
     </a>
   </div>

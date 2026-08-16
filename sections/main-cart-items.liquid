@@ -152,7 +152,7 @@
                                 height="104"
                               >
                             {%- else -%}
-                              {{ 'product-1' | placeholder_svg_tag: 'line-photo' }}
+                              {% render 'cartel-photo-placeholder', ph_size: 'sm', ph_class: 'line-photo' %}
                             {%- endif -%}
                           </a>
                         </div>
@@ -484,7 +484,7 @@
       cart.js/cartel-cart.js re-render) and outside the empty/has-items branch,
       because a shopper can empty the bag with items still saved.
     {%- endcomment -%}
-    <template id="cl-saved-placeholder">{{ 'product-1' | placeholder_svg_tag: 'card-photo' }}</template>
+    <template id="cl-saved-placeholder">{% render 'cartel-photo-placeholder', ph_size: 'md', ph_class: 'card-photo' %}</template>
 
     <section class="saved" data-saved-zone hidden>
       <div class="saved-head">
