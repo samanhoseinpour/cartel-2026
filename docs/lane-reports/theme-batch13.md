@@ -185,13 +185,10 @@ The placeholder fills the previously-empty square exactly at both widths. A prod
 photo is unchanged: `sensitive-tape` renders 0 `.gal-ph`, 1 `.product__media-list > li`, and
 `.gal-main` still measures 597 × 597.
 
-**One thing to decide before the import, not a defect.** The placeholder art is Shopify's
-`product-1`, which draws an apparel backpack. That is already this theme's convention —
-`cartel-card.liquid`, the cart lines and the drawer upsell all use it — and matching them was
-the point of the change. But at card size it is incidental and at 597 × 597 on the PDP hero it
-is the largest thing on the page, and it is off-brand for a lash-supply store. The import puts
-it on all 65 PDPs at once and leaves it on 18 permanently. A branded "photo coming soon" tile
-would be a small, self-contained follow-up.
+**Follow-up, now done — see "The branded placeholder tile" below.** The placeholder art was
+Shopify's `product-1`, which draws an apparel backpack: off-brand for a lash-supply store, and
+at 597 × 597 the largest thing on the PDP. It has been replaced across all nine surfaces by a
+branded "Photo coming soon" tile.
 
 ### 6 · Search dropdown
 
@@ -276,3 +273,87 @@ Carried forward from the batch-12 audit, unchanged:
   `Henna` mega-menu children with 0 products.
 - **`custom.thickness` has no consumer** anywhere in the theme; 4 products' data imports
   invisible.
+
+---
+
+# Follow-up — the branded placeholder tile
+
+Commits `2407af1` (build) and `5875f79` (one regression, caught in verification). Eleven
+files. Raised by the note above and approved before build: mark direction and scope were both
+chosen by the client.
+
+Shopify's `placeholder_svg_tag` drew `product-1`, an apparel backpack, at every product-media
+fallback in the theme. `snippets/cartel-photo-placeholder.liquid` replaces it everywhere.
+
+**Scope: all nine surfaces** — PDP hero, product cards, kit cards, saved-for-later, cart
+lines, cart drawer, cart notification, drawer upsell, search chip. Keeping every surface on
+one placeholder was the point of step 5 above; changing only the PDP would have re-opened the
+divergence that batch closed.
+
+**The mark** is a lash fan over a lid arc: eight stroke-only paths in a 64 × 32 viewBox,
+`currentColor`, no fill. One path set therefore tints and scales from a 44px search chip to a
+190px hero with no second asset and no network request — which matters when 65 photo-less
+products land at once. Stroke width is pinned in screen pixels with `vector-effect:
+non-scaling-stroke` and stepped per size, so it stays optically even instead of ballooning on
+the hero.
+
+**Four sizes.** Only `lg` and `md` carry the "Photo coming soon" label; below roughly 100px
+there is no room for type, so the mark stands alone.
+
+Two cascade decisions, both load-bearing:
+
+- **`.clph.clph` is doubled on purpose.** The per-surface classes the tile sits on
+  (`.card-photo`, `.line-photo`, `.ci-photo`, `.uc-photo`) set `background:#fff` and their own
+  padding, and three of them live in sheets that load *after* `cartel-home.css`. A single
+  class would lose the reset.
+- **The tile sets no width, height or position.** Each surface class already owns those —
+  absolute-fill on the cards, flow-fill in the cart, a fixed 52px on the drawer upsell — and
+  duplicating them is how the two drift apart. `cartel-pdp.css`'s `.gal-ph` rule had to give
+  up its `display:block`, which at (0,4,0) was silently outranking the tile's flex centring.
+
+## The regression, and why the percentage looked fine for six surfaces
+
+The first build sized the tile's padding in **percent**. A percentage padding resolves against
+the *containing block's* inline size, not the element's own — harmless on the cards and the
+hero, where the tile fills its parent, but the drawer upsell photo is a fixed 52px box inside
+a much wider `<a class="uc-link">`. There `16%` resolved to 230px a side, and under
+`border-box` a padding larger than the declared width wins: the 52px tile computed to
+**461 × 461 with a 0 × 0 mark inside it**. Six of the eight measurements passed before this one
+failed, which is the case for measuring every surface rather than the representative one.
+All four sizes now use px, tuned to reproduce the proportions the percentages gave where they
+did work.
+
+## Verification — every surface measured on the draft theme, logged out
+
+| size | surface | how | tile | mark | stroke | label |
+| --- | --- | --- | --- | --- | --- | --- |
+| lg | PDP hero @1440 | natural | 597 × 597 | 163 × 82 | 2.4px | yes, no wrap |
+| lg | PDP hero @390 | natural | 350 × 350 | 107 × 53 | 2.4px | yes, no wrap |
+| md | product card @1440 | natural | 287 × 287 | 104 × 52 | 1.9px | yes, no wrap |
+| md | product card @390 | natural | 169 × 169 | 63 × 32 | 1.9px | yes, no wrap |
+| sm | cart line | constructed | 90 × 104 | 41 × 20 | 1.5px | none — correct |
+| sm | drawer / notification line | constructed | 74 × 90 | 31 × 16 | 1.5px | none — correct |
+| xs | drawer upsell | constructed | 52 × 52 | 25 × 13 | 1.3px | none — correct |
+| xs | predictive search chip | natural | 44 × 44 | 20 × 10 | 1.3px | none — correct |
+
+Every tile computed `display:flex` on `rgb(239,230,215)` (`--prodbg`), mark opacity `.34`, and
+the mark fits inside its tile at every size. **Zero console errors or exceptions across the
+run.** The backpack is gone from the gallery (`svg[viewBox*="525.5"]`: none).
+
+**"Natural" vs "constructed."** The four natural rows rendered from real data — the PDP hero
+on `thuya-vegan-tint`, and the image-less Bronsun brush set as a card and a search chip on
+`/search?q=brush`. The four constructed rows could not: **every image-less product on the
+store is sold out**, so no cart line, drawer line or upsell card can hold one. Those were
+measured by putting the exact markup the snippet emits into the real container inside the real
+`.cl` scope, which proves the CSS; the Liquid `{% else %}` branch was confirmed by reading
+each file. Re-check them naturally once the step-16 import brings purchasable photo-less
+products in.
+
+`shopify theme check`: 0 offenses on all 11 touched files, theme total unchanged at 201.
+`theme pull --only` re-check: all 11 files came back byte-identical to the repo.
+
+**Deliberately left alone.** `snippets/card-collection.liquid`'s `.bx-ph` keeps its own
+treatment (store logo + "Photos coming soon"). It is a *collection* tile, not a product photo,
+it is already branded, and its plural label is correct for a collection. Dawn's dormant
+`card-product.liquid` / `collage` / `featured-collection` placeholders were also left as-is —
+they are in no live template, per the batch-12 audit.
