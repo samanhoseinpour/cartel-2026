@@ -118,7 +118,7 @@
                         height="90"
                       >
                     {%- else -%}
-                      {{ 'product-1' | placeholder_svg_tag: 'ci-photo' }}
+                      {% render 'cartel-photo-placeholder', ph_size: 'sm', ph_class: 'ci-photo' %}
                     {%- endif -%}
                   </a>
                 </div>

@@ -1,0 +1,50 @@
+{% comment %}
+  Cartel "Photo coming soon" tile — the branded stand-in for a product with no media.
+
+  Replaces `placeholder_svg_tag: '<class>'` at every product-media surface in the
+  theme. Shopify's own placeholders draw apparel (product-1 is a backpack), which
+  read as a mistake on a lash-supply store — and at 597px in the PDP hero the
+  backpack was the largest thing on the page. Every product in the step-16 import
+  lands photo-less and 18 stay that way, so this is the default state of the
+  catalogue, not an edge case.
+
+  Accepts:
+  - ph_size:  'lg' | 'md' | 'sm' | 'xs'  (default 'md')
+              lg = PDP hero (350-597px) · md = card grids (~230-300px)
+              sm = cart lines (74-90px)  · xs = upsell + search chips (44-52px)
+              Only lg and md carry the label; below ~100px the mark stands alone.
+  - ph_class: the surface's own sizing class — 'card-photo', 'line-photo',
+              'gal-ph' and so on. Pass it through unchanged: those rules own the
+              positioning (absolute-fill vs flow-fill vs fixed 52px) and this
+              snippet deliberately does not duplicate them. The shared `.clph`
+              rules in cartel-home.css carry a doubled class so they still win
+              the background/padding/display reset against the per-template
+              sheets, which load after it.
+
+  Usage:
+  {% render 'cartel-photo-placeholder', ph_size: 'lg', ph_class: 'gal-ph' %}
+{% endcomment %}
+{%- liquid
+  assign clph_size = ph_size | default: 'md'
+  assign clph_class = ph_class | default: ''
+-%}
+<span class="clph clph--{{ clph_size }}{% if clph_class != blank %} {{ clph_class }}{% endif %}">
+  {%- comment -%}
+    Lash fan over a lid arc. Stroke-only and currentColor so one mark tints and
+    scales from 26px to 200px; stroke width is pinned in px per size via
+    vector-effect, so it stays optically even instead of ballooning on the hero.
+  {%- endcomment -%}
+  <svg class="clph-m" viewBox="0 0 64 32" fill="none" stroke="currentColor" stroke-linecap="round" aria-hidden="true" focusable="false">
+    <path d="M5 28C18 12 46 12 59 28"/>
+    <path d="M11.8 21.9C9.5 17 7 13 5.5 9"/>
+    <path d="M19.9 17.9C18.3 13.5 16.8 9.5 15.5 5.5"/>
+    <path d="M25.9 16.5C25 12 24.2 8 23.6 4"/>
+    <path d="M32 16C32 11.5 32 7.5 32 3"/>
+    <path d="M38.1 16.5C39 12 39.8 8 40.4 4"/>
+    <path d="M44.1 17.9C45.7 13.5 47.2 9.5 48.5 5.5"/>
+    <path d="M52.2 21.9C54.5 17 57 13 58.5 9"/>
+  </svg>
+  {%- if clph_size == 'lg' or clph_size == 'md' -%}
+    <span class="clph-l">Photo coming soon</span>
+  {%- endif -%}
+</span>

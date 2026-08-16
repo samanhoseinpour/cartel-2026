@@ -94,7 +94,7 @@
           leaving .gal-main as an empty tinted square.
         {%- endcomment -%}
         <li class="product__media-item grid__item slider__slide is-active product__media-item--single gal-ph-item">
-          {{ 'product-1' | placeholder_svg_tag: 'gal-ph' }}
+          {% render 'cartel-photo-placeholder', ph_size: 'lg', ph_class: 'gal-ph' %}
         </li>
       {%- endif -%}
       {%- if product.selected_or_first_available_variant.featured_media != null -%}

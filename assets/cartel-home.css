@@ -392,3 +392,46 @@ body.cartel-noscroll{overflow:hidden}
 .cl .reel-ctls{z-index:3}
 .cl .placeholder-svg{width:100%;height:100%;object-fit:cover;background:var(--prodbg)}
 .cl .reelbox-close svg{width:20px;height:20px}
+
+/* ==========================================================================
+   "Photo coming soon" tile — snippets/cartel-photo-placeholder.liquid
+   Lives here because cartel-home.css is the only cartel sheet loaded on every
+   template (theme.liquid:304), and the tile renders on the PDP, the card grids,
+   the cart page, the drawer, the notification and the search dropdown.
+
+   Two specificity notes, both deliberate:
+   • `.clph.clph` (0,3,0) — the per-surface classes it sits on (.card-photo,
+     .line-photo, .ci-photo, .uc-photo) set background:#fff and their own
+     padding, and three of them live in sheets that load AFTER this one
+     (cartel-cart.css, cartel-conversion.css). A single class would lose.
+   • width/height/position are NOT set here. Each surface class already owns
+     them — absolute-fill on the cards, flow-fill in the cart, a fixed 52px on
+     the drawer upsell — and duplicating that is how the two get out of step.
+   ========================================================================== */
+.cl .clph.clph{display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--prodbg);color:var(--bord);text-align:center;line-height:1;overflow:hidden}
+.cl .clph .clph-m{display:block;height:auto;flex:none;opacity:.34}
+/* Pin the stroke in screen px so one 64x32 mark reads evenly from 26px to 200px. */
+.cl .clph .clph-m path{vector-effect:non-scaling-stroke}
+.cl .clph-l{font-size:10px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--bord);opacity:.5}
+
+.cl .clph--lg.clph{padding:14%;gap:24px}
+.cl .clph--lg .clph-m{width:38%;max-width:190px}
+.cl .clph--lg .clph-m path{stroke-width:2.4px}
+
+.cl .clph--md.clph{padding:12%;gap:13px}
+.cl .clph--md .clph-m{width:46%;max-width:104px}
+.cl .clph--md .clph-m path{stroke-width:1.9px}
+.cl .clph--md .clph-l{font-size:9px;letter-spacing:.11em}
+
+.cl .clph--sm.clph{padding:14%}
+.cl .clph--sm .clph-m{width:62%;max-width:52px}
+.cl .clph--sm .clph-m path{stroke-width:1.5px}
+
+.cl .clph--xs.clph{padding:16%}
+.cl .clph--xs .clph-m{width:66%;max-width:30px}
+.cl .clph--xs .clph-m path{stroke-width:1.3px}
+
+@media screen and (max-width: 749px) {
+  .cl .clph--lg.clph{gap:16px}
+  .cl .clph--lg .clph-m{width:42%}
+}
