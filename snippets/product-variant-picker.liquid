@@ -9,6 +9,13 @@
   {% render 'product-variant-picker', product: product, block: block, product_form_id: product_form_id %}
 {% endcomment %}
 {%- unless product.has_only_default_variant -%}
+  {%- liquid
+    # Cartel batch 13: same byte-identical vendor test as the other 15 gate sites.
+    assign cl_vp_gated = false
+    if product.vendor == 'Thuya' and customer == nil
+      assign cl_vp_gated = true
+    endif
+  -%}
   <variant-selects
     id="variant-selects-{{ section.id }}"
     data-section="{{ section.id }}"
@@ -17,7 +24,7 @@
     data-product-id="{{ product.id }}"
     data-currency-code="{{ cart.currency.iso_code }}"
     {% # theme-check-disable %}
-    data-selected-price-amount="{{ product.selected_or_first_available_variant.price | default: 0 | money_amount | escape }}"
+    data-selected-price-amount="{% if cl_vp_gated %}{{ 0 | money_amount | escape }}{% else %}{{ product.selected_or_first_available_variant.price | default: 0 | money_amount | escape }}{% endif %}"
     {% # theme-check-enable %}
     {{ block.shopify_attributes }}
   >
@@ -98,8 +105,24 @@
       {%- endif -%}
     {%- endfor -%}
 
+    {%- liquid
+      # Cartel batch 13: the full variant JSON carries price + compare_at_price in
+      # cents, ungated. Rewriting the two values (rather than dropping the script or
+      # hand-building the object) keeps every other key Dawn's JS reads — id,
+      # available, options, featured_media — byte-for-byte as it was.
+      assign cl_vp_v = product.selected_or_first_available_variant
+      assign cl_vp_json = cl_vp_v | json
+      if cl_vp_gated
+        assign cl_vp_ptok = '"price":' | append: cl_vp_v.price
+        assign cl_vp_json = cl_vp_json | replace: cl_vp_ptok, '"price":0'
+        if cl_vp_v.compare_at_price
+          assign cl_vp_ctok = '"compare_at_price":' | append: cl_vp_v.compare_at_price
+          assign cl_vp_json = cl_vp_json | replace: cl_vp_ctok, '"compare_at_price":null'
+        endif
+      endif
+    -%}
     <script type="application/json" data-selected-variant>
-      {{ product.selected_or_first_available_variant | json }}
+      {{ cl_vp_json }}
     </script>
   </variant-selects>
 {%- endunless -%}
