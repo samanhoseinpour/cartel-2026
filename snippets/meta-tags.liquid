@@ -27,8 +27,20 @@
 {%- endif -%}
 
 {%- if request.page_type == 'product' -%}
-  <meta property="og:price:amount" content="{{ product.price | money_without_currency | strip_html }}">
-  <meta property="og:price:currency" content="{{ cart.currency.iso_code }}">
+  {%- liquid
+    # Cartel batch 13: the gate has to be re-derived here. `cartel_gated` lives in
+    # main-product.liquid and is not in scope in a snippet rendered from <head>.
+    # This test is byte-identical to the other 15 vendor tests in the theme —
+    # do not "improve" it with downcase/strip/contains, or they stop agreeing.
+    assign cl_og_gated = false
+    if product.vendor == 'Thuya' and customer == nil
+      assign cl_og_gated = true
+    endif
+  -%}
+  {%- unless cl_og_gated -%}
+    <meta property="og:price:amount" content="{{ product.price | money_without_currency | strip_html }}">
+    <meta property="og:price:currency" content="{{ cart.currency.iso_code }}">
+  {%- endunless -%}
 {%- endif -%}
 
 {%- if settings.social_twitter_link != blank -%}
