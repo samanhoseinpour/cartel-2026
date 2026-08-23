@@ -1,7 +1,7 @@
 # Batch 14 — brand links point at the brand collections · REPORT
 
 Installed 2026-08-23 on top of master `d8e9063`, as three commits: `089908c` (steps 1–2),
-`131fcfb` (step 4) and `cb202db` (step 5). Step 3 left alone as instructed. Step 5 **ran after Saman confirmed** (commit `cb202db`). Nothing published, no bare push, `config/settings_data.json` untouched,
+`131fcfb` (step 4) and `cb202db` (step 5), plus `507040f` outside the packet (header pills, below). Step 3 left alone as instructed. Step 5 **ran after Saman confirmed** (commit `cb202db`). Nothing published, no bare push, `config/settings_data.json` untouched,
 draft theme `160769933525` only. `shopify theme check`: **201 offenses before, 201 after, 0
 errors** — no new offense on any touched file, none at all on the new snippet.
 
@@ -158,6 +158,31 @@ applied here.
 
 Same caveat as the kicker: until the `brand` template is assigned in admin, these six routes
 land on the generic collection header.
+
+## Outside the packet — header pills with a dropdown now go to their page (`507040f`)
+
+Saman's request, same day: on desktop, clicking **Shop** or **About** should navigate to the
+menu item's link; the dropdown should open on hover only. Hover-open already existed
+(`assets/cartel-nav.js`, batch 5) — the problem was that the panel was already open by the
+time the pill was clicked, so the click handler toggled it shut and nothing navigated.
+A `<summary>` has no `href`, so:
+
+- `snippets/header-mega-menu.liquid` and `snippets/header-dropdown-menu.liquid`: the top-level
+  `<summary>` now carries `data-href="{{ link.url }}"`. Live values: **Shop →
+  `/collections/all`**, **About → `/pages/about`**.
+- `assets/cartel-nav.js`: on a hover device a *pointer* click navigates there (cmd/ctrl-click
+  and middle-click open a new tab, as an `<a>` would). Keyboard Enter/Space on a `<summary>`
+  also dispatches a click but with `detail === 0`, and keeps the **toggle** — keyboard users
+  have no hover, so the pill stays their way into the panel. Touch keeps Dawn's native toggle
+  (`canHover()` is false). A blank or `#` menu link falls back to the toggle, so a menu item
+  that points nowhere never becomes a dead click.
+
+Verified in jsdom against the live header HTML + the pushed JS, nine paths: hover opens (and
+writes `aria-expanded`), pointer click navigates without toggling, cmd-click / middle-click
+open a new tab, keyboard click toggles with no navigation (both directions), About navigates,
+`#` falls back to toggle, no-hover click is not intercepted. `theme check` 201 → 201. The CDN
+serves Shopify's minified build of the new file (contains `navTarget` / `data-href` /
+`auxclick`).
 
 ## Verify — logged out, draft theme `160769933525`
 
