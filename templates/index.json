@@ -52,7 +52,7 @@
             "heading_accent": "truer tint.",
             "sub": "Bronsun and Noemi dye gels, henna and lamination, rich, true-to-tone colour that lands right the first time.",
             "btn1_label": "Shop brows & tints",
-            "btn1_link": "/collections/dyes-tints",
+            "btn1_link": "/collections/tints-dyes",
             "btn2_label": "Browse brands",
             "btn2_link": "/collections"
           }
@@ -347,7 +347,7 @@
             "tag": "Gel dyes, hybrid dyes & developers",
             "blurb": "True-to-tone gel and hybrid dyes in every shade your chair needs, with matched developers and removers.",
             "chips": "Tints & Dyes, Developers",
-            "link": "/collections/dyes-tints"
+            "link": "/collections/tints-dyes"
           }
         }
       },
