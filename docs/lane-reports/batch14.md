@@ -1,8 +1,7 @@
 # Batch 14 — brand links point at the brand collections · REPORT
 
-Installed 2026-08-23 on top of master `d8e9063`, as two commits: `089908c` (steps 1–2) and
-`131fcfb` (step 4). Step 3 left alone as instructed. Step 5 **not done — not yet confirmed by
-Michelle** (see the end). Nothing published, no bare push, `config/settings_data.json` untouched,
+Installed 2026-08-23 on top of master `d8e9063`, as three commits: `089908c` (steps 1–2),
+`131fcfb` (step 4) and `cb202db` (step 5). Step 3 left alone as instructed. Step 5 **ran after Saman confirmed** (commit `cb202db`). Nothing published, no bare push, `config/settings_data.json` untouched,
 draft theme `160769933525` only. `shopify theme check`: **201 offenses before, 201 after, 0
 errors** — no new offense on any touched file, none at all on the new snippet.
 
@@ -139,15 +138,26 @@ Still carrying the old handle, **admin data, not the repo**: the navigation menu
 `HeaderDrawer-shop-tints-dyes-tints-dyes`) all link `/collections/dyes-tints` and ride the 301.
 Worth repointing in Navigation while it is fresh.
 
-## Step 5 — not done, awaiting Michelle
+## Step 5 — ran (confirmed by Saman, same day)
 
-The six marquee blocks `b1`–`b6` in `templates/index.json` still have `"link": ""`, so the
-homepage "Brands we carry" marquee is six plain-text names. It is a content change to what the
-homepage does, so it was **not** applied. If Michelle confirms, the six values are
+Commit `cb202db`: the six marquee blocks `b1`–`b6` in `templates/index.json` now carry
 `/collections/thuya`, `/collections/bronsun`, `/collections/noemi`, `/collections/linger-beauty`,
-`/collections/cartel`, `/collections/prolong` — all six verified to resolve above — and nothing
-else changes. One note for that decision: until the `brand` template is assigned, those six
-routes land on the generic collection header, same as the kicker does today.
+`/collections/cartel`, `/collections/prolong` — those six values only, no markup change. Pulled
+`index.json` from the draft theme before editing (no editor drift) and after the push
+(byte-identical). Live on the draft theme the "Brands we carry" strip renders
+`<a class="brandname" href="/collections/thuya">Thuya</a>` … for all six, in both loop groups.
+Styling is unchanged: `.cl .brandname` (0,2,0) beats the `.cl a{color:inherit}` reset (0,1,1),
+so the anchor paints exactly like the span did, with the hover the prototype already defined.
+
+**One follow-up, left for the packet author because it is a markup change:** the marquee's
+second `.mq-group` is `aria-hidden="true"` (the seamless-loop clone) and, now that the names are
+anchors, it contains 12 focusable links — 24 tab stops per sweep, half of them invisible to
+screen readers (axe `aria-hidden-focus`). One-line fix in `sections/cartel-marquee.liquid`:
+add `{% unless first_half %}tabindex="-1"{% endunless %}` to the `<a class="brandname">`. Not
+applied here.
+
+Same caveat as the kicker: until the `brand` template is assigned in admin, these six routes
+land on the generic collection header.
 
 ## Verify — logged out, draft theme `160769933525`
 
