@@ -106,7 +106,7 @@
                     {%- comment -%} Cartel: vendor kicker links to the brand-filtered catalogue {%- endcomment -%}
                     <a
                       class="p-brand"
-                      href="{{ routes.all_products_collection_url }}?filter.p.vendor={{ product.vendor | url_param_escape }}"
+                      href="{% render 'cartel-brand-url', vendor: product.vendor %}"
                       {{ block.shopify_attributes }}
                     >
                       {{- product.vendor -}}

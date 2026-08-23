@@ -1,0 +1,18 @@
+{%- liquid
+  # Cartel batch 14 — resolve a vendor name to its brand collection.
+  # Returns a URL string. Falls back to the vendor-facet URL when the brand collection
+  # does not exist, is unpublished, or holds nothing — so a renamed or deleted collection
+  # degrades to the previous behaviour instead of 404ing.
+  assign cl_bu_vendor = vendor | default: product.vendor | strip
+  assign cl_bu_handle = cl_bu_vendor | handleize
+  assign cl_bu_coll = collections[cl_bu_handle]
+  if cl_bu_coll != blank and cl_bu_coll.products_count > 0
+    assign cl_bu_url = cl_bu_coll.url
+  else
+    # Escape the VENDOR ONLY, then append. url_param_escape is what the existing kicker
+    # uses (space -> %20), so the fallback is byte-identical to today's link.
+    assign cl_bu_v_esc = cl_bu_vendor | url_param_escape
+    assign cl_bu_url = routes.all_products_collection_url | append: '?filter.p.vendor=' | append: cl_bu_v_esc
+  endif
+-%}
+{{- cl_bu_url -}}
