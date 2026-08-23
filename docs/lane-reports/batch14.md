@@ -202,3 +202,64 @@ serves Shopify's minified build of the new file (contains `navTarget` / `data-hr
 - `Cartel` (6) vs `CARTEL LASH & SUPPLY CO` (8): two vendor strings for the house brand; only the first has a collection.
 - Navigation menu still links `/collections/dyes-tints` (rides the 301).
 - `docs/lane-reports/csv-theme-audit.md:39` says `dyes-tints` 404s — stale since the collection was created 2026-08-16.
+
+## Step 5 follow-up — a11y: the marquee's duplicate tab stops (`05388c0`)
+
+Batch 15. One line, one file: `sections/cartel-marquee.liquid`, the `<a class="brandname">`
+branch inside `.mq-group`.
+
+**The note above understated it.** It proposed `{% unless first_half %}`, which assumes the
+duplicates are only the loop clone. They are not: the section pads each group to twelve items
+(`repeats = 12 | divided_by: brand_count` → 2 with six brands) *and* renders the group twice, so
+`first_half` alone would still have left **12** focusable anchors, not 6. The guard that is
+actually correct is the one the file already uses to place `shopify_attributes` —
+`first_half and first_pass`, the single canonical copy of each block:
+
+```liquid
+{%- unless first_half and first_pass %} tabindex="-1"{% endunless %}
+```
+
+The `{%- ` sits inside the tag, so nothing but the attribute changes in the markup. The
+`{%- else -%}` `<span class="brandname">` branch is untouched — a span is not focusable.
+
+**Before → after, measured on the draft theme homepage (logged out):**
+
+| | before (`8dbae37`) | after (`05388c0`) |
+|---|---|---|
+| `.marquee a.brandname` | 24 | 24 |
+| `…a.brandname:not([tabindex="-1"])` | **24** | **6** |
+| focusable inside the `aria-hidden="true"` clone group | **12** | **0** |
+| theme-editor targets (`shopify_attributes`) | 6 | **6** |
+| tab stops to cross the strip | 24 | 6 |
+
+**Theme-editor targets are unchanged.** `editor_attrs` is assigned by the same
+`first_half and first_pass` guard and was not touched. Rendering the section at `HEAD~1` and at
+`HEAD` against the live six-block config and diffing the parsed anchors: class, href, link text,
+group index and `shopify_attributes` are identical on all 24 anchors — `tabindex` is the only
+delta. (`shopify_attributes` renders empty on storefront requests — 0 `data-shopify-editor-*`
+anywhere on the page — so the 6-target count is from the render diff, not the storefront HTML.)
+
+**Verified on `160769933525`** (`Shopify.theme.id` confirmed 160769933525, role `unpublished`),
+headless Chrome over CDP:
+
+1. 24 anchors / 6 without `tabindex="-1"`.
+2. Group 0 (no `aria-hidden`): 12 anchors, 6 focusable. Group 1 (`aria-hidden="true"`): 12
+   anchors, **0** focusable. Every focusable anchor is in group 0.
+3. Real `Tab` key traversal from the kicker: six marquee stops, in brand order — Thuya,
+   Bronsun, Noemi, Linger Beauty, Cartel, Prolong — no stop inside an `aria-hidden` subtree,
+   then straight out to `button.caro-btn`.
+4. Clicking still navigates. A real `Input.dispatchMouseEvent` press/release on the centre of a
+   `tabindex="-1"` duplicate (`elementFromPoint` → `A.brandname`) landed on
+   `/collections/thuya`; so did `.click()` on the canonical anchor. Duplicates keep their
+   `href`, `pointer-events: auto`, no `disabled`, no `aria-hidden` on the anchors themselves.
+5. Marquee still scrolls: `animation-name: marq`, `animation-duration: 63.996s` from
+   `--mq-dur:63996ms`, track 3965px, two `.mq-group`s, the second still `aria-hidden="true"`.
+6. `theme check --output json`: 201 → 201 offenses, and the two offense sets are identical
+   check-for-check — no new offenses, none resolved. `cartel-marquee.liquid` has none.
+
+**Out of scope, found while sweeping the page.** The homepage still has six `aria-hidden-focus`
+elements — none in the marquee. They are the CTA pairs inside the inactive `.hero-slide`s of
+`#herowrap` ("Shop the collection" / "Explore lash lift", "Shop brows & tints" / "Browse
+brands", "Shop adhesives" / "Shop best sellers"): the carousel marks the off-screen slides
+`aria-hidden="true"` but leaves their links in the tab order. Pre-existing, unrelated to step 5,
+not touched here.
