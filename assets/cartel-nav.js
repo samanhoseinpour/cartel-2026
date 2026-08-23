@@ -103,23 +103,54 @@
       });
     });
 
-    /* Clicking the pill on a hover device must not slam the panel shut when the
-       pointer merely passed over it — but it must still TOGGLE. Unconditionally
+    /* On a hover device the panel is already open by the time the pill is
+       clicked, so a click has one job left: go where the menu item points.
+       The header snippets put link.url on the <summary> as data-href (a
+       <summary> has no href of its own). Only a real pointer click navigates:
+       Enter/Space on a <summary> also dispatches a click, but with detail 0,
+       and keyboard users still need the pill to TOGGLE the panel (they have no
+       hover). Touch keeps Dawn's native toggle because canHover() is false.
+       Cmd/Ctrl-click and middle-click open a new tab, as they would on an <a>.
+       A blank or "#" menu link (nothing to go to) falls back to the toggle.
+
+       Toggle path: clicking the pill must not slam the panel shut when the
+       pointer merely passed over it — but it must still toggle. Unconditionally
        reopening meant the panel could never be closed from the pill, which also
-       trapped keyboard users (Enter on a <summary> dispatches a click).
-       Setting details.open fires the native toggle event, so Dawn's own
-       DetailsDisclosure close logic still runs. */
+       trapped keyboard users. Setting details.open fires the native toggle
+       event, so Dawn's own DetailsDisclosure close logic still runs. */
+    function navTarget(summary) {
+      var href = (summary.getAttribute('data-href') || '').trim();
+      if (!href || href === '#' || href.charAt(0) === '#') return '';
+      return href;
+    }
+
     menus(nav).forEach(function (details) {
       var summary = details.querySelector(':scope > summary');
       if (!summary) return;
       summary.addEventListener('click', function (event) {
         if (!canHover()) return;
         event.preventDefault();
+        var href = navTarget(summary);
+        if (href && event.detail > 0) {
+          if (event.metaKey || event.ctrlKey) {
+            window.open(href, '_blank', 'noopener');
+          } else {
+            window.location.assign(href);
+          }
+          return;
+        }
         if (details.open) {
           setOpen(details, false);
         } else {
           open(nav, details);
         }
+      });
+      summary.addEventListener('auxclick', function (event) {
+        if (!canHover() || event.button !== 1) return;
+        var href = navTarget(summary);
+        if (!href) return;
+        event.preventDefault();
+        window.open(href, '_blank', 'noopener');
       });
     });
 
