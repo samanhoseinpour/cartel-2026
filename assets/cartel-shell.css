@@ -1543,3 +1543,47 @@ product-recommendations {
   margin-left: auto;
   margin-right: auto;
 }
+
+/* ============================================================
+   15. TRUST BAR STOPPED 40px SHORT OF THE PRODUCT ROWS
+   (2026-08-23)
+
+   Reported: the trust bar "isn't filling the container".
+
+   `.cl .wrap` (cartel-home.css:40) is a 1280px box with a 40px
+   gutter, so every band it wraps is a 1200px CONTENT box.
+   `.cl .carousel` (cartel-home.css:120) is the same 1280px box,
+   but its 40px is PADDING — and overflowing flex items are
+   clipped at the padding box, not the content box, so the cards
+   paint right out to 1280. Measured on a local harness against
+   the shipped stylesheets:
+
+     vw=1440   .vprops (trust bar)      120 -> 1320
+               .carousel clip edge       80 -> 1360
+               first card                120 -> ...
+     vw=1280   .vprops                    40 -> 1240
+               .carousel clip edge         0 -> 1280
+
+   So the bar sat 40px inside the rows directly above and below
+   it, which is the gap in the screenshot.
+
+   Dropping the gutter on BOTH sides (bar = the full 1280 band)
+   fixes the right edge but pushes the left edge 40px past the
+   section heading and the first card, which reads worse. The
+   cards start at the content-box left and only bleed RIGHT, so
+   dropping the right gutter alone makes the bar exactly
+   co-extensive with the card rows: left on the heading, right on
+   the clip edge.
+
+   Longhand, never the `padding` shorthand — that would wipe the
+   --cl-pt/--cl-pb section padding set in 7b above.
+
+   <=760px keeps its 20px gutter: the bar is a bordered, rounded
+   card on phones (.vp is restyled at cartel-home.css:328) and
+   running it into the screen edge reads as a clipping bug.
+   ============================================================ */
+@media (min-width: 761px) {
+  .cl .vpwrap {
+    padding-right: 0;
+  }
+}
