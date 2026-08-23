@@ -37,7 +37,18 @@
                 {%- assign editor_attrs = '' -%}
                 {%- if first_half and first_pass -%}{%- assign editor_attrs = block.shopify_attributes -%}{%- endif -%}
                 {%- if block.settings.link != blank -%}
-                  <a class="brandname" href="{{ block.settings.link }}" {{ editor_attrs }}>
+                  {%- comment -%}
+                    Cartel batch 15: the strip renders each brand `repeats` times per group and
+                    the group twice, so only the canonical copy — the one that also carries
+                    shopify_attributes — is a tab stop. The rest are visual duplicates, and half
+                    of them sit inside the aria-hidden loop clone.
+                  {%- endcomment -%}
+                  <a
+                    class="brandname"
+                    href="{{ block.settings.link }}"
+                    {%- unless first_half and first_pass %} tabindex="-1"{% endunless %}
+                    {{ editor_attrs }}
+                  >
                     {{- block.settings.name -}}
                   </a>
                 {%- else -%}
