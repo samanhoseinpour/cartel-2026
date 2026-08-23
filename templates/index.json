@@ -88,42 +88,42 @@
           "type": "brand",
           "settings": {
             "name": "Thuya",
-            "link": ""
+            "link": "/collections/thuya"
           }
         },
         "b2": {
           "type": "brand",
           "settings": {
             "name": "Bronsun",
-            "link": ""
+            "link": "/collections/bronsun"
           }
         },
         "b3": {
           "type": "brand",
           "settings": {
             "name": "Noemi",
-            "link": ""
+            "link": "/collections/noemi"
           }
         },
         "b4": {
           "type": "brand",
           "settings": {
             "name": "Linger Beauty",
-            "link": ""
+            "link": "/collections/linger-beauty"
           }
         },
         "b5": {
           "type": "brand",
           "settings": {
             "name": "Cartel",
-            "link": ""
+            "link": "/collections/cartel"
           }
         },
         "b6": {
           "type": "brand",
           "settings": {
             "name": "Prolong",
-            "link": ""
+            "link": "/collections/prolong"
           }
         }
       },
