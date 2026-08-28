@@ -461,7 +461,9 @@
         "p3": {
           "type": "pair",
           "settings": {
-            "label": "Brow lamination"
+            "label": "Brow lamination",
+            "before": "shopify://shop_images/9.avif",
+            "after": "shopify://shop_images/10.avif"
           }
         },
         "p4": {
