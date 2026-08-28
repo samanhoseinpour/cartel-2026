@@ -445,7 +445,9 @@
         "p1": {
           "type": "pair",
           "settings": {
-            "label": "Korean lash lift"
+            "label": "Korean lash lift",
+            "before": "shopify://shop_images/KLL_Before.avif",
+            "after": "shopify://shop_images/KLL_After.avif"
           }
         },
         "p2": {
