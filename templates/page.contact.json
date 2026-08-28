@@ -16,7 +16,9 @@
           "type": "channel",
           "settings": {
             "style": "email",
-            "title": "Email us"
+            "title": "Email us",
+            "text": "@cartel.lash",
+            "url": ""
           }
         },
         "ch-ig": {
@@ -68,7 +70,25 @@
         "t4",
         "t5"
       ],
-      "settings": {}
+      "settings": {
+        "show_breadcrumbs": true,
+        "eyebrow": "Contact us",
+        "heading": "Get in <em>Touch</em>",
+        "lead": "A question about a product, your order, wholesale or training? We're lash artists too, drop us a line and a real human gets back to you, usually within one business day.",
+        "contact_email": "info@cartellash.ca",
+        "contact_phone": "+1 (778) 251-5550",
+        "form_heading": "Send us a message",
+        "form_text": "Tell us what you need and we'll be in touch.",
+        "topics_label": "What's it about?",
+        "submit_label": "Send message",
+        "fineprint": "We'll only use your details to reply. See our <a href=\"/pages/privacy-policy\">privacy policy</a>.",
+        "error_heading": "That didn't send — check the details below.",
+        "success_heading": "Message sent, thank you!",
+        "success_text": "We've got your note and will reply within one business day. Keep an eye on your inbox (and the spam folder, just in case).",
+        "success_btn_label": "Keep shopping",
+        "success_btn_link": "",
+        "success_again_label": "Send another"
+      }
     },
     "cards": {
       "type": "cartel-contact-cards",
@@ -131,7 +151,16 @@
         "loc-wv",
         "loc-bby"
       ],
-      "settings": {}
+      "settings": {
+        "help_kick": "Quick help",
+        "help_heading": "Find an answer faster.",
+        "help_pad_top": 78,
+        "help_pad_bottom": 78,
+        "loc_kick": "Collect your Order",
+        "loc_heading": "Local pick-up in BC.",
+        "loc_pad_top": 0,
+        "loc_pad_bottom": 78
+      }
     }
   },
   "order": [
