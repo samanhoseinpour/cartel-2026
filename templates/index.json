@@ -467,7 +467,9 @@
         "p4": {
           "type": "pair",
           "settings": {
-            "label": "Lash & brow tint"
+            "label": "Lash Lift & Tint",
+            "before": "shopify://shop_images/5.avif",
+            "after": "shopify://shop_images/6.avif"
           }
         }
       },
