@@ -453,7 +453,9 @@
         "p2": {
           "type": "pair",
           "settings": {
-            "label": "Lash extensions"
+            "label": "Lash extensions",
+            "before": "shopify://shop_images/7.avif",
+            "after": "shopify://shop_images/8.avif"
           }
         },
         "p3": {
