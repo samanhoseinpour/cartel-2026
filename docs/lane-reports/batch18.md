@@ -229,3 +229,38 @@ it occupies a slot against the store's theme cap and can be deleted from admin.
 
 Bare `theme dev` was used throughout — never `theme dev --theme <id>`, which syncs the real theme
 and triggers write-back commits. `git status` confirmed no write-back was produced.
+
+## 10 · Step 5 completed at install time — 2026-08-29
+
+All six Brand card blocks were set to **Image treatment → Logo** in the theme editor on draft
+`160769933525`. Shopify wrote the change back as **`4e9f45a`** ("Update from Shopify for theme
+cartel-2026/master"), fast-forwarded into `master`:
+
+```
+thuya  bronsun  noemi  cartel  linger-beauty  prolong   ->  image_fit: "logo"   (6/6)
+```
+
+The write-back also added Shopify's 363-byte JSONC banner to `templates/list-collections.json`,
+which is why the file no longer parses with a bare `json.loads` — strip the leading `/* … */`
+first (§1a).
+
+**The editor showed the stale schema until the tab was hard-reloaded.** Shopify's editor fetches
+each section's schema once at page load, so a tab opened before the sync landed renders the old
+settings list and the new **Image treatment** select is simply absent. Verified the schema *was*
+live on the theme (`theme pull --only sections/main-list-collections.liquid` → `image_fit` at
+line 126) before concluding it was a client-side cache. Cmd+Shift+R fixed it.
+
+Live theme re-checked after the change: **Expanse `#132799693013` is still `[live]`** and a
+no-cookie fetch of `cartellash.ca/collections` returns `themeId":"132799693013"` with 0 `is-logo`.
+Nothing was published.
+
+### 10a · Two things left open
+
+1. **`4e9f45a` is authored by `shopify[bot]`.** History was rewritten on 2026-08-23 specifically to
+   make `saman` the sole contributor; this write-back reintroduces a bot author. Fixing it needs
+   another rewrite and a force-push — not done here, flagged for a decision.
+2. **The four square-source lockups now render small.** `object-fit:contain` fits the whole 900×900
+   canvas — most of which is whitespace — into a 383×208 tile, so Bronsun, Cartel, Linger and
+   Prolong scale to roughly a 148 px square while the two wide PNGs (Thuya, Noemi) fill much more
+   of their tile. The row reads unevenly. This is a source-image issue, not a CSS one: trimming the
+   whitespace margins on those four JPGs and re-uploading would even it out without touching code.
