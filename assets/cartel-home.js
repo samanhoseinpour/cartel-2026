@@ -407,52 +407,21 @@
     });
   }
 
-  /* ---------------- scroll reveal ---------------- */
-  var REVEAL_SEL = '.cl .sec-head, .cl .vprops, .cl .carousel, .cl .reelrow, .cl .resgrid, .cl .reviewmarq, .cl .brandspot, .cl .abhome, .cl .news, .cl .ba-chips, .cl .ba-cmp';
-  /* Tracked at module scope so the beforeprint handler can be registered ONCE.
-     It used to be added inside reveal(), which runs again on every
-     shopify:section:load — each call leaked another listener holding its whole
-     `els` array alive. */
-  var revealed = [];
-  function reveal(root) {
-    if (RM || !('IntersectionObserver' in window)) return;
-    if (window.Shopify && window.Shopify.designMode) return;
-    var els = Array.prototype.slice.call((root || document).querySelectorAll(REVEAL_SEL));
-    var io = new IntersectionObserver(function (es) {
-      es.forEach(function (en) {
-        if (!en.isIntersecting) return;
-        io.unobserve(en.target);
-        var el = en.target;
-        el.style.opacity = '';
-        if (el.animate) {
-          el.animate(
-            [{ opacity: 0, transform: 'translateY(18px)' }, { opacity: 1, transform: 'none' }],
-            { duration: 620, easing: 'cubic-bezier(.2,.7,.2,1)' }
-          );
-        }
-      });
-    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.05 });
+  /* The scroll reveal that used to live here is gone (2026-08-29).
 
-    var fresh = els.filter(function (el) {
-      if (el.__clReveal) return false;
-      el.__clReveal = 1;
-      return true;
-    });
-    /* Read every rect FIRST, then write. Interleaving them meant each
-       style.opacity write dirtied layout and the next getBoundingClientRect
-       forced a synchronous re-layout — N forced layouts in one block, at load,
-       on the LCP critical path. */
-    var limit = window.innerHeight * 1.15;
-    var below = fresh.map(function (el) { return el.getBoundingClientRect().top > limit; });
-    fresh.forEach(function (el, i) {
-      if (below[i]) el.style.opacity = '0';
-      revealed.push(el);
-      io.observe(el);
-    });
-  }
-  window.addEventListener('beforeprint', function () {
-    revealed.forEach(function (el) { el.style.opacity = ''; });
-  });
+     It set style.opacity='0' on every below-the-fold .sec-head / .carousel /
+     .reelrow / .resgrid / .brandspot / .abhome / .news / .ba-* — 23 elements on
+     the homepage, 11 on the blog — and faded each one up over 620ms when it
+     crossed an IntersectionObserver tuned to rootMargin '0px 0px -8% 0px' with
+     threshold 0.05. Because the trigger only fired once an element was already
+     5% on screen and still 8% clear of the bottom margin, sections visibly
+     arrived late and one at a time; the reported symptom was the site "loading
+     piece by piece". Nothing else depended on it: no stylesheet sets an initial
+     opacity on those selectors, so with the JS removed they simply render.
+
+     Removed with it: REVEAL_SEL, the module-scope `revealed` array, and the
+     `beforeprint` listener whose only job was to undo the inline opacity before
+     printing. */
 
   var def = function (n, C) { if (!customElements.get(n)) customElements.define(n, C); };
   def('cl-hero', CLHero);
@@ -462,7 +431,6 @@
   def('cl-ba', CLBa);
 
   function start(root) {
-    reveal(root);
     marquees(root);
   }
 
