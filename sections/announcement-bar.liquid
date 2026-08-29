@@ -14,7 +14,14 @@
   endif
 -%}
 
-{% if social_icons %}
+{%- comment -%}
+  Gated on show_social as well as on links being configured. It used to key off
+  `social_icons` alone — true whenever ANY social link exists in theme settings —
+  so this render-blocking sheet shipped on every page while show_social was
+  false and {%- render 'social-icons' -%} below never ran. The footer loads its
+  own deferred copy for the icons it does render.
+{%- endcomment -%}
+{% if section.settings.show_social and social_icons %}
   {{ 'component-list-social.css' | asset_url | stylesheet_tag }}
 {% endif %}
 

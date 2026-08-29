@@ -16,8 +16,10 @@
       !important on body, buttons, inputs and every heading. Not a single glyph
       is ever rendered in Assistant, so warming that connection (and the
       @font-face + preload blocks that used to sit below) only stole bandwidth
-      from the Google Fonts request that actually paints text.
-      cartel-fonts.liquid carries its own preconnects.
+      from the request that actually paints text.
+      Hanken Grotesk is now self-hosted: cartel-fonts.liquid declares it and
+      carries its own `rel=preload` for the latin woff2, so there is no
+      third-party origin left in front of the first painted glyph.
     {%- endcomment -%}
 
     <title>
@@ -358,16 +360,37 @@
     <noscript>{{ 'component-cart-items.css' | asset_url | stylesheet_tag }}</noscript>
 
     {%- if settings.cart_type == 'drawer' -%}
-      {{ 'component-cart-drawer.css' | asset_url | stylesheet_tag }}
-      {{ 'component-cart.css' | asset_url | stylesheet_tag }}
-      {{ 'component-totals.css' | asset_url | stylesheet_tag }}
-      {{ 'component-price.css' | asset_url | stylesheet_tag }}
-      {{ 'component-discounts.css' | asset_url | stylesheet_tag }}
       {%- comment -%}
-        Cartel's drawer skin. Must load AFTER component-cart-drawer.css — the
-        overrides in it are written to win against that file.
+        Deferred with the same media="print" onload swap component-cart-items.css
+        uses above, for the same reason: the drawer is closed until someone
+        clicks the cart, so none of this paints anything on load. As blocking
+        CSS it cost six requests on EVERY page of the site — and measured
+        against the live homepage DOM, component-totals.css and
+        component-price.css matched 0% of their rules, component-cart.css 18%
+        and component-discounts.css 17%.
+
+        Shopify's Early Hints preload list is capped at ten entries; these six
+        were eating half of it and pushing the sheets that do paint the page off
+        the end, where the parser had to discover them.
+
+        Document order still decides the cascade once the media swaps, so
+        cartel-cart-drawer.css keeps winning against component-cart-drawer.css
+        regardless of which finishes downloading first.
       {%- endcomment -%}
-      {{ 'cartel-cart-drawer.css' | asset_url | stylesheet_tag }}
+      <link rel="stylesheet" href="{{ 'component-cart-drawer.css' | asset_url }}" media="print" onload="this.media='all'">
+      <link rel="stylesheet" href="{{ 'component-cart.css' | asset_url }}" media="print" onload="this.media='all'">
+      <link rel="stylesheet" href="{{ 'component-totals.css' | asset_url }}" media="print" onload="this.media='all'">
+      <link rel="stylesheet" href="{{ 'component-price.css' | asset_url }}" media="print" onload="this.media='all'">
+      <link rel="stylesheet" href="{{ 'component-discounts.css' | asset_url }}" media="print" onload="this.media='all'">
+      <link rel="stylesheet" href="{{ 'cartel-cart-drawer.css' | asset_url }}" media="print" onload="this.media='all'">
+      <noscript>
+        {{ 'component-cart-drawer.css' | asset_url | stylesheet_tag }}
+        {{ 'component-cart.css' | asset_url | stylesheet_tag }}
+        {{ 'component-totals.css' | asset_url | stylesheet_tag }}
+        {{ 'component-price.css' | asset_url | stylesheet_tag }}
+        {{ 'component-discounts.css' | asset_url | stylesheet_tag }}
+        {{ 'cartel-cart-drawer.css' | asset_url | stylesheet_tag }}
+      </noscript>
     {%- endif -%}
 
     {%- comment -%}
@@ -375,12 +398,33 @@
       an unconditional highest-priority fetch — unlike @font-face it does not
       wait for a glyph match — so the theme was pulling ~50-70KB of woff2 for a
       family it never paints, inside the LCP window, on every page, competing
-      with the Hanken Grotesk request that does. Deleted with the @font-face
-      blocks above. If Hanken is ever self-hosted, preload it here instead.
+      with the Hanken Grotesk request that does.
+
+      Hanken IS now self-hosted, but its preload lives in cartel-fonts.liquid
+      rather than here: that snippet renders immediately before base.css, well
+      above this point, and a font preload is only worth issuing as early as the
+      parser can see it.
     {%- endcomment -%}
 
+    {%- comment -%}
+      Gated on the market list, but every surface that can render a selector —
+      header, footer and announcement bar — has enable_country_selector and
+      enable_language_selector set to false, and header-drawer.liquid now
+      respects those settings too. So this styles nothing at present. It stays
+      loaded (turning a selector back on in the editor must not ship an
+      unstyled dropdown) but it is no longer render-blocking or preloaded: a
+      localization selector is a closed <details> disclosure, never part of the
+      first paint. If a selector is ever enabled permanently, move this load
+      into the three sections that render one.
+    {%- endcomment -%}
     {%- if localization.available_countries.size > 1 or localization.available_languages.size > 1 -%}
-      {{ 'component-localization-form.css' | asset_url | stylesheet_tag: preload: true }}
+      <link
+        rel="stylesheet"
+        href="{{ 'component-localization-form.css' | asset_url }}"
+        media="print"
+        onload="this.media='all'"
+      >
+      <noscript>{{ 'component-localization-form.css' | asset_url | stylesheet_tag }}</noscript>
       <script src="{{ 'localization-form.js' | asset_url }}" defer="defer"></script>
     {%- endif -%}
 

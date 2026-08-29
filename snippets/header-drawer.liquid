@@ -166,9 +166,16 @@
                 -%}
               </a>
             {%- endif -%}
-            {%- if localization.available_countries or localization.available_languages -%}
+            {%- comment -%}
+              This block ignored the header section's enable_country_selector /
+              enable_language_selector settings, so the mobile drawer rendered a
+              country picker on every page of the site even with both selectors
+              switched off — the only localization form the storefront emitted.
+              header.liquid passes the two settings in.
+            {%- endcomment -%}
+            {%- if enable_country_selector or enable_language_selector -%}
               <div class="menu-drawer__localization header-localization">
-                {%- if localization.available_countries and localization.available_countries.size > 1 -%}
+                {%- if enable_country_selector and localization.available_countries.size > 1 -%}
                   <localization-form>
                     {%- form 'localization', id: 'HeaderCountryMobileForm', class: 'localization-form' -%}
                       <div>
@@ -181,7 +188,7 @@
                   </localization-form>
                 {% endif %}
 
-                {%- if localization.available_languages and localization.available_languages.size > 1 -%}
+                {%- if enable_language_selector and localization.available_languages.size > 1 -%}
                   <localization-form>
                     {%- form 'localization', id: 'HeaderLanguageMobileForm', class: 'localization-form' -%}
                       <div>
