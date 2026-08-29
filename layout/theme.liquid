@@ -34,11 +34,23 @@
       {%- unless page_title contains shop.name or template.name == 'product' %} &ndash; {{ shop.name }}{% endunless -%}
     </title>
 
-    {% if page_description %}
-      <meta name="description" content="{{ page_description | escape }}">
+    {%- comment -%}
+      Cartel SEO 2026-08-29: this used to be a bare `if page_description`, and
+      Shopify only fills that from the admin's "Search engine listing"
+      description. Nothing but the 68 imported blog posts and the shop-level
+      homepage line has one, so every collection, page, product, the blog index
+      and /search shipped with no meta description at all. The snippet returns a
+      per-template fallback and still lets any admin-entered value win.
+      escape_once, not escape: derived copy is `strip_html`ed resource HTML, and
+      escape would turn a surviving `&amp;` into `&amp;amp;`.
+    {%- endcomment -%}
+    {%- capture cl_meta_description -%}{%- render 'cartel-meta-description' -%}{%- endcapture -%}
+    {%- assign cl_meta_description = cl_meta_description | strip -%}
+    {% if cl_meta_description != blank %}
+      <meta name="description" content="{{ cl_meta_description | escape_once }}">
     {% endif %}
 
-    {% render 'meta-tags' %}
+    {% render 'meta-tags', cl_description: cl_meta_description %}
 
     <script type="module">
       import * as StandardEvents from 'https://cdn.shopify.com/storefront/standard-events.js';

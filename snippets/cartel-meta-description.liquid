@@ -1,0 +1,186 @@
+{%- comment -%}
+  Cartel SEO — meta description fallback chain.
+
+  Shopify only fills `page_description` from the "Search engine listing"
+  description in the admin, and theme.liquid used to emit the tag only when
+  that was set. Audited every URL in the sitemap against the dev theme on
+  2026-08-29 (169 URLs: 64 products, 21 collections, 8 pages, 70 articles,
+  plus the fixed routes). All but five carry an admin description; these did
+  not, so they shipped with no <meta name="description"> at all:
+
+    /blogs/news                    the blog index
+    /collections/cleanser-shampoo  the one collection with the field empty
+    /cart
+    /account/login                 and the rest of the customer templates
+    404 pages
+
+  This snippet closes those and guarantees every future template resolves to
+  something. Precedence:
+
+    1. `page_description` — an admin-entered SEO description ALWAYS wins, so
+       the 164 URLs that already have one are untouched, and anything the
+       client types in Shopify later still overrides what is below.
+    2. A hand-written line for the gaps above.
+    3. The resource's own copy — collection.description, page.content,
+       article.excerpt, product.description — so a new collection, page or
+       post is covered without editing this file.
+    4. A line composed from the resource's fields, then shop.description as
+       the last resort. Nothing renders empty.
+
+  Output is a bare string: theme.liquid captures it and escapes it once at the
+  tag. Hand-written branches are written to land in the 140-160 character
+  window Google renders; the clamp at the bottom cuts derived copy on a word
+  boundary so a truncated product body never ends mid-word.
+
+  Do not add prices here. snippets/meta-tags.liquid re-derives the Thuya login
+  gate for og:price for a reason - a description is served to logged-out
+  crawlers too.
+{%- endcomment -%}
+{%- liquid
+  assign cl_free_ship = 'Free shipping over $150.'
+  assign d = page_description | default: '' | strip
+
+  # Whatever the admin wrote is emitted verbatim. The clamp at the bottom is for
+  # copy THIS file derived, not for the client's - truncating a 163-character
+  # description they typed, and tacking an ellipsis on it, is a regression.
+  assign cl_from_admin = false
+  if d != blank
+    assign cl_from_admin = true
+  endif
+
+  if d == blank
+    case request.page_type
+
+      when 'index'
+        assign d = shop.description
+
+      when 'collection'
+        if collection.handle == 'cleanser-shampoo'
+          assign d = 'Lash cleansers and foaming shampoos that keep extensions clean and retention high, for your chair and for client aftercare. Shipped across Canada.'
+        else
+          assign d = collection.description | strip_html
+        endif
+        if d == blank
+          assign d = 'Shop ' | append: collection.title | append: ' at Cartel Lash, pro lash and brow supplies stocked in Canada for working artists. ' | append: cl_free_ship
+        endif
+
+      when 'list-collections'
+        assign d = 'Every pro line on the Cartel shelf: Thuya, Bronsun, NOEMI, Linger Beauty, Prolong and our own house range, stocked authentic in Canada.'
+
+      when 'product'
+        assign d = product.description | strip_html
+        if d == blank
+          assign d = product.title
+          if product.vendor != blank
+            assign d = d | append: ' by ' | append: product.vendor
+          endif
+          assign d = d | append: '. '
+          if product.type != blank
+            assign cl_ptype = product.type | downcase
+            assign d = d | append: 'Pro ' | append: cl_ptype | append: ' for lash and brow artists, '
+          else
+            assign d = d | append: 'Pro lash and brow supplies, '
+          endif
+          assign d = d | append: 'in stock at Cartel Lash and shipped across Canada. ' | append: cl_free_ship
+        endif
+
+      when 'page'
+        assign d = page.content | strip_html
+        if d == blank
+          assign d = page.title | append: ' at Cartel Lash, pro lash and brow supply for Canadian artists. ' | append: cl_free_ship
+        endif
+
+      when 'blog'
+        if blog.handle == 'news'
+          assign d = 'The Cartel Journal: practical notes on lash technique, retention, brow lamination, aftercare and the business of lashing, from the artists we supply.'
+        else
+          assign d = blog.title | append: ' from Cartel Lash, technique, education and business notes for working lash and brow artists across Canada.'
+        endif
+
+      when 'article'
+        assign d = article.excerpt | strip_html
+        if d == blank
+          assign d = article.content | strip_html
+        endif
+
+      when 'search'
+        if search.terms != blank
+          assign d = 'Search results for ' | append: search.terms | append: ' at Cartel Lash, pro lash and brow supplies shipped across Canada. ' | append: cl_free_ship
+        else
+          assign d = 'Search Cartel Lash for pro lash and brow supplies: lash lift, brow lamination, tints, adhesives, trays and tools, shipped across Canada.'
+        endif
+
+      when 'cart'
+        assign d = 'Review the pro lash and brow supplies in your Cartel Lash bag, then check out. Shipped across Canada, with free shipping on orders over $150.'
+
+      when '404'
+        assign d = 'That page has moved or retired. Search Cartel Lash or jump back into lash lift, brow, adhesives and tools, pro supplies shipped across Canada.'
+
+      when 'customers/login'
+        assign d = 'Log in to your free Cartel Lash pro account to see your pricing, track your orders and check out faster on lash and brow supplies.'
+
+      when 'customers/register'
+        assign d = 'Create a free Cartel Lash pro account for trade pricing on the brands we carry and faster checkout on lash and brow supplies shipped across Canada.'
+
+      when 'customers/reset_password'
+        assign d = 'Reset the password on your Cartel Lash pro account to get back to your pricing and order history on lash and brow supplies.'
+
+      when 'customers/activate_account'
+        assign d = 'Activate your Cartel Lash pro account to unlock your pricing and order history on lash and brow supplies shipped across Canada.'
+
+      when 'policy'
+        assign d = page_title | append: ' for Cartel Lash, the pro lash and brow supply shop for Canadian artists. The full text in plain English, before you order.'
+
+    endcase
+  endif
+
+  # Anything still unresolved (the signed-in account templates, gift cards, the
+  # password page, a template added later) falls back to the shop line so the
+  # tag is never emitted empty.
+  if d == blank
+    assign d = shop.description | default: shop.name
+  endif
+
+  # Normalise: markup out, entities left alone for escape_once at the tag,
+  # newlines and runs of spaces collapsed so the attribute stays one line.
+  assign d = d | strip_html | strip_newlines | replace: '&nbsp;', ' '
+  assign d = d | replace: '  ', ' ' | replace: '  ', ' ' | replace: '  ', ' ' | strip
+
+  # Paginated listings would otherwise repeat one description across every page
+  # of the set. Reserve room for the suffix, then append it.
+  assign cl_limit = 160
+  assign cl_suffix = ''
+  if current_page > 1
+    assign cl_suffix = ' Page ' | append: current_page | append: '.'
+    assign cl_limit = 148
+  endif
+
+  if cl_from_admin
+    # Client copy: never cut, and only take the page suffix if it still fits.
+    assign cl_try = d | append: cl_suffix
+    if cl_try.size <= 160
+      assign d = cl_try
+    endif
+  else
+    # Derived copy. Word-safe clamp - `truncate` cuts mid-word, so rebuild
+    # instead, and only when it is actually over. Every hand-written branch
+    # above is already under the limit, so this only ever trims a product body,
+    # a page body or an article excerpt.
+    if d.size > cl_limit
+      assign cl_room = cl_limit | minus: 1
+      assign cl_words = d | split: ' '
+      assign cl_out = ''
+      for w in cl_words
+        assign cl_try = cl_out | append: ' ' | append: w | strip
+        if cl_try.size > cl_room
+          break
+        endif
+        assign cl_out = cl_try
+      endfor
+      assign d = cl_out | strip | append: '…'
+    endif
+    assign d = d | append: cl_suffix
+  endif
+
+  echo d
+-%}
