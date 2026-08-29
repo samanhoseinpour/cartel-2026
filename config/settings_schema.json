@@ -1451,5 +1451,82 @@
         "default": "scheme-1"
       }
     ]
+  },
+  {
+    "name": "Email popup",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "The 10% off popup that opens on every page (and from the \"Get 10% off\" tab on the right edge)."
+      },
+      {
+        "type": "image_picker",
+        "id": "popup_image",
+        "label": "Image",
+        "info": "Fills the left half of the popup (the top half on mobile). Leave empty to show the burgundy CL logo panel instead. The mobile crop is short and wide, so pick a photo with the subject centred, or set a focal point on the image in Files."
+      },
+      {
+        "type": "header",
+        "content": "Offer"
+      },
+      {
+        "type": "text",
+        "id": "popup_kicker",
+        "label": "Kicker",
+        "default": "First order treat"
+      },
+      {
+        "type": "text",
+        "id": "popup_heading",
+        "label": "Heading",
+        "default": "Take 10% off your first order."
+      },
+      {
+        "type": "textarea",
+        "id": "popup_body",
+        "label": "Body",
+        "default": "Join the Cartel list for pro tips, restock alerts and early access to drops."
+      },
+      {
+        "type": "text",
+        "id": "popup_placeholder",
+        "label": "Email field placeholder",
+        "default": "Your email address"
+      },
+      {
+        "type": "text",
+        "id": "popup_button",
+        "label": "Button label",
+        "default": "Claim my 10%"
+      },
+      {
+        "type": "text",
+        "id": "popup_skip",
+        "label": "Dismiss link",
+        "default": "No thanks, I'll pay full price"
+      },
+      {
+        "type": "header",
+        "content": "After signing up"
+      },
+      {
+        "type": "text",
+        "id": "popup_success_heading",
+        "label": "Heading",
+        "default": "You're in."
+      },
+      {
+        "type": "textarea",
+        "id": "popup_success_body",
+        "label": "Body",
+        "default": "Your welcome code is on its way to your inbox. Welcome to the Cartel."
+      },
+      {
+        "type": "text",
+        "id": "popup_success_button",
+        "label": "Button label",
+        "default": "Start shopping"
+      }
+    ]
   }
 ]
