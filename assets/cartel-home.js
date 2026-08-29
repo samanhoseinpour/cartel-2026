@@ -351,12 +351,37 @@
       var self = this;
       this.range = this.querySelector('.ba-range');
       this.handle = this.querySelector('.ba-handle');
+      this.cmp = this.querySelector('.ba-cmp');
       this.pairs = Array.prototype.slice.call(this.querySelectorAll('[data-ba-pair]'));
       this.chips = Array.prototype.slice.call(this.querySelectorAll('[data-ba-chip]'));
+      /* rAF-coalesced writes, 1:1 with the About page's [data-cmp] handler in
+         cartel-pages.js: pointermove fires far above 60fps, and measuring the
+         container after writing `left` on the previous event forces a
+         synchronous relayout on every sample. The listeners only record the
+         intent; paint() measures once per frame, before it writes. */
+      this._frame = 0;
+      this._lastX = null;
+      this._pending = null;
       if (this.range) {
-        var on = function () { self.set(parseInt(self.range.value, 10)); };
+        var on = function () {
+          self._pending = parseFloat(self.range.value);
+          self._lastX = null;
+          self.schedule();
+        };
         this.range.addEventListener('input', on);
         this.range.addEventListener('change', on);
+      }
+      if (this.cmp) {
+        /* Hover to compare — the About page has done this since launch and the
+           homepage only ever responded to a drag. Mouse only: on touch,
+           pointermove fires while the page is being scrolled over the image
+           (and again while dragging the range itself), which scrubbed the
+           reveal underneath the reader. Matches cartel-pages.js / cartel-pdp.js. */
+        this.cmp.addEventListener('pointermove', function (e) {
+          if (e.pointerType !== 'mouse') return;
+          self._lastX = e.clientX;
+          self.schedule();
+        });
       }
       this.chips.forEach(function (c, n) {
         c.addEventListener('click', function () {
@@ -374,6 +399,26 @@
         });
       });
       this.set(50);
+    }
+    schedule() {
+      var self = this;
+      if (!this._frame) {
+        this._frame = requestAnimationFrame(function () { self.paint(); });
+      }
+    }
+    paint() {
+      this._frame = 0;
+      var v = this._pending;
+      this._pending = null;
+      if (this._lastX !== null) {
+        var rect = this.cmp.getBoundingClientRect();
+        if (!rect.width) { this._lastX = null; return; }
+        v = ((this._lastX - rect.left) / rect.width) * 100;
+        this._lastX = null;
+      }
+      if (v === null) return;
+      this.set(v);
+      if (this.range && parseFloat(this.range.value) !== v) this.range.value = v;
     }
     set(pos) {
       pos = Math.max(0, Math.min(100, isNaN(pos) ? 50 : pos));
