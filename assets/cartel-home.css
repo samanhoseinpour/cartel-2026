@@ -343,7 +343,12 @@
   .cl .vp-t{font-size:11px;line-height:1.25}
   .cl .vp-s{display:none}
   .cl .sec{padding-top:56px;padding-bottom:56px}
-  .cl .sec-head{margin-bottom:26px}
+  .cl .sec-head{margin-bottom:26px;flex-wrap:wrap}
+  /* .viewlink used to be tagged .deskonly, which hid the only link to
+     /collections/all and /pages/free-resources on every phone. It renders on
+     mobile now; give the heading the full first line so the link wraps under
+     it instead of competing with a 30px title for a 280px box. */
+  .cl .sh-l{flex:1 1 100%}
   .cl .stitle{font-size:30px}
   .cl .bento{grid-template-columns:1fr 1fr;grid-auto-rows:150px;gap:12px}
   .cl .cat.b-lg{grid-column:span 2;grid-row:span 1}
@@ -357,7 +362,12 @@
   .cl .ft-in{padding:52px 24px 26px}
   .cl .ft-top{grid-template-columns:1fr 1fr;gap:30px 24px}
   .cl .brandname{font-size:22px}
-  .cl .caro-nav{display:flex}
+  /* was `.cl .caro-nav{display:flex}` — same (0,2,0) as the .deskonly rule
+     15 lines above it in this very block, but later, so it won and the arrows
+     the markup tags `caro-nav deskonly` came back on phones. .sec-head has no
+     flex-wrap and neither .caro-nav nor .caro-btn sets flex:none, so at 320px
+     the 46px circles shrank to ~26x46 ovals and squeezed the heading into a
+     ~199px column. Deleted: the markup's intent is desktop-only. */
   .cl .brandgrid{grid-template-columns:1fr 1fr;gap:12px}
   .cl .brandtile{min-height:118px;padding:24px 12px;gap:5px}
   .cl .brandtile-name{font-size:18px}
@@ -370,6 +380,13 @@
 }
 @media (max-width:1040px){
   .cl .brandspot{grid-template-columns:1fr}
+  /* Source order is .bp-stack then .bindex, so at one column the big dark
+     preview stacks ABOVE the numbered list that drives it — ~500px of panel
+     plus the rows below means tapping "Brow Lamination" swapped something a
+     full screen above the finger and read as nothing happening. Put the list
+     first; the panel it updates is then directly under it. */
+  .cl .brandspot > .bindex{order:1}
+  .cl .brandspot > .bp-stack{order:2}
   .cl .bp{min-height:0;padding:40px}
   .cl .bp-grid{grid-template-columns:1fr;gap:24px}
   .cl .bp-visual{min-height:230px}

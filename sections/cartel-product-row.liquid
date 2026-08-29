@@ -33,7 +33,7 @@
           {%- if section.settings.title != blank -%}<h2 class="stitle">{{ section.settings.title }}</h2>{%- endif -%}
         </div>
         {%- if section.settings.view_all_label != blank -%}
-          <a class="viewlink deskonly" href="{{ section.settings.view_all_link | default: coll.url | default: '/collections/all' }}">
+          <a class="viewlink" href="{{ section.settings.view_all_link | default: coll.url | default: '/collections/all' }}">
             {{- section.settings.view_all_label -}}
             <svg class="ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
           </a>
