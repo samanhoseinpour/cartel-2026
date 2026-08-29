@@ -65,7 +65,10 @@
 @keyframes fade{from{opacity:0}to{opacity:1}}
 @keyframes pop{from{transform:translateY(14px) scale(.98);opacity:0}to{transform:none;opacity:1}}
 @keyframes marq{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-.cl .toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:210;background:var(--bord);color:var(--cream);padding:14px 24px;border-radius:100px;font-size:14px;font-weight:600;box-shadow:0 14px 36px rgba(40,8,18,.32);animation:pop .25s ease}
+/* bottom offset has to clear the home indicator now that viewport-fit=cover
+   makes the layout viewport extend into the safe area — .pdp-sticky is the
+   only other bottom-anchored fixed element and already did this. */
+.cl .toast{position:fixed;left:50%;bottom:calc(28px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:210;background:var(--bord);color:var(--cream);padding:14px 24px;border-radius:100px;font-size:14px;font-weight:600;box-shadow:0 14px 36px rgba(40,8,18,.32);animation:pop .25s ease}
 .cl .reelbox{margin:auto;width:min(408px,92vw);position:relative;animation:pop .3s ease}
 /* The 9/16 box below is width-driven, so once .reelbox-v was restored (it had
    been missing, leaving the lightbox 0px tall) a 92vw box became 638px tall on a

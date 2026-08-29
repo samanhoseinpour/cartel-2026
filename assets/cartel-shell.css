@@ -1599,16 +1599,39 @@ product-recommendations {
    Root font-size here is 62.5% (theme.liquid:279, body_scale 100), so 1rem is
    10px and these px values are literal — 16px really is the threshold.
 
-   Scoped to mobile so the desktop type scale is untouched, and listed
-   explicitly rather than as a blanket `.cl input` so the two fields that were
-   already correct (.search-input and .srchbar's 17px desktop rule) keep their
-   size. The doubled `.cl.cl` is what makes this win: several of these rules
-   live in per-template sheets that load AFTER this one, so an equal-specificity
-   override here would lose on source order.
+   Listed explicitly rather than as a blanket `.cl input` so the two fields that
+   were already correct (.search-input and .srchbar's 17px desktop rule) keep
+   their size — a blanket 16px would SHRINK those. The doubled `.cl.cl` is what
+   makes this win: several of these rules live in per-template sheets that load
+   AFTER this one, so an equal-specificity override here would lose on source
+   order.
+
+   2026-08-30 — the gate was `max-width: 760px`, which is the wrong condition
+   twice over:
+
+     * every phone in LANDSCAPE is 667-932px wide, so the query never matched
+       and /account/login, /pages/contact and the FAQ all zoomed on focus the
+       moment the device was rotated — the exact failure this section exists to
+       stop. Tablets zoom too and were never covered.
+     * width does not cause the zoom; a coarse pointer does.
+
+   `pointer: coarse` is the condition that actually describes it. The trade is
+   that a touch-screen laptop now renders these fields at 16px rather than
+   14.5px, which is a slightly larger form field, not a defect — whereas the
+   width gate left a real bug on every rotated phone.
+
+   Two live fields were also missing from the list: .note-box (the cart order
+   note) and .cl-price-in (the min/max price inputs INSIDE the mobile filter
+   drawer — zooming while a fixed overlay is open shifts the visual viewport
+   and pushes the drawer's own "Show N results" footer off screen, which is
+   this section's opening paragraph happening again). `.ms-search input` is
+   14px in 13 sheets but no markup renders it, so it is deliberately not here.
    ============================================================ */
-@media (max-width: 760px) {
+@media (pointer: coarse) {
   .cl.cl .pop-input,
   .cl.cl .promo-input,
+  .cl.cl .note-box,
+  .cl.cl .cl-price-in,
   .cl.cl .qty input.qn,
   .cl.cl .qty-lg input.qn,
   .cl.cl .nf-input,
@@ -1618,10 +1641,19 @@ product-recommendations {
   .cl.cl .fr-nf-input,
   .cl.cl .s404-input,
   .cl.cl .faqsearch input,
-  .cl.cl .srchbar input,
   .cl.cl .inp,
   .cl.cl .sel,
   .cl.cl .bl-share .share-button__fallback .field__input {
+    font-size: 16px;
+  }
+}
+/* .srchbar input is the one field in that list whose BASE is already above the
+   threshold (17px, cartel-search.css:95) — it only drops under it at <=760px
+   (:133, 15px). Under a width-free `pointer: coarse` the rule above would have
+   shrunk it to 16px on tablets, which is the opposite of the point. Keep it on
+   the width gate, where it is genuinely small. */
+@media (pointer: coarse) and (max-width: 760px) {
+  .cl.cl .srchbar input {
     font-size: 16px;
   }
 }
