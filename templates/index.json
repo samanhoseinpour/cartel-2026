@@ -396,6 +396,7 @@
         "g2": {
           "type": "resource",
           "settings": {
+            "image": "shopify://shop_images/copy_0CCCD216-A717-4290-92F9-07F9D43B5916.gif",
             "tag": "Blog",
             "title": "Adhesive & humidity, explained",
             "cta": "Read",
