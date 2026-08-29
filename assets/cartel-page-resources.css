@@ -184,3 +184,26 @@
   .cl .fr-lib{padding-top:min(var(--cl-pt,52px),52px)}
 }
 .cl .fr-feat-cover img,.cl .fr-cover img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+
+/* Same defect and same fix as .newsform (cartel-home.css): one pill, a
+   flex:1 input beside a flex:none nowrap button that cannot shrink, so the
+   field is left ~68px of text at 320px. Stack below 400px. */
+@media (max-width: 400px) {
+  .cl .fr-newsform {
+    flex-direction: column;
+    gap: 10px;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    overflow: visible;
+  }
+  .cl .fr-nf-input {
+    border: 1.5px solid rgba(250, 246, 240, 0.4);
+    border-radius: 100px;
+    background: rgba(250, 246, 240, 0.06);
+  }
+  .cl .fr-nf-btn {
+    padding: 15px 26px;
+    border-radius: 100px;
+  }
+}

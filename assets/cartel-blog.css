@@ -359,3 +359,36 @@
   .cl .bl-body h2{font-size:23px}
   .cl .bl-body blockquote p{font-size:20px}
 }
+
+/* .bl-news-form is a flex:1 input beside a .btn at white-space:nowrap with
+   52px of fixed padding (~126px), so at 320px the field keeps ~50px of text —
+   the tightest of the three newsletter bands. These two are already separately
+   rounded, so only the axis needs to change. */
+@media (max-width: 400px) {
+  .cl .bl-news-form {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .cl .bl-news-form .btn {
+    width: 100%;
+  }
+}
+
+/* ============================================================
+   RICH-TEXT OVERFLOW GUARDS (2026-08-30)
+   .bl-body is {{ article.content }} and carries no `rte` class, so
+   base.css:3157's `.rte table{table-layout:fixed}` never reaches it —
+   and the rules above style h2/h3/p/ul/ol/blockquote/img/iframe but
+   never table, pre or code. There is no overflow-wrap, word-break or
+   hyphens anywhere in the cartel layer either. The 70 posts are Word
+   exports (see cartel-blog.js), which is exactly where stray tables
+   and unbroken strings come from: any of them escapes .bl-art-body,
+   then .wrap, then the viewport, and scrolls the whole page sideways.
+   ============================================================ */
+.cl .bl-body{overflow-wrap:anywhere}
+.cl .bl-body table{display:block;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.cl .bl-body pre{max-width:100%;overflow-x:auto;white-space:pre}
+.cl .bl-body code{overflow-wrap:anywhere}
+/* width:100% UPSCALED every inline image — a 40px logo in a Word paste was
+   blown up to the full 680px column. max-width caps without stretching. */
+.cl .bl-body img{width:auto;max-width:100%}

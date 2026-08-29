@@ -215,3 +215,9 @@
    dropdown is positioned by Dawn's component-predictive-search.css) */
 .cl .srch-form-wrap{position:relative;max-width:640px}
 .cl .srch-form-wrap .predictive-search{position:absolute;top:calc(100% + 10px);left:0;right:0;z-index:60}
+
+/* /search echoes the shopper's own query into these two — main-search.liquid
+   renders it at 50px (34px on mobile) — so they are the one place in the theme
+   where an unbreakable string is reader-supplied rather than merchant-supplied. */
+.cl .srch-h,
+.cl .srch-empty-t{overflow-wrap:break-word}

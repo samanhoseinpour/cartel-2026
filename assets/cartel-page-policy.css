@@ -214,3 +214,11 @@
 .cl .pol-body ol{margin:2px 0 14px;padding-left:22px;display:flex;flex-direction:column;gap:9px}
 .cl .pol-body ol li{font-size:15px;line-height:1.6;color:var(--ink)}
 .cl .pol-body a{color:var(--plum);font-weight:700}
+
+/* Same guards as .bl-body (cartel-blog.css): .pol-body is {{ page.content }}
+   with no `rte` class, so nothing constrains a pasted table or a bare URL and
+   either one scrolls the whole page sideways on a phone. */
+.cl .pol-body{overflow-wrap:anywhere}
+.cl .pol-body table{display:block;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.cl .pol-body pre{max-width:100%;overflow-x:auto;white-space:pre}
+.cl .pol-body img{width:auto;max-width:100%;height:auto}

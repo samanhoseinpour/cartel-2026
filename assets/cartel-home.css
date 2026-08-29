@@ -477,3 +477,50 @@ body.cartel-noscroll{overflow:hidden}
    title stacked into a ragged block on every other template. None of the 13
    declare flex-wrap at all, so declaring it once here reaches all of them. */
 .cl .crumb{flex-wrap:wrap}
+
+/* ============================================================
+   NEWSLETTER PILL ON A SMALL PHONE (2026-08-30)
+   .newsform is one pill: a flex:1 input beside a flex:none,
+   white-space:nowrap button. The button cannot shrink, so at 320px
+   (280 - 56 of .news padding = 224) it takes ~108px, leaving 113px
+   for the input, of which 44px is the input's own padding — ~69px of
+   text. cartel-shell.css §16 then raises the field to 16px to stop
+   iOS zooming, which makes it worse. "Your email address" needs
+   ~135px, so the placeholder truncated to a few characters and a
+   typed address showed ~6 at a time.
+
+   The .search-go pattern (hide the label, keep the icon) does not
+   apply — these buttons have no icon, the label IS the button. So
+   stack instead, and drop the pill chrome that only makes sense
+   side-by-side. 400px covers 320-390, where it is genuinely broken;
+   414/430 keep the pill with ~165-181px of text.
+   ============================================================ */
+@media (max-width: 400px) {
+  .cl .newsform {
+    flex-direction: column;
+    gap: 10px;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    overflow: visible;
+  }
+  .cl .nf-input {
+    border: 1.5px solid rgba(250, 246, 240, 0.4);
+    border-radius: 100px;
+    background: rgba(250, 246, 240, 0.06);
+  }
+  .cl .nf-btn {
+    padding: 15px 28px;
+    border-radius: 100px;
+  }
+}
+
+/* base.css:271-283 only gives .h0-.h5 a wrapping guard, and none of the
+   Cartel display classes carry those. A long unbroken token — a product
+   handle in .pname, a search term echoed into a 34px heading — had nothing
+   to break on and ran straight out of the viewport. break-word only acts
+   when the word genuinely cannot fit, so normal copy is unchanged. */
+.cl .stitle,
+.cl .h-hero,
+.cl .pname,
+.cl .bp-name{overflow-wrap:break-word}

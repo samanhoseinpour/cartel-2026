@@ -196,6 +196,18 @@
   .cl .statgrid{grid-template-columns:1fr}
   .cl .inforow{grid-template-columns:1fr}
   .cl .dash-hi{font-size:31px}
+  /* .ord had no flex-wrap and no mobile rule at all. Its incompressible
+     children — .ord-img 56 flex:none, .ord-status nowrap (~96 for
+     "Unfulfilled"), .ord-total width:58 flex:none, .ord-act nowrap, plus
+     4x15 gaps — floor at ~298px, against 230px of content box at 320px and
+     270px at 360px. .pcard is overflow:hidden, so it CLIPPED rather than
+     scrolled and the total and the only per-order action were unreachable;
+     at 390px it fit but .ord-m collapsed and took the order number with it.
+     Basis of `100% - 71px` (the image plus its gap) fills line one exactly,
+     so the pill, total and View wrap together onto line two. */
+  .cl .ord{flex-wrap:wrap;row-gap:10px}
+  .cl .ord-m{flex:1 1 calc(100% - 71px)}
+  .cl .ord-act{margin-left:auto}
 }
 .cl .search-ov{position:fixed;inset:0;z-index:160;background:rgba(40,8,18,.42);backdrop-filter:blur(10px);display:flex;justify-content:center;align-items:flex-start;padding:11vh 20px 20px;animation:fade .2s ease}
 .cl .search-panel{width:min(680px,100%);background:var(--cream);border-radius:var(--r-lg);box-shadow:0 40px 90px rgba(40,8,18,.4);padding:22px;animation:pop .26s ease;position:relative}
