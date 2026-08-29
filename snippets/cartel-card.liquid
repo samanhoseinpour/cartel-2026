@@ -1,11 +1,20 @@
 {% comment %}
   Cartel product card — 1:1 with the approved prototype (.card in Home.dc.html).
-  Accepts: card_product (product object)
+  Accepts: card_product (product object), card_class, card_sizes
+
+  card_sizes: the `sizes` attribute for the card photo. Without it the browser
+  falls back to the spec default of 100vw and picks the 800w candidate for a
+  ~296px slot — on the homepage row that was 202KB of product photos where 53KB
+  would do. The default below describes the GRID contexts (PLP .pgrid, search
+  .srchgrid, cart/PDP .rec-grid): all four land at ~285-296px above 1040px and
+  at two columns (<=45vw) below it. The homepage carousel is 76vw on mobile, so
+  cartel-product-row.liquid passes its own value.
   Thuya = login-gated pricing (brand match only, no pro tier). Everything else is public.
 {% endcomment %}
 {%- liquid
   assign p = card_product
   assign card_extra = card_class | default: ''
+  assign card_sizes_attr = card_sizes | default: '(min-width: 1041px) 296px, 45vw'
   assign gated = false
   if p.vendor == 'Thuya' and customer == nil
     assign gated = true
@@ -32,7 +41,12 @@
         {{
           p.featured_media
           | image_url: width: 800
-          | image_tag: class: 'card-photo', widths: '300,450,600,800', loading: 'lazy', alt: p.title
+          | image_tag:
+            class: 'card-photo',
+            widths: '300,450,600,800',
+            sizes: card_sizes_attr,
+            loading: 'lazy',
+            alt: p.title
         }}
       {%- else -%}
         {% render 'cartel-photo-placeholder', ph_size: 'md', ph_class: 'card-photo' %}

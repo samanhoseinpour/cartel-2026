@@ -122,16 +122,28 @@
                         {%- assign brand_image_height = settings.brand_image_width
                           | divided_by: settings.brand_image.aspect_ratio
                         -%}
+                        {%- capture brand_image_sizes -%}
+                          {{ settings.brand_image_width }}px
+                        {%- endcapture -%}
                         <div
                           class="footer-block__image-wrapper"
                           style="max-width: min(100%, {{ settings.brand_image_width }}px);"
                         >
+                          {%- comment -%}
+                            The wrapper above caps this at settings.brand_image_width
+                            (130px live), so `sizes` is exactly that. Without it the
+                            browser assumed 100vw and fetched the 1100w candidate —
+                            96KB for a 130x52 logo, on every page of the site. The
+                            ladder stops at 3x the slot; the candidates above that
+                            were unreachable at any device pixel ratio.
+                          {%- endcomment -%}
                           {{
                             settings.brand_image
-                            | image_url: width: 1100
+                            | image_url: width: 400
                             | image_tag:
                               loading: 'lazy',
-                              widths: '50, 100, 150, 200, 300, 400, 550, 800, 1100',
+                              widths: '50, 100, 150, 200, 300, 400',
+                              sizes: brand_image_sizes,
                               height: brand_image_height,
                               width: settings.brand_image_width
                           }}

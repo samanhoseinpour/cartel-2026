@@ -49,7 +49,7 @@
             {%- if has_video -%}
               {{
                 block.settings.video
-                | video_tag: image_size: '1600x', class: photo_class, autoplay: false, loop: false, muted: true, controls: false, preload: 'metadata'
+                | video_tag: image_size: '1600x', class: photo_class, autoplay: false, loop: false, muted: true, controls: false, preload: 'none'
               }}
             {%- elsif block.settings.image != blank -%}
               {%- comment -%}

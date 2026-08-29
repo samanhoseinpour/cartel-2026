@@ -41,10 +41,24 @@
               {%- endcomment -%}
               {{
                 block.settings.video
-                | video_tag: image_size: '600x', class: 'reel-media', autoplay: false, loop: true, muted: true, controls: false, preload: 'none'
+                | video_tag: image_size: '480x', class: 'reel-media', autoplay: false, loop: true, muted: true, controls: false, preload: 'none'
               }}
             {%- elsif block.settings.image != blank -%}
-              {{ block.settings.image | image_url: width: 700 | image_tag: class: 'reel-media', widths: '300,480,700', loading: 'lazy', alt: block.settings.caption }}
+              {%- comment -%}
+                .cl .reel is a flat flex:0 0 234px at every width (cartel-home.css:190
+                — no media override), so `sizes` is a constant. Without it the
+                browser assumed 100vw and took the 700w candidate every time.
+              {%- endcomment -%}
+              {{
+                block.settings.image
+                | image_url: width: 700
+                | image_tag:
+                  class: 'reel-media',
+                  widths: '300,480,700',
+                  sizes: '234px',
+                  loading: 'lazy',
+                  alt: block.settings.caption
+              }}
             {%- endif -%}
             <div class="reel-grad"></div>
             {%- comment -%}

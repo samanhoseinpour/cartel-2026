@@ -32,10 +32,21 @@
     {%- endif -%}
     <a class="imglink" href="{{ p.url }}" aria-label="{{ p.title | escape }}">
       {%- if p.featured_media -%}
+        {%- comment -%}
+          .cl .kitcard is flex:0 0 340px above 1040px (cartel-home.css:177) and
+          82% of the viewport below it (:351). Without `sizes` the browser
+          assumes 100vw and always takes the 900w candidate for a 340px slot.
+          Only the homepage row renders this card, so the value is inline.
+        {%- endcomment -%}
         {{
           p.featured_media
           | image_url: width: 900
-          | image_tag: class: 'kit-photo', widths: '360,540,720,900', loading: 'lazy', alt: p.title
+          | image_tag:
+            class: 'kit-photo',
+            widths: '360,540,720,900',
+            sizes: '(min-width: 1041px) 340px, 82vw',
+            loading: 'lazy',
+            alt: p.title
         }}
       {%- else -%}
         {% render 'cartel-photo-placeholder', ph_size: 'md', ph_class: 'kit-photo' %}

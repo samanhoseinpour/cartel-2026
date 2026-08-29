@@ -23,10 +23,19 @@
           <div class="res-img">
             {%- if block.settings.tag != blank -%}<span class="res-tag">{{ block.settings.tag }}</span>{%- endif -%}
             {%- if block.settings.image != blank -%}
+              {%- comment -%}
+                .cl .resgrid is `repeat(3,1fr)` with a 22px gap inside .wrap
+                (cartel-home.css:250) — 385px per card at full width — and drops
+                to one column only below 760px (:314,341).
+              {%- endcomment -%}
               {{
                 block.settings.image
                 | image_url: width: 900
-                | image_tag: widths: '340,520,700,900', loading: 'lazy', alt: block.settings.title
+                | image_tag:
+                  widths: '340,520,700,900',
+                  sizes: '(min-width: 1360px) 385px, (min-width: 761px) calc(33.33vw - 42px), calc(100vw - 40px)',
+                  loading: 'lazy',
+                  alt: block.settings.title
               }}
             {%- endif -%}
           </div>

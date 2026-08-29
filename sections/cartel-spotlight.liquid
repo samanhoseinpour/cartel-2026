@@ -54,10 +54,22 @@
               </div>
               <div class="bp-visual">
                 {%- if block.settings.image != blank -%}
+                  {%- comment -%}
+                    Narrower than it looks: .brandspot gives .bp-stack 1.32fr of
+                    2fr (cartel-home.css:148) = 780px of a 1200px .wrap, .bp eats
+                    48px of padding each side (:149), and .bp-grid hands this
+                    column .92fr of 2fr (:152) — about 297px on a 1440px screen.
+                    Both the grid and the panel collapse to one column at 1040px
+                    (:358-361), where the slot becomes the panel's inner width.
+                  {%- endcomment -%}
                   {{
                     block.settings.image
                     | image_url: width: 1000
-                    | image_tag: widths: '420,640,1000', loading: 'lazy', alt: block.settings.name
+                    | image_tag:
+                      widths: '420,640,1000',
+                      sizes: '(min-width: 1361px) 300px, (min-width: 1041px) 25vw, (min-width: 761px) calc(100vw - 160px), calc(100vw - 88px)',
+                      loading: 'lazy',
+                      alt: block.settings.name
                   }}
                 {%- endif -%}
               </div>

@@ -6,10 +6,20 @@
     <div class="abhome ondark">
       <div class="abhome-img">
         {%- if section.settings.image != blank -%}
+          {%- comment -%}
+            .cl .abhome is `grid-template-columns:.92fr 1.08fr` inside .wrap
+            (cartel-home.css:263), so this column is 46% of 1200px = 552px on a
+            wide screen, and full width below the 900px breakpoint at :267.
+          {%- endcomment -%}
           {{
             section.settings.image
             | image_url: width: 1400
-            | image_tag: class: 'abhome-photo', widths: '500,760,1000,1400', loading: 'lazy', alt: section.settings.image.alt
+            | image_tag:
+              class: 'abhome-photo',
+              widths: '500,760,1000,1400',
+              sizes: '(min-width: 1360px) 552px, (min-width: 901px) calc(46vw - 37px), (min-width: 761px) calc(100vw - 80px), calc(100vw - 40px)',
+              loading: 'lazy',
+              alt: section.settings.image.alt
           }}
         {%- endif -%}
       </div>

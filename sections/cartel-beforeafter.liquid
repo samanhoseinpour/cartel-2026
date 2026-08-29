@@ -46,13 +46,29 @@
         >
           <div class="ba-layer">
             {%- if block.settings.after != blank -%}
-              {{ block.settings.after | image_url: width: 1600 | image_tag: widths: '600,900,1200,1600', loading: 'lazy', alt: 'After' }}
+              {{
+                block.settings.after
+                | image_url: width: 1600
+                | image_tag:
+                  widths: '600,900,1200,1600',
+                  sizes: '(min-width: 1360px) 1200px, (min-width: 761px) calc(100vw - 80px), calc(100vw - 40px)',
+                  loading: 'lazy',
+                  alt: 'After'
+              }}
             {%- endif -%}
             <span class="ba-tag ba-tagr">{{ section.settings.after_label }}</span>
           </div>
           <div class="ba-layer ba-before" style="clip-path:inset(0 50% 0 0)">
             {%- if block.settings.before != blank -%}
-              {{ block.settings.before | image_url: width: 1600 | image_tag: widths: '600,900,1200,1600', loading: 'lazy', alt: 'Before' }}
+              {{
+                block.settings.before
+                | image_url: width: 1600
+                | image_tag:
+                  widths: '600,900,1200,1600',
+                  sizes: '(min-width: 1360px) 1200px, (min-width: 761px) calc(100vw - 80px), calc(100vw - 40px)',
+                  loading: 'lazy',
+                  alt: 'Before'
+              }}
             {%- endif -%}
             <span class="ba-tag ba-tagl">{{ section.settings.before_label }}</span>
           </div>

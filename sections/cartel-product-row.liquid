@@ -54,7 +54,7 @@
             {%- if is_kit -%}
               {%- render 'cartel-card-kit', card_product: product -%}
             {%- else -%}
-              {%- render 'cartel-card', card_product: product -%}
+              {%- render 'cartel-card', card_product: product, card_sizes: '(min-width: 1041px) 296px, 76vw' -%}
             {%- endif -%}
           {%- endfor -%}
         {%- else -%}
@@ -62,7 +62,7 @@
             {%- if is_kit -%}
               {%- render 'cartel-card-kit' -%}
             {%- else -%}
-              {%- render 'cartel-card' -%}
+              {%- render 'cartel-card', card_sizes: '(min-width: 1041px) 296px, 76vw' -%}
             {%- endif -%}
           {%- endfor -%}
         {%- endif -%}
