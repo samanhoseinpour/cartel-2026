@@ -35,6 +35,7 @@
         "story": {
           "type": "story",
           "settings": {
+            "image": "shopify://shop_images/1-lash-application.webp",
             "kick": "Our story",
             "heading": "It started on the lash bed.",
             "text_1": "Cartel Lash grew out of a passion for lash extensions, years of being lash techs in the industry. As extensions became more popular, the need for quality supplies grew with it. But the products on the market weren't up to standard, and too often they led to irritation and retention issues.",
