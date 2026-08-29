@@ -71,14 +71,15 @@
         "r5": {
           "type": "resource",
           "settings": {
-            "title": "Lash Mapping Masterclass",
-            "category": "Video",
-            "type_label": "Video tutorial",
+            "title": "Client Intake Form",
+            "category": "Template",
+            "type_label": "Template",
             "badge": "Free",
-            "text": "Styling maps for every eye shape, from soft cat to open doll — follow along at the bed.",
-            "meta": "Video · 18 min",
-            "file": "",
-            "btn_label": "Watch now",
+            "text": "Design your own client intake form using our template link!",
+            "meta": "Editable Template · 1 page",
+            "image": "shopify://shop_images/Screenshot_2026-08-29_at_4.38.24_PM.avif",
+            "file": "https://canva.link/d6fo39omu67rn5a",
+            "btn_label": "Edit in Canva",
             "is_video": true
           }
         },
@@ -93,7 +94,7 @@
             "meta": "Editable Template · 4 pages",
             "image": "shopify://shop_images/Screenshot_2026-08-29_at_4.34.01_PM.avif",
             "file": "https://canva.link/q2tn9al9lr0rftm",
-            "btn_label": "Download",
+            "btn_label": "Edit in Canva",
             "is_video": false
           }
         }
