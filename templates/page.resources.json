@@ -1,3 +1,12 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "library": {
@@ -12,7 +21,9 @@
             "badge": "Free",
             "text": "Match every client to the right rod in seconds — natural, lifted or doll-eye.",
             "meta": "PDF · 1 page",
-            "btn_label": "Download"
+            "file": "",
+            "btn_label": "Download",
+            "is_video": false
           }
         },
         "r2": {
@@ -24,7 +35,9 @@
             "badge": "Free",
             "text": "Humidity, temperature, dip size — fix poor retention at the source with our go-to checklist.",
             "meta": "PDF · 6 pages",
-            "btn_label": "Download"
+            "file": "",
+            "btn_label": "Download",
+            "is_video": false
           }
         },
         "r3": {
@@ -36,7 +49,9 @@
             "badge": "Free",
             "text": "Patch tests, contraindications and consent, ready to print or adapt for your studio.",
             "meta": "PDF · 2 pages",
-            "btn_label": "Download"
+            "file": "",
+            "btn_label": "Download",
+            "is_video": false
           }
         },
         "r4": {
@@ -48,7 +63,9 @@
             "badge": "Free",
             "text": "Hand your clients the do's and don'ts for the first 24 hours — print four to a page.",
             "meta": "PDF · 1 page",
-            "btn_label": "Download"
+            "file": "",
+            "btn_label": "Download",
+            "is_video": false
           }
         },
         "r5": {
@@ -60,6 +77,7 @@
             "badge": "Free",
             "text": "Styling maps for every eye shape, from soft cat to open doll — follow along at the bed.",
             "meta": "Video · 18 min",
+            "file": "",
             "btn_label": "Watch now",
             "is_video": true
           }
@@ -73,12 +91,58 @@
             "badge": "Free",
             "text": "Bronsun shade mixing ratios and processing times for every brow tone, on one sheet.",
             "meta": "PDF · 1 page",
-            "btn_label": "Download"
+            "file": "",
+            "btn_label": "Download",
+            "is_video": false
           }
         }
       },
-      "block_order": ["r1", "r2", "r3", "r4", "r5", "r6"]
+      "block_order": [
+        "r1",
+        "r2",
+        "r3",
+        "r4",
+        "r5",
+        "r6"
+      ],
+      "settings": {
+        "show_breadcrumbs": true,
+        "eyebrow": "Free resources",
+        "heading": "The Cartel <em>pro library.</em>",
+        "lead": "Guides, charts, printables and tutorials we built for working lash & brow artists, free to download, no strings. Steal our protocols, print them for your trolley, and get back to the chair.",
+        "show_featured": true,
+        "feat_image": "shopify://shop_images/1-lash-application.webp",
+        "feat_tag": "Flagship guide",
+        "feat_kick": "Featured download",
+        "feat_heading": "The Lash Lift Playbook",
+        "feat_text": "Our complete, no-fluff lash lift handbook, consultation to aftercare, with the rod-size and timing charts pros actually use.",
+        "feat_li_1": "Rod & shield selection by eye shape",
+        "feat_li_2": "Processing times for every hair type",
+        "feat_li_3": "Troubleshooting & client aftercare",
+        "feat_meta": "PDF · 24 pages · Free",
+        "feat_btn_label": "Download the playbook",
+        "feat_file": "",
+        "feat_btn2_label": "",
+        "feat_btn2_link": "",
+        "lib_kick": "The library",
+        "lib_heading": "Everything, free to download",
+        "all_label": "All",
+        "lib_pad_top": 78,
+        "lib_pad_bottom": 8,
+        "show_news": true,
+        "news_kick": "Stay stocked",
+        "news_heading": "Get new resources first.",
+        "news_text": "New guides, charts and templates land every month. Join the list and we'll send them straight to your inbox, plus the occasional pro tip.",
+        "news_placeholder": "Your email address",
+        "news_btn_label": "Notify me",
+        "news_fine": "Resource drops & pro tips. Unsubscribe anytime.",
+        "news_success": "You're on the list, new resources incoming.",
+        "news_pad_top": 0,
+        "news_pad_bottom": 90
+      }
     }
   },
-  "order": ["library"]
+  "order": [
+    "library"
+  ]
 }
