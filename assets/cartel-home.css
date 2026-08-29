@@ -3,7 +3,24 @@
    Ported 1:1 from the approved prototype (Home.dc.html).
    Everything is scoped under .cl so Dawn's own components are untouched.
    ============================================================ */
-.cl{--bord:#4A1224;--plum:#7C1B40;--bronze:#D2B48C;--bronze-d:#a8884f;--cream:#FAF6F0;--greige:#ece2d4;--ink:#3a2226;--muted:#917277;--line:rgba(74,18,36,.12);--prodbg:#efe6d7;--r:24px;--r-sm:16px;--r-lg:34px;
+/* --muted and --bronze-d were below WCAG AA on the theme's own backgrounds
+   (2026-08-30). Measured against cream/greige/prodbg/white:
+     --muted    #917277  4.00 / 3.36 / 3.48 / 4.31   -> 206 rules use it as a
+                text colour, 93 of them at <=12.5px (breadcrumbs, .field-hint,
+                .line-unit, .ord-meta, .ba-hint, .pop-p ...)
+     --bronze-d #a8884f  3.10 / 2.60 / 2.69 / 3.33   -> 49 rules, mostly the
+                10.5-11px uppercase kickers, i.e. the smallest type here
+   Darkened to the first value that clears 4.5:1 on ALL FOUR (greige is the
+   binding one), holding hue and saturation so the palette reads the same:
+     --muted    #795f63  5.37 / 4.52 / 4.68 / 5.79
+     --bronze-d #796239  5.37 / 4.51 / 4.67 / 5.78
+   Both drop on a DARK panel (3.48 -> 2.59 and 4.49 -> 2.59), so this is only
+   safe because neither is used on one — checked every selector: no
+   `color:var(--muted)` inside a dark-panel rule, and every --bronze-d text use
+   sits on #fff/cream/greige (.bx-eyebrow is in .bx-card-b, not .bx-imgwrap;
+   .bl-shopcard-k on the dark card uses --bronze, which is untouched). The six
+   `background:var(--bronze-d)` bullet dots only gain contrast. */
+.cl{--bord:#4A1224;--plum:#7C1B40;--bronze:#D2B48C;--bronze-d:#796239;--cream:#FAF6F0;--greige:#ece2d4;--ink:#3a2226;--muted:#795f63;--line:rgba(74,18,36,.12);--prodbg:#efe6d7;--r:24px;--r-sm:16px;--r-lg:34px;
   background:var(--cream);color:var(--ink);font-family:'Hanken Grotesk',system-ui,sans-serif;-webkit-font-smoothing:antialiased;font-size:16px;line-height:1.5;font-weight:500}
 .cl *{box-sizing:border-box;margin:0;padding:0}
 .cl img{display:block;max-width:100%}
