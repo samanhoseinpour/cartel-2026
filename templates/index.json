@@ -387,6 +387,7 @@
         "g1": {
           "type": "resource",
           "settings": {
+            "image": "shopify://shop_images/125792085_3669603836436652_2300161104995278535_n.jpg",
             "tag": "Guide",
             "title": "The Lash Lift Cheat Sheet",
             "cta": "Download",
@@ -406,6 +407,7 @@
         "g3": {
           "type": "resource",
           "settings": {
+            "image": "shopify://shop_images/AdobeStock_356202987.jpg",
             "tag": "Template",
             "title": "Client aftercare cards",
             "cta": "Download",
