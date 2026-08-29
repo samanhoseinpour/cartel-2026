@@ -21,6 +21,15 @@
             "url": ""
           }
         },
+        "ch-phone": {
+          "type": "channel",
+          "settings": {
+            "style": "phone",
+            "title": "Call or text",
+            "text": "",
+            "url": ""
+          }
+        },
         "ch-ig": {
           "type": "channel",
           "settings": {
@@ -63,6 +72,7 @@
       },
       "block_order": [
         "ch-email",
+        "ch-phone",
         "ch-ig",
         "t1",
         "t2",
@@ -110,7 +120,7 @@
             "title": "Wholesale & trade",
             "text": "Stocking Cartel in your studio or salon, or want pro pricing on Thuya? Tell us about your business.",
             "cta_label": "Email the team",
-            "url": "mailto:kireilashco@gmail.com"
+            "url": "mailto:info@cartellash.ca"
           }
         },
         "help-advice": {
