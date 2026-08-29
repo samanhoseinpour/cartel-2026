@@ -2,6 +2,82 @@
   "sections": {
     "main": {
       "type": "main-list-collections",
+      "blocks": {
+        "thuya": {
+          "type": "brand",
+          "settings": {
+            "collection": "thuya",
+            "accent": "bx-mauve",
+            "badge": "Log in for pricing",
+            "eyebrow": "Thuya · Spain",
+            "blurb": "Salon-grade lash lift, brow lamination and tinting from Spain. Log in to your free account to see Thuya pricing.",
+            "specs": "Lash lift, Brow lamination, Vegan line"
+          }
+        },
+        "bronsun": {
+          "type": "brand",
+          "settings": {
+            "collection": "bronsun",
+            "accent": "bx-bronze",
+            "badge": "Brow & lash tint",
+            "eyebrow": "Innovator Cosmetics · EU",
+            "blurb": "Rich, true-to-tone dye gels in eight shades, plus developer, brushes and brow care, the colour system Canadian pros reach for.",
+            "specs": "Dye gel, Developer, Brow care"
+          }
+        },
+        "noemi": {
+          "type": "brand",
+          "settings": {
+            "collection": "noemi",
+            "accent": "bx-blush",
+            "badge": "Lash lift & lamination",
+            "eyebrow": "NOEMI · Lash artistry",
+            "blurb": "Lash lift and brow lamination systems, hybrid dyes and the cult Gooey lift powder, clean, long-lasting results every time.",
+            "specs": "Lash lift, Lamination, Hybrid dye"
+          }
+        },
+        "cartel": {
+          "type": "brand",
+          "settings": {
+            "collection": "cartel",
+            "accent": "bx-wine",
+            "badge": "House brand",
+            "eyebrow": "Cartel · House brand",
+            "blurb": "Our house line of precision lash-lift shields, lifting pads and the comb we use on our own clients.",
+            "specs": "Shields, Rods, Comb tool"
+          }
+        },
+        "linger": {
+          "type": "brand",
+          "settings": {
+            "collection": "linger-beauty",
+            "accent": "bx-taupe",
+            "badge": "Lash extensions",
+            "eyebrow": "Linger Beauty · Lash extensions",
+            "blurb": "Mixed-length easy-fan lash trays in every curl and thickness, plus the Wonderlock adhesives that hold them.",
+            "specs": "Mix trays, C/CC/D, Wonderlock"
+          }
+        },
+        "prolong": {
+          "type": "brand",
+          "settings": {
+            "collection": "prolong",
+            "accent": "bx-sage",
+            "badge": "Aftercare",
+            "eyebrow": "Prolong · Aftercare",
+            "blurb": "Lash aftercare that protects retention, the cleanser concentrate makes up to 500 ml of gentle lash bath.",
+            "specs": "Cleanser, Aftercare"
+          }
+        }
+      },
+      "block_order": [
+        "thuya",
+        "bronsun",
+        "noemi",
+        "cartel",
+        "linger",
+        "prolong"
+      ],
       "settings": {
         "eyebrow": "Shop by brand",
         "title": "The pro lines we carry",
