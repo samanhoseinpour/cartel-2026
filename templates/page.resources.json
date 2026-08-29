@@ -85,13 +85,14 @@
         "r6": {
           "type": "resource",
           "settings": {
-            "title": "Brow Tint Mixing Chart",
-            "category": "Charts",
-            "type_label": "Printable chart",
+            "title": "Loyalty Card & Google Review Card Template",
+            "category": "Template",
+            "type_label": "Template",
             "badge": "Free",
             "text": "Bronsun shade mixing ratios and processing times for every brow tone, on one sheet.",
-            "meta": "PDF · 1 page",
-            "file": "",
+            "meta": "Editable Template · 4 pages",
+            "image": "shopify://shop_images/Screenshot_2026-08-29_at_4.34.01_PM.avif",
+            "file": "https://canva.link/q2tn9al9lr0rftm",
             "btn_label": "Download",
             "is_video": false
           }
