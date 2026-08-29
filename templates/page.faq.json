@@ -20,7 +20,7 @@
           "settings": {
             "category": "Ordering & pricing",
             "question": "Why can't I see prices on some products?",
-            "answer": "<p>Professional Thuya products are reserved for verified pros — log in or create a free account to unlock their pricing. Everything else shows its price to everyone.</p>"
+            "answer": "<p>Thuya prices show once you're logged in. An account is free and takes about a minute — there's no application and nothing to prove. Every other brand shows its price to everyone, account or not.</p>"
           }
         },
         "q2": {
@@ -28,7 +28,7 @@
           "settings": {
             "category": "Ordering & pricing",
             "question": "Do I need an account to order?",
-            "answer": "<p>No — guest checkout works fine. A free account does unlock professional pricing, saves your details and makes reordering your studio staples much faster.</p>"
+            "answer": "<p>No — guest checkout works fine. The one thing an account changes is that Thuya prices become visible; it also saves your details and makes reordering your studio staples much faster.</p>"
           }
         },
         "q3": {
