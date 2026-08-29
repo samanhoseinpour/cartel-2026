@@ -70,7 +70,18 @@ body.cl-noscroll .cl .offtab{display:none}
 .cl .ci-brand{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--bronze-d);font-weight:700}
 .cl .ci-name{display:block;font-size:15px;font-weight:700;color:var(--bord);margin:3px 0;letter-spacing:-.01em;line-height:1.3}
 .cl .ci-var{font-size:12px;color:var(--muted)}
-.cl .ci-bottom{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:auto;padding-top:8px}
+/* cart_type is "drawer" (settings_data.json), so .ci is the live cart line on
+   every add-to-bag — the comments elsewhere in this file still saying
+   "notification" are stale and are why this never got a mobile pass.
+   At 320px the drawer is min(440px,94vw)=300.8, less .dw-items' 26px sides,
+   less .ci-img 74 + the remove button ~63 + 2x14 gap, leaves .ci-b just 83.8px
+   — against ~155px of min-content here (.qty floors at ~73 via input.qn's
+   min-width:26px, .ci-price ~72 for one unbreakable money token). With
+   .drawer__inner.dw on overflow:hidden the +/- squashed to the bare 15px SVGs
+   and the price was clipped at the drawer edge. Still ~5px over at 390px.
+   Let the price wrap under the stepper rather than compete with it. */
+.cl .ci-bottom{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 10px;margin-top:auto;padding-top:8px}
+.cl .ci-price{margin-left:auto}
 .cl .ci-price{font-size:15px;font-weight:800;color:var(--bord);text-align:right}
 .cl .ci>cart-remove-button{flex:none;align-self:flex-start;margin-top:7px}
 .cl .ci-rm{font-size:11.5px;color:var(--muted);display:inline-flex;gap:5px;align-items:center;align-self:flex-start;padding:0}

@@ -546,3 +546,31 @@
     border-radius: var(--r-sm);
   }
 }
+
+/* ---- gallery: Dawn's mobile slider gutter (2026-08-30) ----
+   section-main-product.css:395-398 is loaded in the BODY by
+   main-product.liquid:12, so it lands after this sheet:
+
+     @media (max-width:749px){
+       .product__media-wrapper slider-component:not(.thumbnail-slider--no-slide)
+         { margin-left:-1.5rem; margin-right:-1.5rem }   /* root 62.5% -> -15px */
+     }
+
+   Both slider-components inside .product__media-wrapper match — GalleryViewer
+   (.gal-main) and GalleryThumbnails (.gal-rail). The rules here out-specify it
+   but none of them DECLARE margin, so Dawn's declaration applied unopposed and
+   the photo sat 15px off the axis of the breadcrumb, title, price and buy row
+   underneath it (and, at >=4 media, the thumb strip sat on a third axis).
+   Same shape as the base.css `div:empty` bug in 4bb69d3: winning the cascade
+   does nothing for a property you never mention.
+
+   .cl .gallery > .gal-* is (0,3,0) against Dawn's (0,2,1), so this wins on
+   specificity rather than order. The `--rail` margin-left:94px desktop offset
+   is (0,4,0) and is untouched; at <=900px its own rule already zeroes it. */
+@media screen and (max-width: 749px) {
+  .cl .gallery > .gal-main,
+  .cl .gallery > .gal-rail {
+    margin-left: 0;
+    margin-right: 0;
+  }
+}

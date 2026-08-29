@@ -1666,3 +1666,46 @@ product-recommendations {
     );
   }
 }
+
+/* ============================================================
+   18. THE MOBILE GUTTER SPLIT (2026-08-30)
+
+   §0 exists to put the whole page on one axis: .page-width is
+   1280/20px, matching cartel-home.css:40's .cl .wrap. §8 then had
+   to re-pin the header because base.css takes it back — but only
+   inside `min-width: 990px`, and two rules take it back below that
+   too:
+
+     header.liquid:83   .header{padding:Npx 3rem …}   (0,1,0), and
+                        it is a body-injected {% style %}, so it
+                        beats §0's .page-width on source order
+     base.css:103       .utility-bar__grid.page-width
+                        {padding-left:3rem;padding-right:3rem}  (0,2,0)
+
+   Both resolve to 30px. So on a phone the logo and cart icon sat at
+   30px, the announcement message wrapped inside 30px, every .cl .wrap
+   band ran at 20px and .herowrap at 12px — three different left edges
+   down one screen. (header.liquid:83 is also the theme's own
+   documented bug class: a padding SHORTHAND on a .page-width element.)
+
+   Same repair as §8, extended to the widths it was missing, at the
+   (0,4,0)/(0,3,0) needed to outrank each. The hero's 12px bleed is
+   left alone — that one is deliberate, and one intentional exception
+   reads better than a three-way split.
+   ============================================================ */
+@media screen and (max-width: 749px) {
+  .header-wrapper .header:not(.drawer-menu).page-width,
+  .utility-bar .utility-bar__grid.page-width {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}
+/* 750-989px tracks .page-width's own step to 40px (§0), not .cl .wrap's, which
+   flips at 760 — that 10px seam is a separate defect and is left as it is. */
+@media screen and (min-width: 750px) and (max-width: 989px) {
+  .header-wrapper .header:not(.drawer-menu).page-width,
+  .utility-bar .utility-bar__grid.page-width {
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+}
