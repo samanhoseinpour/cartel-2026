@@ -1,25 +1,156 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "hero": {
       "type": "cartel-page-hero",
       "settings": {
         "style": "about",
-        "show_breadcrumbs": true
+        "show_breadcrumbs": true,
+        "eyebrow": "About Cartel Lash",
+        "heading": "Made by lash artists, <em>for</em> lash artists.",
+        "lead": "Cartel Lash began on the lash bed, years of doing extensions, lifts and tints, and never quite trusting the supplies on the shelf. So we built the shop we always wanted.",
+        "btn_primary_label": "Shop the collection",
+        "btn_primary_link": "",
+        "btn_secondary_label": "Meet the brands",
+        "btn_secondary_link": "",
+        "show_badge": true,
+        "badge_title": "Tried, tested & true",
+        "badge_text": "We've used every product we sell",
+        "show_search": true,
+        "search_placeholder": "Search questions"
       }
     },
     "story": {
       "type": "cartel-story",
       "blocks": {
-        "story": { "type": "story", "settings": {} },
-        "values": { "type": "values", "settings": {} },
-        "compare": { "type": "compare", "settings": {} },
-        "brands": { "type": "brands", "settings": {} },
-        "locations": { "type": "locations", "settings": {} },
-        "instagram": { "type": "instagram", "settings": { "url": "https://www.instagram.com/cartel.lash/" } },
-        "cta": { "type": "cta", "settings": {} }
+        "story": {
+          "type": "story",
+          "settings": {
+            "kick": "Our story",
+            "heading": "It started on the lash bed.",
+            "text_1": "Cartel Lash grew out of a passion for lash extensions, years of being lash techs in the industry. As extensions became more popular, the need for quality supplies grew with it. But the products on the market weren't up to standard, and too often they led to irritation and retention issues.",
+            "text_2": "So we built Cartel Lash: a place to find quality products, accessories and tools for lash extensions, lifts and tints, and to inform, educate and support a growing lash community with supplies we actually trust.",
+            "quote": "\"Tried, tested and true, that's our guarantee. We don't play favourites.\"",
+            "quote_by": "The Cartel Lash founders",
+            "pad_top": 78,
+            "pad_bottom": 78
+          }
+        },
+        "values": {
+          "type": "values",
+          "settings": {
+            "kick": "What we stand for",
+            "heading": "Our promise to pros",
+            "icon_1": "shield",
+            "title_1": "Tried, tested & true",
+            "text_1": "Being artists ourselves, we've tried every product we carry. If it's on the shelf, it earned its place on the lash bed first.",
+            "icon_2": "star",
+            "title_2": "No favourites",
+            "text_2": "We don't play favourites. If we think a brand or product is genuinely good, we'll do our best to bring it in for you.",
+            "icon_3": "book",
+            "title_3": "Built to educate",
+            "text_3": "We're here to inform and educate the lash community, sharing what works, how to use it, and why it matters.",
+            "icon_4": "box",
+            "title_4": "Authentic & in stock",
+            "text_4": "Sourced direct from trusted brands and stocked in Canada, so you skip the border and the wait.",
+            "pad_top": 0,
+            "pad_bottom": 78
+          }
+        },
+        "compare": {
+          "type": "compare",
+          "settings": {
+            "kick": "See the difference",
+            "heading": "Supplies that show in the results.",
+            "image_before": "shopify://shop_images/KLL_Before.avif",
+            "image_after": "shopify://shop_images/KLL_After.avif",
+            "label_before": "Before",
+            "label_after": "After",
+            "hint": "Move your cursor across the photo to reveal the before & after.",
+            "pad_top": 0,
+            "pad_bottom": 78
+          }
+        },
+        "brands": {
+          "type": "brands",
+          "settings": {
+            "kick": "The lines we carry",
+            "heading": "Pro brands, stocked authentic.",
+            "brands": "Bronsun\nNoemi\nThuya\nLinger Beauty\nCartel\nProlong",
+            "link": "",
+            "btn_label": "Explore all brands",
+            "pad_top": 74,
+            "pad_bottom": 74
+          }
+        },
+        "locations": {
+          "type": "locations",
+          "settings": {
+            "kick": "Come say hi",
+            "heading": "Collect Your Order",
+            "pin_1": "West Vancouver",
+            "title_1": "West Vancouver pick-up",
+            "place_1": "West Vancouver, BC",
+            "how_1": "Order online, collect locally",
+            "note_1": "Pick-up by appointment, exact address shared at checkout.",
+            "pin_2": "Burnaby",
+            "title_2": "Burnaby pick-up",
+            "place_2": "Burnaby, BC",
+            "how_2": "Order online, collect locally",
+            "note_2": "Pick-up by appointment, exact address shared at checkout.",
+            "pad_top": 78,
+            "pad_bottom": 78
+          }
+        },
+        "instagram": {
+          "type": "instagram",
+          "settings": {
+            "kick": "On the grid",
+            "heading": "@cartel.lash",
+            "handle": "@cartel.lash",
+            "url": "https://www.instagram.com/cartel.lash/",
+            "btn_label": "Follow on Instagram",
+            "pad_top": 0,
+            "pad_bottom": 78
+          }
+        },
+        "cta": {
+          "type": "cta",
+          "settings": {
+            "kick": "Stock your studio",
+            "heading": "Everything your lash bed needs, in one place.",
+            "text": "Join thousands of Canadian lash and brow artists who trust Cartel Lash for authentic, pro-grade supplies, shipped fast or ready for local pick-up.",
+            "btn_primary_label": "Shop the collection",
+            "btn_primary_link": "",
+            "btn_secondary_label": "Create a free account",
+            "btn_secondary_link": "",
+            "pad_top": 0,
+            "pad_bottom": 90
+          }
+        }
       },
-      "block_order": ["story", "values", "compare", "brands", "locations", "instagram", "cta"]
+      "block_order": [
+        "story",
+        "values",
+        "compare",
+        "brands",
+        "locations",
+        "instagram",
+        "cta"
+      ],
+      "settings": {}
     }
   },
-  "order": ["hero", "story"]
+  "order": [
+    "hero",
+    "story"
+  ]
 }
