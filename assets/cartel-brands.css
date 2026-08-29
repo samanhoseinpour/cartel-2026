@@ -91,6 +91,11 @@
 .cl .bx-card:hover{transform:translateY(-5px);box-shadow:0 22px 50px rgba(40,8,18,.13)}
 .cl .bx-imgwrap{position:relative;height:248px;background:var(--prodbg);overflow:hidden}
 .cl .bx-imgwrap img{width:100%;height:100%;object-fit:cover}
+/* batch 18 · logo treatment. A wide brand lockup in an object-fit:cover 208px tile was cropped to
+   its middle band. `contain` fits it whole; `multiply` drops the white box of a JPG logo so the
+   accent gradient still reads behind it. Transparent PNGs are unaffected by multiply. */
+.cl .bx-imgwrap.is-logo img{object-fit:contain;padding:30px 26px;mix-blend-mode:multiply}
+@media (max-width:600px){.cl .bx-imgwrap.is-logo img{padding:22px 20px}}
 .cl .bx-badge{position:absolute;top:16px;left:16px;display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:100px;background:rgba(255,255,255,.92);font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--bord)}
 .cl .bx-card-b{display:flex;flex-direction:column;gap:14px;padding:28px 30px 30px;flex:1}
 .cl .bx-eyebrow{display:flex;align-items:center;gap:10px;font-size:12px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--bronze-d)}

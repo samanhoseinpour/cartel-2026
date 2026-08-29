@@ -27,7 +27,8 @@
               eyebrow: block.settings.eyebrow,
               blurb: block.settings.blurb,
               specs: block.settings.specs,
-              card_image: block.settings.image
+              card_image: block.settings.image,
+              card_fit: block.settings.image_fit
             %}
           </div>
         {%- endfor -%}
@@ -119,7 +120,18 @@
         { "type": "text", "id": "eyebrow", "label": "Eyebrow", "info": "e.g. “Thuya · Spain”." },
         { "type": "textarea", "id": "blurb", "label": "Blurb", "info": "Blank = collection description." },
         { "type": "text", "id": "specs", "label": "Spec pills", "info": "Comma-separated, e.g. “Lash lift, Brow lamination, Vegan line”." },
-        { "type": "image_picker", "id": "image", "label": "Image", "info": "Blank = collection image." }
+        { "type": "image_picker", "id": "image", "label": "Image", "info": "Blank = collection image." },
+        {
+          "type": "select",
+          "id": "image_fit",
+          "label": "Image treatment",
+          "default": "photo",
+          "info": "Choose Logo when the image is a brand lockup — it fits inside the tile whole instead of being cropped, and a white JPG background drops out over the accent.",
+          "options": [
+            { "value": "photo", "label": "Photo — fills the tile" },
+            { "value": "logo", "label": "Logo — fits inside the tile" }
+          ]
+        }
       ]
     }
   ],

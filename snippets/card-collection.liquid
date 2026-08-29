@@ -9,6 +9,7 @@
   - blurb: {String} short copy; falls back to the collection description
   - specs: {String} comma-separated spec pills (optional)
   - card_image: {Object} image override; falls back to the collection image
+  - card_fit: {String} photo (default — fills the tile) | logo (fits inside, white drops out)
 
   Usage:
   {% render 'card-collection', card_collection: collection, accent: 'bx-bronze' %}
@@ -16,6 +17,10 @@
 {%- liquid
   assign c = card_collection
   assign img = card_image | default: c.featured_image
+  assign fit_class = ''
+  if card_fit == 'logo'
+    assign fit_class = ' is-logo'
+  endif
   assign card_title = c.title | default: 'Brand line'
   # blurb is a plain-text setting, so escape it. The description fallback must NOT be
   # escaped again: strip_html removes tags but leaves entities encoded, so a description
@@ -36,7 +41,7 @@
 {%- else -%}
   <div class="bx-card {{ accent }}">
 {%- endif -%}
-  <div class="bx-imgwrap">
+  <div class="bx-imgwrap{{ fit_class }}">
     {%- if img -%}
       {{ img | image_url: width: 900 | image_tag: widths: '450,675,900', loading: 'lazy', alt: card_title }}
     {%- else -%}
