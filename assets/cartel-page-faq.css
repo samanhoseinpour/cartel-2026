@@ -78,7 +78,12 @@
 @media (max-width:760px){
   .cl .line{flex-wrap:wrap;gap:14px 16px}
 }
-.cl .faqhead{padding-top:30px;max-width:760px}
+.cl .faqhead{padding-top:30px}
+/* The measure belongs to the content, not to the .wrap box — as a max-width on the
+   section itself it beat .wrap's 1280px while .wrap's margin:0 auto still centred the
+   result, so the heading sat inboard of the breadcrumb and the FAQ list below it.
+   .faqsearch's narrower 520px cap is declared later in this file and still wins. */
+.cl .faqhead > *{max-width:760px}
 .cl .faqh{font-size:54px;margin-top:14px}
 .cl .faqlead{margin-top:16px}
 .cl .faqsearch{display:flex;align-items:center;gap:12px;margin-top:24px;background:#fff;border:1.5px solid var(--line);border-radius:100px;padding:15px 22px;max-width:520px}
@@ -103,6 +108,12 @@
 .cl .qa-chev{width:20px;height:20px;flex:none;color:var(--bronze-d);transition:transform .2s}
 .cl .qa.open .qa-chev{transform:rotate(180deg)}
 .cl .qa-a{padding:2px 24px 24px;font-size:15px;line-height:1.65;color:var(--muted);max-width:680px}
+/* The .cl reset (cartel-home.css:11) strips colour and underline from every anchor,
+   and this sheet never opted its answer body back out — so links inside an answer
+   rendered as plain body text. Every sibling content sheet has this rule
+   (.page-rte a, .pol-body a, .bl-body a, .ct-fineprint a); the FAQ was the miss. */
+.cl .qa-a a{color:var(--plum);font-weight:700;text-decoration:underline;text-underline-offset:2px}
+.cl .qa-a a:hover{color:var(--bord)}
 .cl .faqempty{padding:60px 24px;text-align:center;border:1px dashed rgba(74,18,36,.2);border-radius:var(--r-lg);background:#fff}
 .cl .faqempty-t{font-size:20px;font-weight:800;color:var(--bord);margin-bottom:6px}
 .cl .faqempty-p{font-size:14px;color:var(--muted)}

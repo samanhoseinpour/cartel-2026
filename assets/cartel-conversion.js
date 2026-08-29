@@ -299,14 +299,16 @@
         if (sections['cart-icon-bubble']) applyBubble(sections['cart-icon-bubble']);
         busy = false;
 
-        /* 'cart-items' is the one source cart.js:39 skips. The drawer has already
-           rendered itself from the sections in THIS response, so a second
-           `?section_id=cart-drawer` fetch would be pure waste — every other
-           cartUpdate subscriber still hears the event. PUB_SUB_EVENTS is a
-           top-level const in constants.js, so it is a global BINDING, not a
-           window property. */
+        /* Announce as the DRAWER, because the drawer is what already rendered itself
+           from the sections in THIS response — cart.js now skips only the host whose
+           tagName matches `source`, so 'cart-drawer-items' spares <cart-drawer-items>
+           a redundant `?section_id=cart-drawer` fetch while letting <cart-items> on
+           /cart refresh (it previously said 'cart-items', which silenced the cart page
+           and left its name="updates[]" inputs stale). Every other cartUpdate
+           subscriber still hears the event. PUB_SUB_EVENTS is a top-level const in
+           constants.js, so it is a global BINDING, not a window property. */
         if (typeof publish === 'function' && typeof PUB_SUB_EVENTS !== 'undefined') {
-          publish(PUB_SUB_EVENTS.cartUpdate, { source: 'cart-items', cartData: data, productVariantId: id });
+          publish(PUB_SUB_EVENTS.cartUpdate, { source: 'cart-drawer-items', cartData: data, productVariantId: id });
         }
 
         restoreFocus();

@@ -85,7 +85,12 @@
 .cl .bchip{font-size:14px;font-weight:700;color:var(--bord);background:#fff;border:1.5px solid var(--line);padding:10px 18px;border-radius:100px;transition:.18s}
 .cl .bchip:hover{border-color:var(--bronze)}
 .cl .bchip.on{background:var(--bord);color:var(--cream);border-color:var(--bord)}
-.cl .bx-head{padding:14px 0 30px;max-width:680px}
+.cl .bx-head{padding-top:14px;padding-bottom:30px}
+/* The 680px measure belongs to the text, not to the .wrap box: as a shorthand +
+   max-width on the section itself it wiped .wrap's 20/40px gutter (copy ran flush
+   to both screen edges on mobile) and re-centred the block ~260px inboard of the
+   breadcrumb and grid on desktop. */
+.cl .bx-head > *{max-width:680px}
 .cl .bx-intro{margin-top:16px;font-size:17px;line-height:1.55;color:var(--muted)}
 .cl .bx-card{display:flex;flex-direction:column;background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;transition:transform .25s,box-shadow .25s}
 .cl .bx-card:hover{transform:translateY(-5px);box-shadow:0 22px 50px rgba(40,8,18,.13)}

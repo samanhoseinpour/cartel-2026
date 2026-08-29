@@ -76,7 +76,13 @@
 .cl .ftc-row{display:inline-flex;align-items:center;gap:9px;font-size:13.5px;color:rgba(250,246,240,.82);transition:.15s;width:fit-content}
 .cl .ftc-row:hover{color:var(--cream)}
 .cl .ftc-row svg{width:16px;height:16px;color:var(--bronze);flex:none}
-.cl .srchhead{padding-top:30px;max-width:780px}
+.cl .srchhead{padding-top:30px}
+/* The measure belongs to the content, not to the .wrap box — as a max-width on the
+   section itself it beat .wrap's 1280px while .wrap's margin:0 auto still centred the
+   result, so the heading and search field sat ~250px inboard of the breadcrumb and the
+   results toolbar. .srch-form-wrap's narrower 640px cap is declared later in this file
+   and still wins. */
+.cl .srchhead > *{max-width:780px}
 .cl .srch-h{font-size:50px;margin-top:12px}
 .cl .srchbar{display:flex;align-items:center;gap:14px;margin-top:22px;background:#fff;border:1.5px solid var(--line);border-radius:100px;padding:17px 24px;max-width:640px;transition:.18s}
 .cl .srchbar:focus-within{border-color:var(--plum);box-shadow:0 8px 24px rgba(74,18,36,.1)}
@@ -109,7 +115,7 @@
 .cl .srchgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:36px 18px;padding-top:26px}
 .cl .sload{display:flex;flex-direction:column;align-items:center;gap:14px;margin-top:46px}
 .cl .sload-bar{width:200px;height:5px;background:rgba(74,18,36,.12);border-radius:10px;overflow:hidden}
-.cl .sload-bar-f{height:100%;background:var(--bronze);border-radius:10px;transition:width .4s}
+.cl .sload-bar-f{display:block;height:100%;background:var(--bronze);border-radius:10px;transition:width .4s}
 .cl .srch-empty{padding:70px 30px;text-align:center;display:flex;flex-direction:column;align-items:center;background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);margin-top:26px}
 .cl .srch-empty-ic{width:70px;height:70px;border-radius:50%;background:var(--greige);color:var(--bord);display:flex;align-items:center;justify-content:center;margin-bottom:18px}
 .cl .srch-empty-ic svg{width:32px;height:32px}

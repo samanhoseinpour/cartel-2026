@@ -95,7 +95,7 @@
 .cl .ab-hero-badge svg{width:21px;height:21px;color:var(--plum);flex:none}
 .cl .ab-hero-badge b{font-size:13px;font-weight:800;color:var(--bord);letter-spacing:-.01em;display:block}
 .cl .ab-hero-badge span{font-size:11.5px;color:var(--muted);font-weight:600}
-.cl .ab-sec{padding:78px 0}
+.cl .ab-sec{padding-top:78px;padding-bottom:78px}
 .cl .ab-sechead{display:flex;flex-direction:column;gap:13px;margin-bottom:36px}
 .cl .ab-story{display:grid;grid-template-columns:.92fr 1.08fr;gap:54px;align-items:center}
 .cl .ab-story-img{aspect-ratio:1;border-radius:var(--r-lg);overflow:hidden;position:relative;box-shadow:0 24px 56px rgba(40,8,18,.16)}
@@ -143,7 +143,7 @@
 @media (max-width:760px){
   .cl .ab-h1{font-size:46px}
   .cl .ab-sub{font-size:17px}
-  .cl .ab-sec{padding:54px 0}
+  .cl .ab-sec{padding-top:54px;padding-bottom:54px}
   .cl .ab-sechead{margin-bottom:26px}
   .cl .ab-values{grid-template-columns:1fr}
   .cl .ab-pq{font-size:23px}
@@ -167,7 +167,7 @@
 .cl .ab-ig-wrap{position:relative}
 .cl .ab-ig-car{display:flex;align-items:flex-start;gap:14px;overflow-x:auto;scroll-behavior:smooth;scrollbar-width:none;padding:4px 2px 14px}
 .cl .ab-ig-cell{flex:0 0 246px;aspect-ratio:9/16;border-radius:var(--r);overflow:hidden;position:relative;background:var(--prodbg);display:block}
-.cl .ab-ig-shade{position:absolute;inset:0;background:linear-gradient(to top,rgba(40,8,18,.62),transparent 40%);z-index:1;pointer-events:none}
+.cl .ab-ig-shade{display:block;position:absolute;inset:0;background:linear-gradient(to top,rgba(40,8,18,.62),transparent 40%);z-index:1;pointer-events:none}
 .cl .ab-ig-user{position:absolute;top:12px;left:12px;z-index:2;display:flex;align-items:center;gap:7px;padding:6px 12px;border-radius:100px;background:rgba(250,246,240,.92);color:var(--bord);font-size:11px;font-weight:800;letter-spacing:.02em}
 .cl .ab-ig-user svg{width:13px;height:13px}
 .cl .ab-ig-meta{position:absolute;left:14px;right:14px;bottom:13px;z-index:2;display:flex;align-items:center;gap:14px;color:var(--cream);font-size:12px;font-weight:700}

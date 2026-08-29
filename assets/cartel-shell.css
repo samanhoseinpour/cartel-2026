@@ -1587,3 +1587,41 @@ product-recommendations {
     padding-right: 0;
   }
 }
+
+/* ============================================================
+   16. iOS ZOOM-ON-FOCUS (2026-08-29)
+   Mobile Safari zooms the page whenever a focused input/select/textarea
+   computes under 16px, and never zooms back out. On the email popup — which
+   is position:fixed — that shifts the visual viewport and pushes the submit
+   button and the close X off screen; on /cart it fires twice in a row when a
+   discount code is followed by a quantity change.
+
+   Root font-size here is 62.5% (theme.liquid:279, body_scale 100), so 1rem is
+   10px and these px values are literal — 16px really is the threshold.
+
+   Scoped to mobile so the desktop type scale is untouched, and listed
+   explicitly rather than as a blanket `.cl input` so the two fields that were
+   already correct (.search-input and .srchbar's 17px desktop rule) keep their
+   size. The doubled `.cl.cl` is what makes this win: several of these rules
+   live in per-template sheets that load AFTER this one, so an equal-specificity
+   override here would lose on source order.
+   ============================================================ */
+@media (max-width: 760px) {
+  .cl.cl .pop-input,
+  .cl.cl .promo-input,
+  .cl.cl .qty input.qn,
+  .cl.cl .qty-lg input.qn,
+  .cl.cl .nf-input,
+  .cl.cl .ct-input,
+  .cl.cl .ct-textarea,
+  .cl.cl .bl-news-input,
+  .cl.cl .fr-nf-input,
+  .cl.cl .s404-input,
+  .cl.cl .faqsearch input,
+  .cl.cl .srchbar input,
+  .cl.cl .inp,
+  .cl.cl .sel,
+  .cl.cl .bl-share .share-button__fallback .field__input {
+    font-size: 16px;
+  }
+}

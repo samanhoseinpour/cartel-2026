@@ -67,8 +67,15 @@ class CartItems extends window.StandardEvents.createViewEventElement(HTMLElement
     // sets `view-event-trigger="manual"` to skip auto-dispatch.
     super.connectedCallback();
 
+    /* Skip only OUR OWN update. Both <cart-items> and <cart-drawer-items> run this
+       class, and both used to publish the literal 'cart-items', so each ignored the
+       other: on /cart (where theme.liquid renders the drawer on every template and
+       cart-drawer.js intercepts the header cart icon) a quantity edited in the drawer
+       left the page's stale name="updates[]" inputs in place, and #checkout submits
+       form#cart -- posting them back and reverting the edit on the way to checkout.
+       Keying on the tag name is the pattern quick-order-list.js:33 already uses. */
     this.cartUpdateUnsubscriber = subscribe(PUB_SUB_EVENTS.cartUpdate, (event) => {
-      if (event.source === 'cart-items') return;
+      if (event.source === this.tagName.toLowerCase()) return;
       return this.onCartUpdate();
     });
   }
@@ -376,7 +383,7 @@ class CartItems extends window.StandardEvents.createViewEventElement(HTMLElement
           }
         });
 
-        publish(PUB_SUB_EVENTS.cartUpdate, { source: 'cart-items', cartData: parsedState, variantId: variantId });
+        publish(PUB_SUB_EVENTS.cartUpdate, { source: this.tagName.toLowerCase(), cartData: parsedState, variantId: variantId });
       })
       .catch((e) => {
         this.querySelectorAll('.loading__spinner').forEach((overlay) => overlay.classList.add('hidden'));

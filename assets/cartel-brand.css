@@ -137,7 +137,7 @@
 .cl .bwhy-h{font-size:34px;font-weight:800;letter-spacing:-.03em;color:var(--bord);line-height:1.05}
 .cl .bwhy-points{display:flex;flex-direction:column;gap:17px}
 .cl .bwhy-pt{display:flex;gap:13px}
-.cl .bwhy-dot{width:9px;height:9px;border-radius:50%;background:var(--bronze-d);margin-top:7px;flex:none}
+.cl .bwhy-dot{display:block;width:9px;height:9px;border-radius:50%;background:var(--bronze-d);margin-top:7px;flex:none}
 .cl .bwhy-t{font-size:16px;font-weight:800;color:var(--bord)}
 .cl .bwhy-s{font-size:14px;line-height:1.55;color:var(--ink);opacity:.85;margin-top:3px}
 .cl .bwhy-r{aspect-ratio:1;background:#fff;border-radius:var(--r);overflow:hidden;box-shadow:0 18px 44px rgba(40,8,18,.14);position:relative}
