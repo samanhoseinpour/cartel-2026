@@ -301,7 +301,8 @@
         "rv4"
       ],
       "settings": {
-        "kicker": "@cartellashsupply",
+        "kicker": "@cartel.lash",
+        "kicker_url": "https://www.instagram.com/cartel.lash",
         "title": "Watch Products in Action",
         "pad_top": 0,
         "pad_bottom": 92

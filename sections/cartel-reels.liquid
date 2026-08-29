@@ -8,7 +8,11 @@
     <div class="sec-head">
       <div class="sh-l">
         {%- if section.settings.kicker != blank -%}
-          <span class="kick">{{ section.settings.kicker }}</span>
+          {%- if section.settings.kicker_url != blank -%}
+            <a class="kick" href="{{ section.settings.kicker_url }}" target="_blank" rel="noopener">{{ section.settings.kicker }}</a>
+          {%- else -%}
+            <span class="kick">{{ section.settings.kicker }}</span>
+          {%- endif -%}
         {%- endif -%}
         {%- if section.settings.title != blank -%}<h2 class="stitle">{{ section.settings.title }}</h2>{%- endif -%}
       </div>
@@ -149,7 +153,8 @@
   "class": "cartel-section",
   "max_blocks": 12,
   "settings": [
-    { "type": "text", "id": "kicker", "label": "Kicker", "default": "@cartellashsupply" },
+    { "type": "text", "id": "kicker", "label": "Kicker", "default": "@cartel.lash" },
+    { "type": "url", "id": "kicker_url", "label": "Kicker link", "info": "Optional. Set it and the kicker becomes a link; leave it empty and the kicker stays plain text." },
     { "type": "text", "id": "title", "label": "Heading", "default": "Watch Products in Action" },
     { "type": "range", "id": "pad_top", "min": 0, "max": 120, "step": 4, "unit": "px", "label": "Padding top", "default": 0 },
     { "type": "range", "id": "pad_bottom", "min": 0, "max": 120, "step": 4, "unit": "px", "label": "Padding bottom", "default": 92 }
