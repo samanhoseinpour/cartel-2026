@@ -426,6 +426,22 @@
   customElements.define('sticky-header', StickyHeader);
 {% endjavascript %}
 
+{%- liquid
+  assign cartel_social_raw = settings.social_twitter_link | append: '~|~' | append: settings.social_facebook_link | append: '~|~' | append: settings.social_pinterest_link | append: '~|~' | append: settings.social_instagram_link | append: '~|~' | append: settings.social_tiktok_link | append: '~|~' | append: settings.social_tumblr_link | append: '~|~' | append: settings.social_snapchat_link | append: '~|~' | append: settings.social_youtube_link | append: '~|~' | append: settings.social_vimeo_link
+  assign cartel_social_list = cartel_social_raw | split: '~|~'
+-%}
+{%- capture cartel_same_as -%}
+  {%- assign cartel_sep = '' -%}
+  {%- for cartel_profile in cartel_social_list -%}
+    {%- assign cartel_url = cartel_profile | strip -%}
+    {%- if cartel_url != blank and cartel_url != '#' -%}
+      {{- cartel_sep }}{{ cartel_url | json -}}
+      {%- assign cartel_sep = ',' -%}
+    {%- endif -%}
+  {%- endfor -%}
+{%- endcapture -%}
+{%- assign cartel_same_as = cartel_same_as | strip -%}
+
 <script type="application/ld+json">
   {
     "@context": "http://schema.org",
@@ -434,17 +450,9 @@
     {% if settings.logo %}
       "logo": {{ settings.logo | image_url: width: 500 | prepend: "https:" | json }},
     {% endif %}
-    "sameAs": [
-      {{ settings.social_twitter_link | json }},
-      {{ settings.social_facebook_link | json }},
-      {{ settings.social_pinterest_link | json }},
-      {{ settings.social_instagram_link | json }},
-      {{ settings.social_tiktok_link | json }},
-      {{ settings.social_tumblr_link | json }},
-      {{ settings.social_snapchat_link | json }},
-      {{ settings.social_youtube_link | json }},
-      {{ settings.social_vimeo_link | json }}
-    ],
+    {%- if cartel_same_as != blank %}
+    "sameAs": [{{ cartel_same_as }}],
+    {%- endif %}
     "url": {{ request.origin | append: page.url | json }}
   }
 </script>
