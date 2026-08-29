@@ -152,6 +152,12 @@
   .cl .collhead-t{font-size:28px}
   .cl .collhead{padding-top:8px;padding-bottom:22px}
   .cl .plptop{flex-wrap:wrap;gap:12px;padding-top:16px}
+  /* .plptop wraps, but .plptop-r itself does not — and on a phone it carries BOTH
+     the filter button and the sort button, whose label is white-space:nowrap. The
+     pair measures ~379px against a 350px content box, so the toolbar hung 8px past
+     the screen edge and the collection page scrolled sideways. Let the two controls
+     wrap onto separate lines instead of overflowing. */
+  .cl .plptop-r{flex-wrap:wrap;row-gap:10px}
   .cl .filterbtn{display:inline-flex}
   .cl .plpbody{grid-template-columns:1fr;gap:0;padding-bottom:64px}
   .cl .filters{display:none}

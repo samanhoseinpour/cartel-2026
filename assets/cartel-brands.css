@@ -171,8 +171,14 @@
   .cl .bx-title{font-size:34px}
 }
 
-/* block wrappers (theme-editor highlight targets) stretch their card */
-.cl .bx-grid6>.bx-item{display:flex}
+/* block wrappers (theme-editor highlight targets) stretch their card.
+   min-width:0 is load-bearing: a grid item's automatic minimum is its MIN-CONTENT
+   width, and the brand lockup inside .bx-imgwrap is wider than one mobile column —
+   so every `1fr` track resolved to 402px inside a 350px grid and the whole page
+   scrolled sideways (scrollWidth 422 at a 390px viewport). It also squared up the
+   desktop grid, where the same auto-minimum gave the 3 columns three different
+   widths (315/326/379 at 1100px). Same trap as .nf-input in cartel-home.css. */
+.cl .bx-grid6>.bx-item{display:flex;min-width:0}
 .cl .bx-item>.bx-card{flex:1}
 
 /* pagination for the no-blocks fallback (matches cartel-account.css:318-322) */
