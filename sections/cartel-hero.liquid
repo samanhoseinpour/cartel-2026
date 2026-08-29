@@ -37,7 +37,7 @@
           both; cartel-home.js keeps it in sync as slides change.
         {%- endcomment -%}
         <div
-          class="hero-slide{% if forloop.first %} on{% endif %}"
+          class="hero-slide{% if forloop.first %} on{% endif %}{% if fit == 'contain' %} hero-slide--prod{% endif %}"
           {% unless forloop.first %}inert aria-hidden="true"{% endunless %}
           {{ block.shopify_attributes }}
         >

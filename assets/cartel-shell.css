@@ -1625,3 +1625,44 @@ product-recommendations {
     font-size: 16px;
   }
 }
+
+/* ============================================================
+   17. HERO PACKSHOT SLIDE — CREAM TEXT ON A LIGHT PLATE (2026-08-30)
+
+   §9c's scrim is a 96deg gradient: rgba(28,6,13,.9) at 0%, .22 at 62%,
+   .03 at 100%. Dark on the left, effectively clear on the right. That
+   works on desktop only because cartel-home.css:84 caps .hero-txt at
+   660px, so the copy never leaves the dark 55% of the card.
+
+   cartel-home.css:328 drops that cap on mobile (`max-width:none`), so
+   every line now runs the full width of the card. On an `image_fit:
+   contain` slide the plate behind it is .hero-media-prod's #eceae7
+   (cartel-home.css:81), and measured against that plate the tail of the
+   gradient gives:
+
+     scrim .22  ->  h1 1.82:1   sub 1.65:1
+     scrim .03  ->  h1 1.19:1   sub 1.15:1     <- the right-hand end
+
+   i.e. the last third of "Retention you can trust." and its subhead fade
+   out. Floor the tail at .62, which is the value that clears AA for the
+   15px subhead (cream at .82 alpha) rather than just the headline:
+
+     scrim .62  ->  h1 5.83:1   sub 4.55:1
+
+   Scoped to .hero-slide--prod (cartel-hero.liquid emits it for the same
+   `fit == 'contain'` test that adds .hero-media-prod) so the three photo
+   slides keep the design's light-touch gradient, and to <=760px so the
+   desktop hero is untouched. Same selector + same specificity as §9c,
+   appended later, so it wins on source order.
+   ============================================================ */
+@media screen and (max-width: 760px) {
+  .cl .hero-slide--prod::before {
+    background: linear-gradient(
+      96deg,
+      rgba(28, 6, 13, 0.92) 0%,
+      rgba(28, 6, 13, 0.8) 38%,
+      rgba(28, 6, 13, 0.68) 70%,
+      rgba(28, 6, 13, 0.62) 100%
+    );
+  }
+}

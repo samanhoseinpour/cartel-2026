@@ -282,12 +282,23 @@
       this.boxOpen = true;
       var wrap = document.createElement('div');
       wrap.className = 'cl';
+      /* .reelbox-v is what gives the lightbox a size. Every other child here is
+         position:absolute (.reelbox-media :198, .reelbox-close :71, .reelbox-grad
+         :72, .reelbox-cap :73) and .cl .reelbox (:69) declares only margin/width/
+         position — so without this wrapper the box computed to height 0, the video
+         inside it to 0px, and tapping a reel dimmed the screen, locked body scroll
+         and played audio with nothing on it but a close X floating in empty space.
+         The rule for it (.cl .reelbox-v, cartel-home.css:70) was already in the
+         sheet; only the element was lost in the port. .reelbox-close stays a direct
+         child of .reelbox — it is pinned top:-48px, i.e. above the media box. */
       wrap.innerHTML =
         '<div class="ov ov-c"><div class="reelbox">' +
         '<button class="reelbox-close" type="button" aria-label="Close">' +
         '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>' +
-        '</button><div class="reelbox-grad"></div><div class="reelbox-cap"></div></div></div>';
-      var box = wrap.querySelector('.reelbox');
+        '</button><div class="reelbox-v">' +
+        '<div class="reelbox-grad"></div><div class="reelbox-cap"></div>' +
+        '</div></div></div>';
+      var box = wrap.querySelector('.reelbox-v');
       if (v) {
         var clone = v.cloneNode(true);
         clone.className = 'reelbox-media';

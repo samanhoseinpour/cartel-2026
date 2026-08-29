@@ -67,6 +67,14 @@
 @keyframes marq{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 .cl .toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:210;background:var(--bord);color:var(--cream);padding:14px 24px;border-radius:100px;font-size:14px;font-weight:600;box-shadow:0 14px 36px rgba(40,8,18,.32);animation:pop .25s ease}
 .cl .reelbox{margin:auto;width:min(408px,92vw);position:relative;animation:pop .3s ease}
+/* The 9/16 box below is width-driven, so once .reelbox-v was restored (it had
+   been missing, leaving the lightbox 0px tall) a 92vw box became 638px tall on a
+   390px phone and taller than the overlay in landscape — and .ov centres with
+   `margin:auto`, which pushes the overflow out of reach rather than scrolling it,
+   taking the close button at top:-48px with it. Cap by height as well: 108px is
+   the 48px the close button sits above the media plus 60px of breathing room.
+   Separate declaration so a browser without svh keeps the line above. */
+.cl .reelbox{width:min(408px,92vw,calc((100svh - 108px) * 9 / 16))}
 .cl .reelbox-v{position:relative;aspect-ratio:9/16;border-radius:var(--r);overflow:hidden}
 .cl .reelbox-close{position:absolute;top:-48px;right:0;color:var(--cream);width:40px;height:40px;display:flex;align-items:center;justify-content:center}
 .cl .reelbox-grad{display:block;position:absolute;inset:0;background:linear-gradient(to top,rgba(40,8,18,.7),transparent 45%);z-index:1}
