@@ -17,7 +17,12 @@
 .cl .pop-skip{font-size:12px;color:var(--muted);text-decoration:underline;align-self:center;margin-top:4px}
 .cl .pop-done-ic{width:60px;height:60px;border-radius:50%;background:var(--bronze);color:var(--bord);display:flex;align-items:center;justify-content:center;margin-bottom:6px}
 .cl .offtab{position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:140;background:var(--bord);color:var(--cream);border:1px solid var(--bronze);border-right:0;border-radius:12px 0 0 12px;padding:16px 9px;writing-mode:vertical-rl;font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;box-shadow:-4px 6px 20px rgba(40,8,18,.32);transition:padding .2s ease,background .2s ease}
-.cl .offtab:hover{padding-left:13px;background:var(--plum)}
+/* Gated on a real hover device: on touch there is no pointer to leave, so this
+   state sticks after the tap that opens the popup and the tab stays wider and
+   plum until the next navigation. */
+@media (hover:hover){
+  .cl .offtab:hover{padding-left:13px;background:var(--plum)}
+}
 /* .offtab is position:fixed at z-140, but the header group is only z-3
    (base.css:2328) and Dawn's menu drawer stacks inside it — so the tab floated
    over the open drawer. Rather than drop it into page content's stacking range,
@@ -27,16 +32,22 @@ body.overflow-hidden-mobile .cl .offtab,
 body.overflow-hidden-tablet .cl .offtab,
 body.cartel-noscroll .cl .offtab,
 body.cl-noscroll .cl .offtab{display:none}
-/* The tab is position:fixed at the right edge, vertically centred, with no
-   width or visibility query anywhere and no dismiss of its own. Computed box
-   is ~31-45px wide by ~140px tall at z-140 — above the header's z-45 — so on a
-   390px phone it sits permanently over the right-hand card of every 2-up grid,
-   the reels row, the PDP gallery and half the before/after image, exactly where
-   a right-edge swipe lands, with a sub-44px hit area of its own. Hidden below
-   760px: cartel-conversion.js still auto-opens the popup after ~12s and on exit
-   intent, so the offer itself is not lost — only the permanent obstruction. */
+/* 2026-08-30 - 7652a28 hid this below 760px: at 390px the ~33x131px box is a
+   permanent obstruction over the right-hand card of every 2-up grid, the reels
+   row and the PDP gallery. The client wants the offer on mobile, so it is back,
+   with the obstruction cut instead of the tab:
+
+     * same right-edge centred position. The bottom edge is not free - it
+       belongs to .pdp-sticky (cartel-pdp.css:412, z-90) below 749px - and
+       centred is the placement the tab already has on desktop.
+     * trimmed to ~26x109px, about a quarter off each axis, which still leaves
+       it well over the 24x24 minimum target size in WCAG 2.5.8 AA.
+
+   It still clears itself whenever a drawer or overlay locks body scroll: the
+   five body rules above cover the menu drawer, the popup and the mobile filter
+   drawer. */
 @media (max-width:760px){
-  .cl .offtab{display:none}
+  .cl .offtab{padding:13px 6px;font-size:11px;letter-spacing:.08em;border-radius:10px 0 0 10px}
 }
 @media (max-width:700px){
   .cl .pop{grid-template-columns:1fr;max-height:94vh;overflow-y:auto}
