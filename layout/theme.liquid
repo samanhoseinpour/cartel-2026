@@ -5,7 +5,30 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="theme-color" content="">
-    <link rel="canonical" href="{{ canonical_url }}">
+    {%- comment -%}
+      batch 19 · The four Settings → Policies documents duplicate the four /pages/ policy pages
+      word for word (the pages are the designed version and the footer links them; /policies/ is
+      what checkout links and cannot be redirected or removed). Each policy page therefore points
+      its canonical at its /pages/ twin so the duplicate does not compete in search. Whitelisted by
+      handle on purpose: any policy Shopify adds later keeps its own canonical rather than pointing
+      at a page that does not exist. Note refund-policy maps to return-policy — the handles differ.
+      Every other template is unaffected and still emits canonical_url verbatim, pagination included.
+    {%- endcomment -%}
+    {%- assign cl_canonical = canonical_url -%}
+    {%- if request.page_type == 'policy' -%}
+      {%- assign cl_policy = canonical_url | split: '/policies/' | last -%}
+      {%- case cl_policy -%}
+        {%- when 'shipping-policy' -%}
+          {%- assign cl_canonical = shop.url | append: '/pages/shipping-policy' -%}
+        {%- when 'refund-policy' -%}
+          {%- assign cl_canonical = shop.url | append: '/pages/return-policy' -%}
+        {%- when 'privacy-policy' -%}
+          {%- assign cl_canonical = shop.url | append: '/pages/privacy-policy' -%}
+        {%- when 'terms-of-service' -%}
+          {%- assign cl_canonical = shop.url | append: '/pages/terms-of-service' -%}
+      {%- endcase -%}
+    {%- endif -%}
+    <link rel="canonical" href="{{ cl_canonical }}">
 
     {% render 'cartel-favicon' %}
 

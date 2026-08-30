@@ -40,6 +40,17 @@
   assign cl_free_ship = 'Free shipping over $150.'
   assign d = page_description | default: '' | strip
 
+  # batch 19 · /collections has no admin SEO field, but Shopify still fills
+  # page_description on that route with shop.description — the same string the
+  # index branch uses. The snippet read that as client copy, skipped the case,
+  # and both URLs shipped one description (Semrush duplicate error, 2026-08-29).
+  # Clear it ONLY when it is verbatim the shop line, so anything genuinely
+  # entered later still wins under rule 1.
+  assign cl_shop_desc = shop.description | default: '' | strip
+  if request.page_type == 'list-collections' and d == cl_shop_desc
+    assign d = ''
+  endif
+
   # Whatever the admin wrote is emitted verbatim. The clamp at the bottom is for
   # copy THIS file derived, not for the client's - truncating a 163-character
   # description they typed, and tacking an ellipsis on it, is a regression.
