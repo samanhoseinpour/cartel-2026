@@ -553,7 +553,7 @@
 
      @media (max-width:749px){
        .product__media-wrapper slider-component:not(.thumbnail-slider--no-slide)
-         { margin-left:-1.5rem; margin-right:-1.5rem }   /* root 62.5% -> -15px */
+         { margin-left:-1.5rem; margin-right:-1.5rem }      root is 62.5%, so -15px
      }
 
    Both slider-components inside .product__media-wrapper match — GalleryViewer
