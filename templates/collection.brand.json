@@ -1,10 +1,25 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "brand-hero": {
       "type": "cartel-brand-hero",
       "settings": {
         "mode": "hero",
-        "tabs_label": "Shop by brand"
+        "tabs_label": "Shop by brand",
+        "why_kick": "The line",
+        "why_heading": "",
+        "cross_kick": "Keep exploring",
+        "cross_heading": "",
+        "cross_label": "View the line",
+        "cross_link": ""
       }
     },
     "product-grid": {
@@ -21,32 +36,40 @@
         "point-1": {
           "type": "point",
           "settings": {
-            "title": "Chosen for pro results",
-            "text": "Every product in this line is tested in the studio before it earns shelf space."
+            "title": "Made for working artists",
+            "text": "Professional lash essentials thoughtfully developed to make everyday lashing simpler and more seamless."
           }
         },
         "point-2": {
           "type": "point",
           "settings": {
-            "title": "Stocked authentic in Canada",
-            "text": "Ordered direct from the brand and shipped from BC, no grey-market stock."
+            "title": "Performance you can rely on",
+            "text": "From ultra-soft, semi-matte lashes to climate-adaptable adhesives, every product is designed for consistent, dependable results."
           }
         },
         "point-3": {
           "type": "point",
           "settings": {
-            "title": "Backed by real artists",
-            "text": "We use this line on our own clients and answer questions from experience."
+            "title": "Designed around your technique",
+            "text": "Flexible options for different preferences, environments and dry times, so you can choose what works best behind your lash bed."
           }
         }
       },
-      "block_order": ["point-1", "point-2", "point-3"],
+      "block_order": [
+        "point-1",
+        "point-2",
+        "point-3"
+      ],
       "settings": {
         "mode": "story",
+        "tabs_label": "Shop by brand",
         "why_kick": "The line",
+        "why_heading": "",
+        "why_image": "shopify://shop_images/CashmereDreamLashTrays-0.07.avif",
         "cross_kick": "Keep exploring",
         "cross_heading": "",
-        "cross_label": "View the line"
+        "cross_label": "View the line",
+        "cross_link": ""
       }
     }
   },
