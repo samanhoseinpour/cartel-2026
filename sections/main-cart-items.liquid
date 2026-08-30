@@ -194,6 +194,22 @@
                               class="line-tool line-save{% if can_remove == false %} hidden{% endif %}"
                               data-line-save
                               data-variant-id="{{ item.variant.id }}"
+                              {% comment %}
+                                2026-08-30: the saved snapshot carried no quantity, yet
+                                saveForLater() clicks <cart-remove-button>, which deletes
+                                EVERY unit of the line. "Move to bag" then posted a hard
+                                quantity: 1 — so a shopper who saved 3 of an item silently
+                                got 1 back. cartel-cart.js reads this into the record.
+
+                                The closing tag deliberately omits the whitespace-control
+                                hyphens its neighbours use. Stripping BOTH sides of a
+                                comment that sits between two attributes emits
+                                `data-variant-id="1"data-quantity="3"` with no separator.
+                                Browsers recover from that (it is why the data-price
+                                comment below still works), but it is a parse error, so
+                                don't add another — the kept trailing newline is the space.
+                              {% endcomment %}
+                              data-quantity="{{ item.quantity }}"
                               data-product-title="{{ item.product.title | escape }}"
                               data-brand="{{ item.product.vendor | escape }}"
                               data-variant-title="{% unless item.product.has_only_default_variant %}{{ item.variant.title | escape }}{% endunless %}"

@@ -116,7 +116,8 @@ if (!customElements.get('pickup-availability-drawer')) {
       hide() {
         this.removeAttribute('open');
         document.body.removeEventListener('click', this.onBodyClick);
-        document.body.classList.remove('overflow-hidden');
+        if (window.clScrollLock) window.clScrollLock.unlock(this);
+        else document.body.classList.remove('overflow-hidden');
         removeTrapFocus(this.focusElement);
       }
 
@@ -124,7 +125,11 @@ if (!customElements.get('pickup-availability-drawer')) {
         this.focusElement = focusElement;
         this.setAttribute('open', '');
         document.body.addEventListener('click', this.onBodyClick);
-        document.body.classList.add('overflow-hidden');
+        /* 2026-08-30: shared owner-counted lock (assets/cartel-scroll-lock.js) —
+           the bare class does not hold on iOS, and it was released by whichever
+           overlay closed last rather than by its owner. */
+        if (window.clScrollLock) window.clScrollLock.lock(this);
+        else document.body.classList.add('overflow-hidden');
         trapFocus(this);
       }
     }

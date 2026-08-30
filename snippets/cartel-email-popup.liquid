@@ -61,14 +61,20 @@
         half whose id matches the redirect fragment. With JS off this degrades to
         the previous behaviour.
       {%- endcomment -%}
-      {%- liquid
-        assign pop_hide = ''
-        if form.posted_successfully?
-          assign pop_hide = ' hidden'
-        endif
-      -%}
       {%- form 'customer', id: 'cl-popup-form', class: 'pop-b' -%}
+        {%- comment -%}
+          Fix 2026-08-30. This assign used to sit ABOVE the {%- form -%} tag,
+          where `form` does not exist yet — it is only defined inside a
+          {% form %} block — so form.posted_successfully? was always nil,
+          pop_hide was always '' and .pop-offer below never got its `hidden`
+          class. Someone who had just subscribed saw "You're in. / Your welcome
+          code is on its way" with the "Take 10% off your first order" pitch, an
+          empty email field and a Claim button stacked directly beneath it.
+          Moved inside the block, exactly like cartel-email.liquid:29-33.
+        {%- endcomment -%}
+        {%- assign pop_hide = '' -%}
         {%- if form.posted_successfully? -%}
+          {%- assign pop_hide = ' hidden' -%}
           <div class="pop-done-wrap" data-popup-posted data-cl-form-ok="cl-popup-form">
             <div class="pop-done-ic">
               <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>

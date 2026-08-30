@@ -28,7 +28,13 @@ class DetailsModal extends HTMLElement {
     this.onBodyClickEvent = this.onBodyClickEvent || this.onBodyClick.bind(this);
     event.target.closest('details').setAttribute('open', true);
     document.body.addEventListener('click', this.onBodyClickEvent);
-    document.body.classList.add('overflow-hidden');
+    /* 2026-08-30: shared owner-counted lock (assets/cartel-scroll-lock.js).
+       The bare class does not stop touch scrolling on iOS, and every overlay
+       used to remove it unconditionally on close, releasing whoever else was
+       still holding it. `this` is the owner; the fallback keeps the modal
+       usable if the helper failed to load. */
+    if (window.clScrollLock) window.clScrollLock.lock(this);
+    else document.body.classList.add('overflow-hidden');
 
     trapFocus(
       this.detailsContainer.querySelector('[tabindex="-1"]'),
@@ -40,7 +46,8 @@ class DetailsModal extends HTMLElement {
     removeTrapFocus(focusToggle ? this.summaryToggle : null);
     this.detailsContainer.removeAttribute('open');
     document.body.removeEventListener('click', this.onBodyClickEvent);
-    document.body.classList.remove('overflow-hidden');
+    if (window.clScrollLock) window.clScrollLock.unlock(this);
+    else document.body.classList.remove('overflow-hidden');
   }
 }
 

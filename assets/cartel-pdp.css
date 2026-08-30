@@ -212,7 +212,23 @@
    Same selector as an existing theme rule but a different value in this page's design.
    Kept so the page matches the mock; this file only loads on its own template. */
 .cl .kick{text-transform:uppercase;letter-spacing:.18em;font-size:12px;font-weight:700;color:var(--plum)}
-.cl .stitle{font-weight:800;font-size:44px;line-height:1.0;letter-spacing:-.035em;color:var(--bord)}
+/* 2026-08-30 — font-size lifted out into a min-width query. 44px is the ONLY
+   real override here; the other four declarations are byte-identical to the
+   shared rule (cartel-home.css:59) and are left in place so this block still
+   reads as the whole declaration. Re-declaring font-size unconditionally at
+   equal specificity (0,2,0) from a sheet that loads AFTER cartel-home.css
+   (theme.liquid:360 vs :381) killed that file's step-downs — :337 38px below
+   1100px, :386 30px below 760px — on every product page. Measured by injecting
+   identical markup into three contexts: PDP @390px 44px, Home @390px 30px,
+   PDP @1400px 44px. 1101px is the complement of cartel-home.css's first
+   step-down, so 761–1100 falls back to the shared 38px and ≤760 to 30px.
+   LATENT today: no PDP renders a .stitle — product recommendations come back
+   empty on this catalogue and the metafield headings are unset — so this bites
+   the day either of those starts working. */
+.cl .stitle{font-weight:800;line-height:1.0;letter-spacing:-.035em;color:var(--bord)}
+@media (min-width:1100.02px){
+  .cl .stitle{font-size:44px}
+}
 .cl .stars{color:var(--bronze);letter-spacing:1px}
 /* .sec.sec, not .sec: cartel-shell.css:548 sets padding from --cl-pt/--cl-pb and
    is loaded FIRST (theme.liquid:295 vs :315), so an equal-specificity rule here
@@ -413,6 +429,31 @@
 .cl .pdp-sticky.on{transform:translateY(0)}
 .cl .pdp-sticky .btn{flex:1}
 .cl .pdp-sticky .pdp-sticky__add[disabled]{background:var(--greige);color:#93806f;cursor:not-allowed;transform:none;box-shadow:none}
+/* 2026-08-30 — the bar is position:fixed at z-90 inside <main>, and <main> is a
+   flex item with z-index:auto, so it is NOT a stacking context: the bar competes
+   at the document ROOT, where it outranks the whole header group (z-3,
+   base.css:2327-2330). Measured live at 390px on a product page, scrolled so the
+   bar is on, with the header search open (details-modal, which sets
+   body.overflow-hidden): the modal painted at z-4, the bar at z-90, and
+   elementFromPoint over the bar's centre returned the "Add to bag" CTA —
+   unblurred, undimmed, on top of the modal, and a tap fired a real add-to-cart
+   the shopper never intended. Same from the menu drawer and the media lightbox.
+   Same remedy as .offtab (cartel-conversion.css:30-34): hide it whenever a
+   drawer/overlay has locked body scroll, keyed on the five lock classes in use
+   (Dawn's overflow-hidden / -mobile / -tablet, plus cartel-home.js's
+   cartel-noscroll and cartel-plp.js's cl-noscroll). display:none, not
+   visibility/opacity, so the bar stops being hit-testable too — a tap through
+   the modal can no longer reach it. (0,3,1) beats the (0,2,0) display:flex in
+   the <750px block below, which media queries do not lift.
+   This LAYERS on cartel-pdp.js:96-99: that function still owns the .on class
+   and bar.inert, neither is touched here, so once the overlay closes the bar
+   returns in whatever state the two IntersectionObservers left it. */
+body.overflow-hidden .cl .pdp-sticky,
+body.overflow-hidden-mobile .cl .pdp-sticky,
+body.overflow-hidden-tablet .cl .pdp-sticky,
+body.overflow-hidden-desktop .cl .pdp-sticky,
+body.cartel-noscroll .cl .pdp-sticky,
+body.cl-noscroll .cl .pdp-sticky{display:none}
 
 /* ---- responsive ---- */
 @media screen and (max-width:989px){

@@ -1330,9 +1330,41 @@
 .menu-drawer.menu-drawer .menu-drawer__account:hover{color:var(--plum,#7C1B40)}
 .menu-drawer.menu-drawer .menu-drawer__account .svg-wrapper,
 .menu-drawer.menu-drawer .menu-drawer__account account-icon{width:20px;height:20px}
-.menu-drawer.menu-drawer .list-social{justify-content:flex-start;gap:2px}
-.menu-drawer.menu-drawer .list-social__link{padding:8px 10px;color:var(--bronze-d,#a8884f)}
-.menu-drawer.menu-drawer .list-social__link:hover{color:var(--plum,#7C1B40)}
+/* social row — 2026-08-30, client: "make the drawer icons match the footer".
+   Measured live at 430px they were two unrelated treatments: drawer chips were
+   bare 40x36 boxes (Dawn's link padding, no border, no radius) at a 2px gap;
+   footer chips are 42px circles on a 1px hairline at a 10px gap. Footer geometry
+   adopted here (cartel.css:124 + the 42px/gap retune at :401-410 above).
+   Palette does NOT copy over: the drawer sits on cream (background at :1240),
+   so the footer's rgba(250,246,240,.28) hairline would be invisible on it — a
+   maroon hairline at .22 reads the same weight on this ground. It is written
+   literally because it is --bord at 22% alpha and there is no token for that
+   (--line is .12, too faint for a 42px ring). The glyph keeps the bronze the
+   client already has. Hover mirrors the footer's (:411) with the palette
+   flipped: fill with the accent, knock the glyph out to the ground, lift 2px.
+   Doubling `.menu-drawer` is required — component-menu-drawer.css:233 sets the
+   link padding and loads in the BODY, so it beats any single-class rule. */
+/* display/flex-wrap are restated rather than inherited: the only sheet that
+   gives .list-social display:flex is component-list-social.css, which
+   sections/footer.liquid:20 loads with media="print" onload="this.media='all'"
+   — async. The old chips were inline-ish boxes that happened to line up either
+   way; 42px rings do not, so the drawer must not wait on a body stylesheet to
+   put them in a row.
+   margin-top replaces the air the old `padding:8px 10px` used to contribute:
+   with padding:0 the ring butted straight up under "Log in" (measured
+   gap 0px). component-localization-form.css:445 would have supplied it, but
+   header-group.json has both selectors disabled, so that rule never matches on
+   this store — the spacing has to be unconditional. */
+.menu-drawer.menu-drawer .list-social{display:flex;flex-wrap:wrap;justify-content:flex-start;gap:10px;margin-top:14px}
+.menu-drawer.menu-drawer .list-social__link{
+  width:42px;height:42px;padding:0;display:flex;align-items:center;justify-content:center;
+  border:1px solid rgba(74,18,36,.22);border-radius:50%;color:var(--bronze-d,#a8884f);
+  transition:background .2s ease,color .2s ease,border-color .2s ease,transform .2s ease;
+}
+.menu-drawer.menu-drawer .list-social__link:hover{
+  background:var(--bronze-d,#a8884f);border-color:var(--bronze-d,#a8884f);
+  color:var(--cream,#FAF6F0);transform:translateY(-2px);
+}
 .menu-drawer.menu-drawer .list-social__link .icon{width:17px;height:17px}
 
 /* ------------------------------------------------------------
@@ -1460,19 +1492,22 @@
 
 /* §12 install fix 6 (2026-08-09): two leftovers in the utility block.
    (a) component-menu-drawer.css:224-227 pulls .list-social 1.25rem left to
-       optically cancel Dawn's 1.1rem link padding. §12 L109 re-pads the
-       links to 10px but leaves the −12.5px, so the Instagram box landed at
-       x=19.5 while the "Log in" icon it should line up with sits at x=22.
-       Retuned to §12's padding, −10px puts it at exactly 22px. (An
-       adversarial re-check called the residual sub-perceptual, since the
-       two glyphs have different intrinsic insets anyway; the retune is kept
-       because it is strictly closer and costs one declaration.)
+       optically cancel Dawn's 1.1rem link padding. §12 L109 re-padded the
+       links to 10px but left the −12.5px in place, so the first glyph
+       landed at x=19.5 while the "Log in" icon it lines up with sits at
+       x=22; −10px put it back on 22.
+       2026-08-30: the reskin above gives the chips padding:0 (42px circles
+       that carry their own ring), so there is nothing left to cancel and
+       the negative margin turned into a real 10px shift — the whole row,
+       ring and all, 10px left of "Log in". Zeroed. The declaration is kept
+       rather than deleted because Dawn's −1.25rem is still there and still
+       has to be overridden.
    (b) the account link carries Dawn's `h5` class, and base.css:269-283
        gives .h5 `letter-spacing: calc(var(--font-heading-scale)*0.06rem)`.
        §12 L101-104 sets that row's size/weight/colour but no tracking, so
        "Log in" ran ~0.6px looser than every other label in the sheet. */
 .menu-drawer.menu-drawer .list-social {
-  margin-left: -10px;
+  margin-left: 0;
 }
 .menu-drawer.menu-drawer .menu-drawer__account {
   letter-spacing: 0;
@@ -1745,5 +1780,48 @@ product-recommendations {
   .utility-bar .utility-bar__grid.page-width {
     padding-left: 40px;
     padding-right: 40px;
+  }
+}
+
+/* ============================================================
+   19. FOOTER BRAND COLUMN TRAPPED AT HALF WIDTH ON PHONES
+   (2026-08-30)
+
+   Reported from the client's screen recording: the footer's social
+   row breaks, leaving TikTok alone on its own line.
+
+   §10's mobile footer (the `max-width: 749px` block at :495 above)
+   lays the blocks out as a 2-column grid, 24px page padding and a
+   24px column gap, and the brand block is just the first cell.
+   That gives it, measured live:
+
+     viewport   brand column   social row
+     360px      144px          2 + 2 wrapped
+     390px      159px          3 + 1 orphan
+     414px      171px          3 + 1 orphan
+     430px      179px          3 + 1 orphan
+
+   (360 − 48 padding − 24 gap) / 2 = 144, so the column width is
+   entirely the grid, nothing inside the block. Four 42px chips at a
+   10px gap need 198px and the column never gets close, so the row
+   wraps at every phone size — while ~150px of dead space sits beside
+   the logo and the tagline, both of which are far narrower than the
+   cell anyway.
+
+   Span it across both columns. At the narrowest phone that is
+   360 − 48 = 312px, comfortably past 198, so the icons hold one line
+   everywhere. The three link_list blocks then pair up on the rows
+   below (Learn | Company, Policies) and .footer-block--contact keeps
+   its own `grid-column: 1 / -1` at :506.
+
+   Matched on `:has(.footer-block__brand-info)` because the block
+   wrapper carries no modifier class — footer.liquid:85 emits
+   `footer-block--menu` and `--contact` but nothing for
+   brand_information. Nothing else in any sheet sets grid-column on
+   this cell, so the specificity only has to clear `auto`.
+   ============================================================ */
+@media screen and (max-width: 749px) {
+  .footer .footer__content-top .footer__blocks-wrapper > .footer-block.grid__item:has(.footer-block__brand-info) {
+    grid-column: 1 / -1;
   }
 }

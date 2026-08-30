@@ -30,6 +30,7 @@
 body.overflow-hidden .cl .offtab,
 body.overflow-hidden-mobile .cl .offtab,
 body.overflow-hidden-tablet .cl .offtab,
+body.overflow-hidden-desktop .cl .offtab,
 body.cartel-noscroll .cl .offtab,
 body.cl-noscroll .cl .offtab{display:none}
 /* 2026-08-30 - 7652a28 hid this below 760px: at 390px the ~33x131px box is a
@@ -38,7 +39,7 @@ body.cl-noscroll .cl .offtab{display:none}
    with the obstruction cut instead of the tab:
 
      * same right-edge centred position. The bottom edge is not free - it
-       belongs to .pdp-sticky (cartel-pdp.css:412, z-90) below 749px - and
+       belongs to .pdp-sticky (cartel-pdp.css:428, z-90) below 749px - and
        centred is the placement the tab already has on desktop.
      * trimmed to ~26x109px, about a quarter off each axis, which still leaves
        it well over the 24x24 minimum target size in WCAG 2.5.8 AA.
@@ -161,6 +162,21 @@ body.cl-noscroll .cl .offtab{display:none}
    the success arm can render alongside it and JS can drop the wrong one. The
    wrapper inherits the column layout its children used to get from .pop-b. */
 .cl .pop-offer{display:flex;flex-direction:column;justify-content:center;gap:13px}
+/* 2026-08-30: stop the popup chaining its scroll into the document. Measured at
+   430x932: the popup is 599px tall inside a 599px box, so it has nothing of its
+   own to scroll and a touch drag on it went straight through to the page behind.
+   overscroll-behavior only applies to a scroll CONTAINER, hence overflow:auto on
+   the backdrop — it is inert either way, because .pop is capped at 92vh (94vh
+   below 700px) inside a 100vh .ov, so the backdrop never actually overflows and
+   .pop's margin:auto centring inside the line-5 flex container is untouched.
+   The real hold is the body pin in cartel-scroll-lock.js; this is the second
+   layer, for the drag that starts ON the popup.
+   Scoped to the popup by ID, NOT to `.cl .ov`: cartel-home.js:283-299 builds the
+   homepage reel lightbox from the same `.ov` class, and cartel-home.css:99 puts
+   its close button at top:-48px — deliberately OUTSIDE the box — which an
+   overflow:auto backdrop would clip. */
+.cl #cl-popup-ov{overflow:auto;overscroll-behavior:contain}
+.cl .pop{overscroll-behavior:contain}
 
 /* ---- reduced motion ---- */
 @media (prefers-reduced-motion: reduce){

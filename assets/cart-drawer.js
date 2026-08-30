@@ -47,7 +47,13 @@ class CartDrawer extends HTMLElement {
       { once: true },
     );
 
-    document.body.classList.add('overflow-hidden');
+    /* 2026-08-30: routed through the shared owner-counted lock
+       (assets/cartel-scroll-lock.js). The bare class did nothing against
+       touch scrolling on iOS, and any other overlay's close() used to strip
+       it out from under this drawer. `this` is the owner token; the fallback
+       keeps the drawer opening even if the helper failed to load. */
+    if (window.clScrollLock) window.clScrollLock.lock(this);
+    else document.body.classList.add('overflow-hidden');
 
     // cart-drawer-items is a CartItems subclass that extends createViewEventElement.
     // Its `view-event-trigger="manual"` skips auto-dispatch on connect; we fire
@@ -58,7 +64,8 @@ class CartDrawer extends HTMLElement {
   close() {
     this.classList.remove('active');
     removeTrapFocus(this.activeElement);
-    document.body.classList.remove('overflow-hidden');
+    if (window.clScrollLock) window.clScrollLock.unlock(this);
+    else document.body.classList.remove('overflow-hidden');
   }
 
   setSummaryAccessibility(cartDrawerNote) {
