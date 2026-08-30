@@ -1615,10 +1615,16 @@ product-recommendations {
        stop. Tablets zoom too and were never covered.
      * width does not cause the zoom; a coarse pointer does.
 
-   `pointer: coarse` is the condition that actually describes it. The trade is
-   that a touch-screen laptop now renders these fields at 16px rather than
-   14.5px, which is a slightly larger form field, not a defect — whereas the
-   width gate left a real bug on every rotated phone.
+   The gate is now the UNION of the two: `max-width: 760px, (pointer: coarse)`.
+   `pointer: coarse` is the condition that actually describes the zoom, but on
+   its own it is a silent single point of failure — anywhere it fails to match
+   (an emulator, a UA that reports fine, a desktop browser resized to a phone
+   width) the whole section would stop applying, which is strictly worse than
+   the old behaviour. The union can only ever add coverage: every portrait
+   phone still matches on width exactly as before, and landscape phones and
+   tablets now match on pointer. The trade is that a touch-screen laptop
+   renders these fields at 16px rather than 14.5px — a slightly larger form
+   field, not a defect.
 
    Two live fields were also missing from the list: .note-box (the cart order
    note) and .cl-price-in (the min/max price inputs INSIDE the mobile filter
@@ -1627,7 +1633,7 @@ product-recommendations {
    this section's opening paragraph happening again). `.ms-search input` is
    14px in 13 sheets but no markup renders it, so it is deliberately not here.
    ============================================================ */
-@media (pointer: coarse) {
+@media (max-width: 760px), (pointer: coarse) {
   .cl.cl .pop-input,
   .cl.cl .promo-input,
   .cl.cl .note-box,
@@ -1652,7 +1658,7 @@ product-recommendations {
    (:133, 15px). Under a width-free `pointer: coarse` the rule above would have
    shrunk it to 16px on tablets, which is the opposite of the point. Keep it on
    the width gate, where it is genuinely small. */
-@media (pointer: coarse) and (max-width: 760px) {
+@media (max-width: 760px) {
   .cl.cl .srchbar input {
     font-size: 16px;
   }
