@@ -353,7 +353,21 @@
   .cl .brandlogo{height:24px}
   .cl .herowrap{padding:12px 12px 0}
   .cl .hero-c{min-height:460px;border-radius:var(--r)}
-  .cl .hero-txt{padding:0 26px;gap:16px;max-width:none}
+  /* The bottom 63px of the card belong to .hero-dots: bottom:18px (next rule)
+     plus its own 45px box. .hero-txt is height:100% + justify-content:center
+     with no awareness of that, so the vertically centred block grew straight
+     into the pill as soon as .hero-cta wrapped to two rows - which it does at
+     every width below 414px, because the two buttons need 332px and the card
+     only offers 314px at 390px. Measured overlap before this: -2.5px at
+     375/390, -14.5px at 320/360.
+
+     Reserving 78px here is the fix rather than shrinking the buttons: padding
+     is inside the centring box, so the block re-centres in what is left and
+     clears the pill by at least 78-63 = 15px no matter how many rows the CTAs
+     wrap to or how long a heading the client types in the editor. Shrinking
+     the buttons only buys back the 18px shortfall at 390px - it still wraps at
+     320/360, and it re-breaks the moment a button label gets longer. */
+  .cl .hero-txt{padding:0 26px 78px;gap:16px;max-width:none}
   .cl .h-hero{font-size:38px}
   .cl .hero-sub{font-size:15px}
   .cl .hero-dots{bottom:18px}
