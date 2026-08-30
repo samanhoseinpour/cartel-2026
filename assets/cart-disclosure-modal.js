@@ -137,27 +137,24 @@ if (!customElements.get('cart-disclosure-modal')) {
       window.pauseAllMedia();
     }
 
+    /* 2026-08-30: this pair used to hand-roll the only owner guard in the theme
+       — a bodyOverflowWasHidden flag plus its own scrollbar-width padding
+       compensation — because it opens on top of the cart drawer, which is
+       already holding the lock. assets/cartel-scroll-lock.js now does exactly
+       that for every overlay, with a real owner set instead of one boolean, so
+       the local copy is gone. Method names kept so the call sites in show()/
+       hide() are untouched. The fallback is the same unconditional class every
+       other overlay falls back to: if the helper is missing entirely, this
+       close can release the drawer's class, which is precisely the shared
+       behaviour the helper exists to fix — no worse than the other four. */
     lockScroll() {
-      this.bodyOverflowWasHidden = document.body.classList.contains('overflow-hidden');
-      this.previousBodyPaddingRight = document.body.style.paddingRight;
-
-      if (this.bodyOverflowWasHidden) return;
-
-      const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
-
-      if (scrollbarWidth > 0) {
-        const currentPaddingRight = parseFloat(window.getComputedStyle(document.body).paddingRight) || 0;
-        document.body.style.paddingRight = `${currentPaddingRight + scrollbarWidth}px`;
-      }
-
-      document.body.classList.add('overflow-hidden');
+      if (window.clScrollLock) window.clScrollLock.lock(this);
+      else document.body.classList.add('overflow-hidden');
     }
 
     unlockScroll() {
-      if (this.bodyOverflowWasHidden) return;
-
-      document.body.classList.remove('overflow-hidden');
-      document.body.style.paddingRight = this.previousBodyPaddingRight;
+      if (window.clScrollLock) window.clScrollLock.unlock(this);
+      else document.body.classList.remove('overflow-hidden');
     }
 
     restoreFocusTrap() {

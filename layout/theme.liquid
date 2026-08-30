@@ -6,7 +6,7 @@
     {%- comment -%}
       NOT viewport-fit=cover — deliberately. Adding it makes
       env(safe-area-inset-*) report real values, which is what
-      assets/cartel-pdp.css:412 needs for the mobile sticky buy bar. But it
+      assets/cartel-pdp.css:428 needs for the mobile sticky buy bar. But it
       ALSO opts the whole site into edge-to-edge layout, and the theme is not
       ready for that on either axis:
         * bottom — the layout viewport then extends under the home indicator,
@@ -117,6 +117,16 @@
 
     <script src="{{ 'constants.js' | asset_url }}" defer="defer"></script>
     <script src="{{ 'pubsub.js' | asset_url }}" defer="defer"></script>
+    {%- comment -%}
+      cartel-scroll-lock.js must load before every overlay script (global.js's
+      MenuDrawer/ModalDialog, details-modal.js, cart-drawer.js,
+      pickup-availability.js, cartel-conversion.js). `defer` runs these in
+      document order, so window.clScrollLock is defined by the time any of them
+      can lock the body. Each call site still falls back to the bare class if
+      this file ever fails to load, so an overlay can never be blocked from
+      opening.
+    {%- endcomment -%}
+    <script src="{{ 'cartel-scroll-lock.js' | asset_url }}" defer="defer"></script>
     <script src="{{ 'global.js' | asset_url }}" defer="defer"></script>
     {%- comment -%}
       cart-disclosure-modal.js and cart-disclosure-tooltip.js were loaded here on
@@ -332,6 +342,16 @@
         box-sizing: border-box;
         font-size: calc(var(--font-body-scale) * 62.5%);
         height: 100%;
+        /* 2026-08-30: iOS rubber-band overscroll paints the CANVAS, not <body>.
+           html had no background, so the canvas inherited body's cream
+           rgb(250,246,240) while the footer is maroon rgb(74,18,36) — dragging
+           past the end of any page flashed a cream band under the maroon
+           footer. The announcement bar at the top of every template is that
+           same maroon, so one value is right at BOTH ends of the scroll.
+           --cartel-bord (74,18,36) is declared :root-level in cartel.css:6;
+           custom properties resolve at computed-value time, so it applies even
+           though this inline style block parses before cartel.css loads. */
+        background-color: rgb(var(--cartel-bord));
       }
 
       body {

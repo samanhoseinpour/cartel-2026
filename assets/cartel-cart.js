@@ -165,6 +165,13 @@
       (it.brand ? '<span class="pbrand">' + esc(it.brand) + '</span>' : '') +
       '<a class="pname" href="' + esc(it.url || '#') + '">' + esc(it.title) + '</a>' +
       (it.variant ? '<span class="pvar">' + esc(it.variant) + '</span>' : '') +
+      /* 2026-08-30: the card now carries a real quantity (saveForLater snapshots
+         it), so show it. Without this a card holding 3 units looks identical to
+         one holding 1 and "Move to bag" surprises the shopper with a subtotal
+         three times what they expected — the same silent-surprise problem, just
+         pointing the other way. Reuses .pvar so no sheet this file does not own
+         has to change. */
+      (it.qty > 1 ? '<span class="pvar">Qty ' + esc(it.qty) + '</span>' : '') +
       '<div class="prow">' + price + '</div>' +
       '<button type="button" class="btn btn-out btn-sm w100" data-saved-move="' + esc(it.id) + '">Move to bag</button>' +
       '</div>'
@@ -192,6 +199,20 @@
       price: btn.dataset.price || '',
       image: btn.dataset.image || '',
       url: btn.dataset.url || '',
+      /* 2026-08-30: quantity was never captured, but the click below removes the
+         WHOLE line, so "Move to bag" handed back a single unit of a multi-unit
+         line — silent data loss. Clamp here as well as on the way out: a missing
+         or garbage data-quantity must become 1, never NaN or 0.
+         Read the live input first, and only fall back to the server-rendered
+         attribute: cart.js:21-25 debounces the quantity `change` handler by
+         ON_CHANGE_DEBOUNCE_TIMER (300ms, constants.js), so a shopper who edits
+         the field and hits "Save for later" inside that window still has the
+         PRE-EDIT number sitting in data-quantity. The input is the only value
+         that is current at click time. */
+      qty: Math.max(
+        1,
+        parseInt((row && row.querySelector('input[name="updates[]"]') || {}).value || btn.dataset.quantity, 10) || 1
+      ),
     };
     if (!item.id) return;
     const list = readSaved().filter((x) => x.id !== item.id);
@@ -229,29 +250,86 @@
   function moveToBag(btn) {
     const id = parseInt(btn.dataset.savedMove, 10);
     if (!id) return;
+    /* Restore the quantity that was saved, not a hard 1. Records already sitting
+       in a returning shopper's localStorage predate `qty` (2026-08-30), so the
+       lookup must tolerate a missing field and fall back to 1 rather than post
+       NaN. readSaved() owns the JSON.parse/Array guards — reuse it. */
+    const savedRec = readSaved().find((x) => String(x.id) === String(id));
+    const qty = Math.max(1, parseInt(savedRec && savedRec.qty, 10) || 1);
     btn.disabled = true;
     const itemsEl = document.getElementById('main-cart-items');
     const sectionId = (itemsEl && itemsEl.dataset.id) || '';
     const addUrl = ((window.routes && window.routes.cart_add_url) || '/cart/add') + '.js';
-    fetch(addUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Accept: 'application/javascript' },
-      body: JSON.stringify({
-        items: [{ id: id, quantity: 1 }],
-        sections: [sectionId, 'cart-icon-bubble'].filter(Boolean).join(','),
-        sections_url: window.location.pathname,
-      }),
-    })
-      .then((res) => res.json().then((data) => ({ ok: res.ok, data: data })))
-      .then(({ ok, data }) => {
+    const post = (n) =>
+      fetch(addUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/javascript' },
+        body: JSON.stringify({
+          items: [{ id: id, quantity: n }],
+          sections: [sectionId, 'cart-icon-bubble'].filter(Boolean).join(','),
+          sections_url: window.location.pathname,
+        }),
+      }).then((res) => res.json().then((data) => ({ ok: res.ok, data: data })));
+
+    post(qty)
+      .then((r) => {
+        /* /cart/add.js rejects the WHOLE line with a 422 when the requested
+           quantity exceeds stock — it never partially fulfils. Now that we post
+           the saved quantity instead of a hard 1, a card saved at 3 units that
+           later drops to 2 in stock would fail on every click and strand itself
+           on the page forever. Fall back to a single unit once, and say so, so
+           the shopper is never stuck AND is never silently short-changed. */
+        if ((!r.ok || r.data.status) && qty > 1) {
+          return post(1).then((r1) => (r1.ok && !r1.data.status ? { ...r1, reduced: true } : r));
+        }
+        return r;
+      })
+      .then(({ ok, data, reduced }) => {
+        const errs = document.getElementById('cart-errors');
         if (!ok || data.status) {
-          const errs = document.getElementById('cart-errors');
           if (errs) errs.textContent = data.description || data.message || 'Sorry, that item could not be added.';
           btn.disabled = false;
           return;
         }
+        if (reduced && errs) {
+          errs.textContent = 'Only some of those were left — 1 moved to your bag. The rest are no longer available.';
+        }
         writeSaved(readSaved().filter((x) => String(x.id) !== String(id)));
         applySections(data.sections);
+
+        /* is-empty lives on the OUTER <cart-drawer> (cart-drawer.liquid:44) and
+           on .drawer__inner (:79). The cartUpdate below makes cart.js:239-255
+           refetch ?section_id=cart-drawer, but that swap replaces only
+           <cart-drawer-items> and .cart-drawer__footer — neither carries the
+           class — and CartDrawer.renderContents (which does clear the inner one)
+           is not on this path at all. So a drawer that was empty before the move
+           kept rendering its empty layout (component-cart-drawer.css:47,54 and
+           cartel-cart-drawer.css:25-28 all key off cart-drawer.is-empty) over
+           the restored line. moveToBag only runs after a SUCCESSFUL add, so the
+           cart is non-empty by definition and the class can only ever need
+           removing. */
+        const drawerEl = document.querySelector('cart-drawer');
+        if (drawerEl) {
+          drawerEl.classList.remove('is-empty');
+          const drawerInner = drawerEl.querySelector('.drawer__inner');
+          if (drawerInner) drawerInner.classList.remove('is-empty');
+        }
+
+        /* Announce as the CART PAGE, because the cart page is what already
+           rendered itself from the sections in THIS response — cart.js:77 skips
+           only the host whose tagName matches `source`, so 'cart-items' spares
+           <cart-items> a redundant re-fetch of what applySections just painted
+           while letting <cart-drawer-items> refresh. theme.liquid renders the
+           drawer on every template, so without this it kept its pre-move cart —
+           usually still "Your bag is empty" with no checkout button — until a
+           full page load. Exact mirror of cartel-conversion.js:362, which
+           publishes 'cart-drawer-items' from the drawer side. PUB_SUB_EVENTS is
+           a top-level const in constants.js, so it is a global BINDING, not a
+           window property — hence typeof, not window.PUB_SUB_EVENTS. */
+        if (typeof publish === 'function' && typeof PUB_SUB_EVENTS !== 'undefined') {
+          publish(PUB_SUB_EVENTS.cartUpdate, { source: 'cart-items', cartData: data, productVariantId: id });
+        }
+
         renderSaved();
         syncPromo();
         syncNote();

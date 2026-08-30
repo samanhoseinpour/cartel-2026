@@ -68,10 +68,18 @@
 
   let lastFocus = null;
   let autoTimer = null;
+  let autoTries = 0;
   const designMode = !!(window.Shopify && window.Shopify.designMode);
   const onCartPage = !!document.querySelector('main[data-template="cart"]');
 
   const isOpen = () => !!ov && !ov.hidden;
+
+  /* An element hidden with display:none still matches querySelector but cannot
+     be focused, and the popup now really does hide one of its two arms — see
+     the note in open(). Both the initial focus and the Tab trap have to skip
+     anything that is not laid out. */
+  const isRendered = (el) => !!(el && (el.offsetWidth || el.offsetHeight || el.getClientRects().length));
+  const popInput = () => ov && ov.querySelector('.pop-input');
 
   function cancelAuto() {
     if (autoTimer) {
@@ -86,26 +94,93 @@
     cancelAuto();
     lastFocus = document.activeElement;
     ov.hidden = false;
-    document.body.classList.add('overflow-hidden');
-    const first = ov.querySelector('.pop-input') || ov.querySelector('[data-popup-close]');
+    /* 2026-08-30: shared owner-counted lock (assets/cartel-scroll-lock.js).
+       The bare class never held on iOS, and this popup's close() removed it
+       unconditionally — which is how dismissing it released the cart drawer's
+       lock and let the page scroll away behind the still-open drawer. A string
+       owner because there is one popup per page, not a custom element. */
+    if (window.clScrollLock) window.clScrollLock.lock('cl-popup');
+    else document.body.classList.add('overflow-hidden');
+    /* 2026-08-30: .pop-offer can now genuinely carry `hidden`
+       (.hidden{display:none!important}, base.css:209). Until today
+       snippets/cartel-email-popup.liquid computed that flag ABOVE its
+       {%- form -%} tag, where `form` is nil, so it never applied and .pop-input
+       was always rendered. A display:none element still MATCHES querySelector
+       but cannot take focus, so a bare `.pop-input || [data-popup-close]` picks
+       the hidden input, the `||` fallback never fires and .focus() is a spec
+       no-op — the success dialog reopened (line ~195) with focus stranded on
+       <body> and nothing for the focus trap to hold. Pick what is actually
+       rendered, keeping the input's precedence on the normal path (the close X
+       is earlier in the DOM, so document order alone would flip it). */
+    const first = isRendered(popInput()) ? popInput() : ov.querySelector('[data-popup-close]');
     if (first) first.focus();
   }
 
   function close() {
     if (!ov || !isOpen()) return;
     ov.hidden = true;
-    document.body.classList.remove('overflow-hidden');
+    if (window.clScrollLock) window.clScrollLock.unlock('cl-popup');
+    else document.body.classList.remove('overflow-hidden');
     mark();
     if (lastFocus && typeof lastFocus.focus === 'function') lastFocus.focus();
   }
 
+  /* 2026-08-30: the two UNPROMPTED entry points (the 12s timer and exit intent)
+     must not fire while another overlay owns the screen. The popup is z-150 and
+     the cart drawer is z-1000, so auto-opening behind it produced an invisible
+     but focus-trapped dialog — and dismissing that invisible dialog is what
+     unlocked the page under the open drawer. Re-arm instead of opening, so the
+     one-shot offer is not spent on a moment the visitor never saw.
+
+     Only these two are wrapped. The offer-tab click below and the post-submit
+     reopen still call open() directly: a deliberate tap must always work, and
+     .offtab is already hidden whenever a lock class is on
+     (cartel-conversion.css:30-34). */
+  /* clScrollLock only knows about its own owners. Two surfaces still take a body
+     lock directly and are invisible to it — cartel-home.js's reel lightbox
+     ('cartel-noscroll') and cartel-plp.js's filter drawer ('cl-noscroll') — and
+     the lightbox matters here because it reuses `.cl .ov` at the SAME z-150 and
+     is appended to <body> last, so it paints above the popup. Test the classes
+     too, which is the same set cartel-conversion.css:30-35 hides .offtab on. */
+  const LOCK_CLASSES = [
+    'overflow-hidden',
+    'overflow-hidden-mobile',
+    'overflow-hidden-tablet',
+    'overflow-hidden-desktop',
+    'cartel-noscroll',
+    'cl-noscroll',
+  ];
+  const somethingElseIsOpen = () =>
+    (window.clScrollLock && window.clScrollLock.isLocked()) ||
+    LOCK_CLASSES.some((c) => document.body.classList.contains(c));
+
+  function autoOpen() {
+    if (somethingElseIsOpen()) {
+      /* Clear first: exit intent can fire repeatedly while a drawer is open,
+         and each un-cleared re-arm would start its own retry chain.
+         Capped rather than unbounded — a visitor who leaves the cart drawer
+         open should not be left with a 0.5Hz timer for the life of the page.
+         30 tries is a minute, after which the one-shot offer is simply not
+         shown this pageview. */
+      cancelAuto();
+      if (++autoTries > 30) return;
+      document.addEventListener('mouseout', onExitIntent);
+      autoTimer = window.setTimeout(autoOpen, 2000);
+      return;
+    }
+    open();
+  }
+
   function onExitIntent(e) {
-    if (e.clientY <= 0 && !e.relatedTarget) open();
+    if (e.clientY <= 0 && !e.relatedTarget) autoOpen();
   }
 
   function trapTab(e) {
-    const focusables = ov.querySelectorAll(
-      'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    const focusables = Array.prototype.filter.call(
+      ov.querySelectorAll(
+        'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      ),
+      isRendered
     );
     if (!focusables.length) return;
     const first = focusables[0];
@@ -162,7 +237,7 @@
     }
 
     if (!designMode && !onCartPage && !dismissed()) {
-      autoTimer = window.setTimeout(open, 12000);
+      autoTimer = window.setTimeout(autoOpen, 12000);
       document.addEventListener('mouseout', onExitIntent);
     }
   }

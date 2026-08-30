@@ -495,7 +495,14 @@ class MenuDrawer extends HTMLElement {
     });
     summaryElement.setAttribute('aria-expanded', true);
     trapFocus(this.mainDetailsToggle, summaryElement);
-    document.body.classList.add(`overflow-hidden-${this.dataset.breakpoint}`);
+    /* 2026-08-30: shared owner-counted lock (assets/cartel-scroll-lock.js).
+       Breakpoint-scoped, so it still writes overflow-hidden-${this.dataset.breakpoint}
+       for base.css:2916-2934 and only pins <body> at the widths where that class
+       actually hides overflow. The bare class alone never stopped touch scrolling
+       on iOS, and any other overlay's close() used to strip it out from under an
+       open drawer. Fallback keeps the drawer opening if the helper failed to load. */
+    if (window.clScrollLock) window.clScrollLock.lock(this, this.dataset.breakpoint);
+    else document.body.classList.add(`overflow-hidden-${this.dataset.breakpoint}`);
   }
 
   closeMenuDrawer(event, elementToFocus = false) {
@@ -509,7 +516,8 @@ class MenuDrawer extends HTMLElement {
     this.mainDetailsToggle.querySelectorAll('.submenu-open').forEach((submenu) => {
       submenu.classList.remove('submenu-open');
     });
-    document.body.classList.remove(`overflow-hidden-${this.dataset.breakpoint}`);
+    if (window.clScrollLock) window.clScrollLock.unlock(this);
+    else document.body.classList.remove(`overflow-hidden-${this.dataset.breakpoint}`);
     removeTrapFocus(elementToFocus);
     this.closeAnimation(this.mainDetailsToggle);
 
@@ -585,7 +593,13 @@ class HeaderDrawer extends MenuDrawer {
     summaryElement.setAttribute('aria-expanded', true);
     window.addEventListener('resize', this.onResize);
     trapFocus(this.mainDetailsToggle, summaryElement);
-    document.body.classList.add(`overflow-hidden-${this.dataset.breakpoint}`);
+    /* Same lock as MenuDrawer.openMenuDrawer above — HeaderDrawer overrides
+       openMenuDrawer wholesale (it never calls super), so this second add site
+       has to be converted too or the site header drawer would keep the old
+       unowned class. Its closeMenuDrawer DOES call super, so the unlock happens
+       once, in MenuDrawer.closeMenuDrawer, with this same instance as owner. */
+    if (window.clScrollLock) window.clScrollLock.lock(this, this.dataset.breakpoint);
+    else document.body.classList.add(`overflow-hidden-${this.dataset.breakpoint}`);
   }
 
   closeMenuDrawer(event, elementToFocus) {
@@ -635,7 +649,10 @@ class ModalDialog extends HTMLElement {
   show(opener) {
     this.openedBy = opener;
     const popup = this.querySelector('.template-popup');
-    document.body.classList.add('overflow-hidden');
+    /* 2026-08-30: shared owner-counted lock (assets/cartel-scroll-lock.js) —
+       see the header of that file for the two failures it fixes. */
+    if (window.clScrollLock) window.clScrollLock.lock(this);
+    else document.body.classList.add('overflow-hidden');
     this.setAttribute('open', '');
     if (popup) popup.loadContent();
     trapFocus(this, this.querySelector('[role="dialog"]'));
@@ -643,7 +660,8 @@ class ModalDialog extends HTMLElement {
   }
 
   hide() {
-    document.body.classList.remove('overflow-hidden');
+    if (window.clScrollLock) window.clScrollLock.unlock(this);
+    else document.body.classList.remove('overflow-hidden');
     document.body.dispatchEvent(new CustomEvent('modalClosed'));
     this.removeAttribute('open');
     removeTrapFocus(this.openedBy);
