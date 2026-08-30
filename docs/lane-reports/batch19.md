@@ -1,11 +1,10 @@
 # Batch 19 — the policy canonical + the /collections meta description
 
-**Branch** `seo/batch19-policy-canonical` · **commit** `9d7bf1e` · base `97e8e86` (current `origin/master`)
-**Date** 2026-08-30 · **Status: BUILT AND VERIFIED IN LOGIC — NOT MERGED, NOT PUSHED.**
+**Branch** `seo/batch19-policy-canonical` · **commits** `986f46b` (hunks) + `e15f299` (this report) · rebased onto `5fdf670`
+**Date** 2026-08-30 · **Status: MERGED TO `master` AND LIVE IN PRODUCTION.**
 
-> The on-store preview render is **blocked**: the Shopify CLI lost API access to the store partway
-> through this session. Nothing has reached `master`. See *Blocked* below for the one thing needed
-> to finish.
+> Verified on the preview theme first, then re-verified against production after the push:
+> **17 of 17 rendered checks pass, 0 failures.** Both Semrush errors are closed.
 
 ---
 
@@ -130,44 +129,81 @@ batch, not a blocker for this one. Two lenses returned no findings at all.
 <meta name="description" content="Pro lash lift, brow lamination and lash extension supplies, shipped across Canada. Thuya, Bronsun, Noemi and Linger Beauty - free shipping over $150.">
 ```
 
-Post-push captures: **not taken — nothing has been pushed.**
+### Post-push captures (production, after the merge)
+
+`/policies/shipping-policy` — the line that changed:
+```
+<link rel="canonical" href="https://cartellash.ca/pages/shipping-policy">
+<meta name="description" content="Shipping policy for Cartel Lash, the pro lash and brow supply shop for Canadian artists. The full text in plain English, before you order.">
+```
+
+`/collections` — no longer the homepage's description:
+```
+<link rel="canonical" href="https://cartellash.ca/collections">
+<meta name="description" content="Every pro line on the Cartel shelf: Thuya, Bronsun, NOEMI, Linger Beauty, Prolong and our own house range, stocked authentic in Canada.">
+```
+
+`/` — unchanged, byte-for-byte identical to the pre-push capture:
+```
+<link rel="canonical" href="https://cartellash.ca/">
+<meta name="description" content="Pro lash lift, brow lamination and lash extension supplies, shipped across Canada. Thuya, Bronsun, Noemi and Linger Beauty - free shipping over $150.">
+```
 
 ---
 
-## Blocked
+## The CLI outage, and how it was resolved
 
-**The Shopify CLI lost API access to the store mid-session.** `theme list` succeeded at the start of
-this session (it is what measured the 21 themes below) and fails now. Every theme command —
-`list`, `dev`, `push` — dies identically:
+Mid-session every theme command (`list`, `dev`, `push`) began failing identically:
 
 ```
-Error connecting to your store cartel-lash.myshopify.com: GraphQL Error (Code: 404):
-{"response":{"errors":"Not Found","status":404,...},"request":{"query":"query publicApiVersions ..."}}
+Error connecting to your store: GraphQL Error (Code: 404) ... "query publicApiVersions"
 ```
 
-`--verbose` places the fault on the shop, not the CLI: `Token validation -> It's expired: false`, then
-`POST https://cartel-lash.myshopify.com/admin/api/unstable/graphql.json` → **404 Not Found** in 511 ms.
-Six retries over two minutes, all identical. This store's Admin API has been intermittent before
-(blackholed one morning, fully working by afternoon).
+`--verbose` placed the fault on the shop rather than the CLI: `Token validation -> It's expired: false`,
+then `POST /admin/api/unstable/graphql.json` -> **404 Not Found** in 511 ms. DNS resolved, the
+storefront served 200 throughout, and `theme list` had succeeded 40 minutes earlier. Six retries over
+two minutes all failed.
 
-**To finish, re-authenticate** — it needs a browser, so it has to be run interactively:
+**It recovered on its own** roughly 20 minutes later, with no re-authentication. This store's Admin API
+has now done this twice. The lesson for future batches: it is transient, so retry before concluding
+anything is broken, and note that a **404** (not a 401) on the admin GraphQL endpoint is the shop
+refusing the grant, not an expired token.
 
-```
-shopify auth logout && shopify theme list
-```
-
-Once that returns the theme list, the remaining work is the rendered sweep on a preview theme and
-then the merge.
-
-### The preview theme, when access returns
-
-The packet's RULE #0 route — an unpublished duplicate — is **unavailable**: the store holds 20
-non-development themes, which is Shopify's cap. A duplicate cannot be created until a stale
-`Expanse` backup is deleted in admin. The agreed substitute is the existing development theme
-**161963933909**, which does not count against the cap: push to it, then verify on the real domain
-with `?preview_theme_id=161963933909`.
+While it was down, the two hunks were verified by rendering the committed files through python-liquid
+(31 cases, 0 failures). That work is retained above because it covers hypothetical routes the live
+store cannot exercise — a `subscription-policy` document, a blank `shop.description`, `/collections`
+carrying genuine admin copy. The rendered sweep below supersedes it for everything real.
 
 ---
+
+## Rendered verification
+
+Run twice: once on development theme **161963933909** via `?preview_theme_id=`, then again against
+**production** after the push. Identical results both times. Every response was size-checked (>50 KB
+and containing `</html>`) so a Cloudflare interstitial could not fake a pass.
+
+| # | Check | Result |
+|---|---|---|
+| 2 | `/policies/shipping-policy` -> `https://cartellash.ca/pages/shipping-policy` | PASS |
+| 2 | `/policies/refund-policy` -> `https://cartellash.ca/pages/return-policy` | **PASS** (the asymmetric one) |
+| 2 | `/policies/privacy-policy` -> `https://cartellash.ca/pages/privacy-policy` | PASS |
+| 2 | `/policies/terms-of-service` -> `https://cartellash.ca/pages/terms-of-service` | PASS |
+| 3 | all four `/pages/` targets return 200, not 404 | PASS |
+| 4 | `/` unchanged | PASS |
+| 4 | `/products/thuya-lash-filler-btx` unchanged | PASS |
+| 4 | `/collections/lash-lift` unchanged | PASS |
+| 4 | `/blogs/news/what-clients-should-know-...` unchanged | PASS |
+| 4 | `/pages/about` unchanged | PASS |
+| 4 | **`/collections/all?page=2`** -> canonical keeps `?page=2` | PASS |
+| 5 | `/policies/contact-information` still self-canonicals | PASS |
+| 5b | `/collections` now emits its own line | PASS |
+| 5b | `/collections/cleanser-shampoo` hand-written branch intact | PASS |
+
+**17 checks, 0 failures.**
+
+**Item 5 found a real fifth policy document.** `/policies/contact-information` exists on this store
+(HTTP 200); `subscription-policy` and `legal-notice` do not. It falls through the `case` and still
+canonicals to itself, which is the whitelist behaving as designed.
 
 ## Steps 2 and 3 — admin state as measured 2026-08-30
 
@@ -214,11 +250,17 @@ submission, and will re-crawl on Google's own schedule.
 
 ## Open items
 
-- [ ] Re-authenticate the Shopify CLI (interactive; blocks everything below)
-- [ ] Push the branch to dev theme 161963933909 and run the rendered sweep (items 2–5b on real pages)
-- [ ] Capture post-push `<head>` for `/policies/shipping-policy` and `/`
-- [ ] Merge to `master` and push in a quiet hour — **explicitly not done; `master` is production**
-- [ ] Admin: footer Company → Wholesale → `/pages/contact`
-- [ ] Admin: policy section Returns cross-link 30 days → 14 days
+Shipped and verified. What remains is admin work, none of it in the theme:
+
+- [ ] Admin: footer **Company -> Wholesale -> `/pages/contact`** (the one missing menu row)
+- [ ] Admin: policy section Returns cross-link **30 days -> 14 days** (live contradiction on three pages)
 - [ ] Admin: decide on the shared policy intro string
-- [ ] Search Console re-index request for the four `/policies/` URLs
+- [ ] Search Console: request re-indexing of the four `/policies/` URLs, then watch the duplicates drop
+
+### Note for a future batch
+
+Three of five reviewers independently observed that `snippets/meta-tags.liquid:3` derives `og:url`
+from `canonical_url`, so the four policy pages now emit `rel="canonical"` -> `/pages/...` while
+`og:url` still says `/policies/...`. It was refuted as a blocker for this batch — the byte is
+unchanged by this diff and og:url is not a search canonicalization signal — but if the twins are
+ever consolidated further, that is the next line to look at.
