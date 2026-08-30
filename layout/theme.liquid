@@ -4,14 +4,25 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     {%- comment -%}
-      viewport-fit=cover is load-bearing, not cosmetic: without it iOS reports
-      env(safe-area-inset-*) as 0, so cartel-pdp.css:412's
-      `padding-bottom: calc(10px + env(safe-area-inset-bottom))` on the mobile
-      sticky buy bar was inert and the Add to bag button sat under the home
-      indicator. No maximum-scale / user-scalable here on purpose — pinch-zoom
-      must stay available.
+      NOT viewport-fit=cover — deliberately. Adding it makes
+      env(safe-area-inset-*) report real values, which is what
+      assets/cartel-pdp.css:412 needs for the mobile sticky buy bar. But it
+      ALSO opts the whole site into edge-to-edge layout, and the theme is not
+      ready for that on either axis:
+        * bottom — the layout viewport then extends under the home indicator,
+          and only .pdp-sticky and .toast carry an inset. The cart drawer's
+          .dw-foot (cart_type is "drawer", so this is the live cart) and the
+          mobile filter drawer's .fsheet-foot ("Show N results") are both
+          pinned to the viewport bottom with no compensation.
+        * left/right — nothing in the theme reads safe-area-inset-left/right,
+          and in landscape iOS reports 44-59px against the theme's largest
+          gutter of 40px, so copy would sit under the sensor housing.
+      Turning it on is a batch of its own: all five bottom-anchored surfaces
+      plus max()-based horizontal gutters, verified on a real notched device.
+      A headless browser cannot emulate safe-area insets, so it cannot be
+      signed off here.
     {%- endcomment -%}
-    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="theme-color" content="">
     {%- comment -%}
       batch 19 · The four Settings → Policies documents duplicate the four /pages/ policy pages
