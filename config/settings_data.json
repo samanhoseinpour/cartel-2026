@@ -145,6 +145,19 @@
       }
     },
     "content_for_index": [],
+    "blocks": {
+      "18272643779398082604": {
+        "type": "shopify://apps/timesact-pre-order/blocks/app-embed-v2/bf6c109b-79b5-457c-8752-0e5e9e9676e7",
+        "disabled": false,
+        "settings": {
+          "debug_mode": false,
+          "add_to_cart_text": "Add to cart",
+          "sold_out_text": "Sold out",
+          "unavailable_text": "Unavailable",
+          "use_custom_script": false
+        }
+      }
+    },
     "color_schemes": {
       "background-1": {
         "settings": {
