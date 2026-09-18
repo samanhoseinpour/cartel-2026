@@ -176,29 +176,38 @@
                     Cartel: availability line (.p-stock). Keeps Dawn's #Inventory-{{ section.id }}
                     contract so product-info.js re-renders it on variant change.
                   {%- endcomment -%}
-                  <p
-                    class="product__inventory p-stock"
-                    {{ block.shopify_attributes }}
-                    id="Inventory-{{ section.id }}"
-                    role="status"
-                  >
-                    {%- liquid
-                      assign cl_variant = product.selected_or_first_available_variant
-                      assign cl_low_stock = false
-                      if cl_variant.inventory_management == 'shopify' and cl_variant.inventory_quantity > 0 and cl_variant.inventory_quantity <= block.settings.inventory_threshold
-                        assign cl_low_stock = true
-                      endif
-                    -%}
-                    {%- if cl_variant.available and cl_low_stock -%}
-                      <span class="stockdot"></span>Low stock
-                      {%- if block.settings.show_inventory_quantity %} &middot; only {{ cl_variant.inventory_quantity }} left{% endif -%}
-                      &middot; order soon, dispatched within 48 hrs
-                    {%- elsif cl_variant.available -%}
-                      <span class="stockdot"></span>In stock &middot; ready to ship, dispatched within 48 hrs
-                    {%- else -%}
-                      <span class="stockdot out"></span>Out of stock, currently unavailable
-                    {%- endif -%}
-                  </p>
+<p
+  class="product__inventory p-stock"
+  {{ block.shopify_attributes }}
+  id="Inventory-{{ section.id }}"
+  role="status"
+>
+  {%- liquid
+    assign cl_variant = product.selected_or_first_available_variant
+    assign cl_low_stock = false
+    assign cl_preorder = false
+
+    if product.tags contains 'pre-order'
+      assign cl_preorder = true
+    endif
+
+    if cl_variant.inventory_management == 'shopify' and cl_variant.inventory_quantity > 0 and cl_variant.inventory_quantity <= block.settings.inventory_threshold
+      assign cl_low_stock = true
+    endif
+  -%}
+
+  {%- unless cl_preorder -%}
+    {%- if cl_variant.available and cl_low_stock -%}
+      <span class="stockdot"></span>Low stock
+      {%- if block.settings.show_inventory_quantity %} &middot; only {{ cl_variant.inventory_quantity }} left{% endif -%}
+      &middot; order soon, dispatched within 48 hrs
+    {%- elsif cl_variant.available -%}
+      <span class="stockdot"></span>In stock &middot; ready to ship, dispatched within 48 hrs
+    {%- else -%}
+      <span class="stockdot out"></span>Out of stock, currently unavailable
+    {%- endif -%}
+  {%- endunless -%}
+</p>
                 {%- when 'description' -%}
                   {%- if product.description != blank -%}
                     <div class="product__description rte quick-add-hidden" {{ block.shopify_attributes }}>
