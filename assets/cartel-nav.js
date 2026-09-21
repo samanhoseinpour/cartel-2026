@@ -201,3 +201,31 @@
     init(event.target);
   });
 })();
+
+/* ============================================================
+   Search placeholders by width (2026-09-21)
+   "Search products, brands, categories" needs ~255px at the 16-17px these
+   fields use on phones, and on phones they have 118-254px — so the header
+   search, /search and the 404 field all read "Search products, brands,
+   catego" on every phone up to 414px. The markup now carries the short text
+   (phones get it from first paint, JS or not) and data-placeholder-long, which
+   is swapped in wherever the long one fits: snippets/header-search.liquid,
+   sections/main-search.liquid, sections/main-404.liquid.
+   ============================================================ */
+(function () {
+  var wide = window.matchMedia('(min-width: 761px)');
+  function apply(root) {
+    Array.prototype.forEach.call((root || document).querySelectorAll('input[data-placeholder-long]'), function (input) {
+      if (!input.hasAttribute('data-placeholder-short')) input.setAttribute('data-placeholder-short', input.placeholder);
+      input.placeholder = input.getAttribute(wide.matches ? 'data-placeholder-long' : 'data-placeholder-short');
+    });
+  }
+  var all = function () { apply(document); };
+  if (wide.addEventListener) wide.addEventListener('change', all);
+  else wide.addListener(all);
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', all);
+  else all();
+  document.addEventListener('shopify:section:load', function (event) {
+    apply(event.target);
+  });
+})();
