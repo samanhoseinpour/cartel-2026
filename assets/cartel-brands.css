@@ -102,6 +102,11 @@
 .cl .bx-imgwrap.is-logo img{object-fit:contain;padding:30px 26px;mix-blend-mode:multiply}
 @media (max-width:600px){.cl .bx-imgwrap.is-logo img{padding:22px 20px}}
 .cl .bx-badge{position:absolute;top:16px;left:16px;display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:100px;background:rgba(255,255,255,.92);font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--bord)}
+/* A contained logo is centred in the WHOLE tile, so its top edge sat at 22-30px while the badge
+   runs 16-47px: "LOG IN FOR PRICING" printed over the Thuya lettering, and all six /collections
+   tiles carry a badge. With one, start the logo box below it (47 + 11px). (0,4,1) outranks the
+   <=600px padding above, so this one rule holds at every width. */
+.cl .bx-imgwrap.is-logo:has(.bx-badge) img{padding-top:58px}
 .cl .bx-card-b{display:flex;flex-direction:column;gap:14px;padding:28px 30px 30px;flex:1}
 .cl .bx-eyebrow{display:flex;align-items:center;gap:10px;font-size:12px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--bronze-d)}
 .cl .bx-name{font-size:40px;font-weight:800;letter-spacing:-.035em;line-height:.95;color:var(--bord)}
