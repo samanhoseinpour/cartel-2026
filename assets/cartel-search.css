@@ -214,7 +214,16 @@
 /* §6 Predictive dropdown anchoring under the template search bar (the header
    dropdown is positioned by Dawn's component-predictive-search.css) */
 .cl .srch-form-wrap{position:relative;max-width:640px}
-.cl .srch-form-wrap .predictive-search{position:absolute;top:calc(100% + 10px);left:0;right:0;z-index:60}
+/* display:none at rest (2026-09-21). Dawn's own `.predictive-search{display:none}`
+   lives in component-predictive-search.css, which theme.liquid loads with the
+   media="print" onload swap, i.e. after every image, and with no noscript copy.
+   Until it landed, the panel (and its unsized loading spinner) painted over the
+   results on every first visit, and forever with JavaScript off. The (0,3,0)
+   hide outranks Dawn's (0,2,1) open/loading rule, so both states are restated
+   here at (0,4,1). */
+.cl .srch-form-wrap .predictive-search{display:none;position:absolute;top:calc(100% + 10px);left:0;right:0;z-index:60}
+.cl .srch-form-wrap predictive-search[open] .predictive-search,
+.cl .srch-form-wrap predictive-search[loading] .predictive-search{display:block}
 
 /* /search echoes the shopper's own query into these two — main-search.liquid
    renders it at 50px (34px on mobile) — so they are the one place in the theme

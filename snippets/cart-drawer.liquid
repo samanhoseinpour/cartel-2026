@@ -5,7 +5,9 @@
   .drawer__inner / .drawer__inner-empty / .drawer__close / <cart-drawer-items> /
   #CartDrawer-CartItems .js-contents / .cart-drawer__footer / #Drawer-quantity-{n} /
   #CartDrawer-Item-{n} / live regions / #CartDrawer-CartErrors / #CartDrawer-Checkout.
-  Skin lives in assets/cartel-conversion.css (loads on every template).
+  Skin lives in assets/cartel-cart-drawer.css (shell, .dw-*, .qty), which loads
+  deferred next to Dawn's component-cart-drawer.css; the .ci line-item rules stay
+  in assets/cartel-conversion.css (loads on every template).
 
   Usage:
   {% render 'cart-drawer' %}
@@ -13,9 +15,28 @@
 
 <script src="{{ 'cart.js' | asset_url }}" defer="defer"></script>
 
+{%- comment -%}
+  Critical, inline on purpose. theme.liquid renders this drawer as the FIRST
+  element of <body>, above the header group, and loads component-cart-drawer.css
+  with the media="print" onload swap — so that sheet arrives after every image.
+  visibility:hidden only makes the drawer invisible; it stays in normal flow.
+  Until the deferred sheet landed, the empty drawer occupied a blank band
+  above the announcement bar (190px at 1280, 180px at 820, 167px at 390) and the
+  whole page jumped up when it arrived: CLS 0.14 / 0.14 / 0.20 on every first
+  or hard-refreshed load (measured 2026-09-21). The cart-drawer rule below is
+  byte-for-byte the one in component-cart-drawer.css, so nothing changes when
+  that sheet applies; it just takes the drawer out of flow from the first paint.
+{%- endcomment -%}
 <style>
   .drawer {
     visibility: hidden;
+  }
+  cart-drawer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100%;
   }
 </style>
 

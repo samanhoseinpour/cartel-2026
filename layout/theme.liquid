@@ -429,6 +429,10 @@
       but cart_type is "drawer", so the drawer's .cart-item markup ships on
       EVERY page, and /cart is nothing but cart lines. Without the noscript
       fallback the line items stayed unstyled for the whole no-JS session.
+      Deferred means it lands AFTER first paint, so any rule in it that
+      changes the resting geometry of /cart (.cart-item margin-bottom, the
+      cart-remove-button margin and 45px box) must be neutralised in
+      cartel-cart.css, or the cart page shifts when it arrives.
     {%- endcomment -%}
     <link rel="stylesheet" href="{{ 'component-cart-items.css' | asset_url }}" media="print" onload="this.media='all'">
     <noscript>{{ 'component-cart-items.css' | asset_url | stylesheet_tag }}</noscript>
@@ -437,7 +441,12 @@
       {%- comment -%}
         Deferred with the same media="print" onload swap component-cart-items.css
         uses above, for the same reason: the drawer is closed until someone
-        clicks the cart, so none of this paints anything on load. As blocking
+        clicks the cart, so none of its visuals paint on load. Its POSITION does,
+        though: component-cart-drawer.css is also what makes <cart-drawer>
+        position:fixed, and without that the hidden drawer sat in normal flow
+        above the header until this sheet landed (a 170-190px blank band and a
+        full-page jump, CLS 0.14-0.20). snippets/cart-drawer.liquid now carries
+        that one rule inline — keep it there if this block ever changes. As blocking
         CSS it cost six requests on EVERY page of the site — and measured
         against the live homepage DOM, component-totals.css and
         component-price.css matched 0% of their rules, component-cart.css 18%

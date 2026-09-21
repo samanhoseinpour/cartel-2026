@@ -133,7 +133,7 @@ body.cl-noscroll .cl .offtab{display:none}
    settings_data.json:376 ships cart_type "notification", one editor click
    away. Values are identical: --cream #FAF6F0, --line rgba(74,18,36,.12),
    --ink #3a2226, --r 24px. */
-.cart-notification.cart-notification{background:rgb(var(--cartel-cream));border:1px solid rgba(var(--cartel-bord),.12);border-width:0 1px 1px;border-radius:0 0 24px 24px;padding:20px 22px;box-shadow:0 28px 60px rgba(74,18,36,.18);color:rgb(var(--cartel-ink));font-family:'Hanken Grotesk',system-ui,sans-serif}
+.cart-notification.cart-notification{background:rgb(var(--cartel-cream));border:1px solid rgba(var(--cartel-bord),.12);border-width:0 1px 1px;border-radius:0 0 24px 24px;padding:20px 22px;box-shadow:0 28px 60px rgba(74,18,36,.18);color:rgb(var(--cartel-ink));font-family:'Hanken Grotesk','Hanken Grotesk Fallback',system-ui,sans-serif}
 @media screen and (min-width:750px){
   .cart-notification.cart-notification{border-width:1px;border-radius:24px;margin-top:10px}
 }

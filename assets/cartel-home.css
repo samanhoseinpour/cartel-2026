@@ -21,7 +21,7 @@
    .bl-shopcard-k on the dark card uses --bronze, which is untouched). The six
    `background:var(--bronze-d)` bullet dots only gain contrast. */
 .cl{--bord:#4A1224;--plum:#7C1B40;--bronze:#D2B48C;--bronze-d:#796239;--cream:#FAF6F0;--greige:#ece2d4;--ink:#3a2226;--muted:#795f63;--line:rgba(74,18,36,.12);--prodbg:#efe6d7;--r:24px;--r-sm:16px;--r-lg:34px;
-  background:var(--cream);color:var(--ink);font-family:'Hanken Grotesk',system-ui,sans-serif;-webkit-font-smoothing:antialiased;font-size:16px;line-height:1.5;font-weight:500}
+  background:var(--cream);color:var(--ink);font-family:'Hanken Grotesk','Hanken Grotesk Fallback',system-ui,sans-serif;-webkit-font-smoothing:antialiased;font-size:16px;line-height:1.5;font-weight:500}
 .cl *{box-sizing:border-box;margin:0;padding:0}
 .cl img{display:block;max-width:100%}
 .cl button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
@@ -55,7 +55,7 @@
 .cl .reelbox-open{overflow:hidden}
 
 .cl .wrap{max-width:1280px;margin:0 auto;padding:0 40px}
-.cl .kick{font-family:'Hanken Grotesk';text-transform:uppercase;letter-spacing:.18em;font-size:12px;font-weight:700;color:var(--plum)}
+.cl .kick{text-transform:uppercase;letter-spacing:.18em;font-size:12px;font-weight:700;color:var(--plum)}
 .cl .stitle{font-weight:800;font-size:48px;line-height:1.0;letter-spacing:-.035em;color:var(--bord)}
 .cl .lead{font-size:18px;line-height:1.6;color:var(--muted)}
 .cl .muted{color:var(--muted)}

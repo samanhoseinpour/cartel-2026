@@ -398,7 +398,14 @@
   color: rgb(var(--cartel-cream));
 }
 /* socials — 42px circles, bronze fill on hover */
+/* display/flex-wrap restated (2026-09-21), the same fix §12 made for the
+   menu drawer's copy of this list: the only sheet that gives .list-social
+   display:flex is component-list-social.css, which footer.liquid loads with the
+   media="print" onload swap. Until it lands the icons stack vertically, which
+   shows on short pages (empty cart, 404) where the footer is on screen. */
 .footer .footer__list-social.list-social {
+  display: flex;
+  flex-wrap: wrap;
   gap: 1rem;
   margin-top: 2.2rem;
 }
@@ -468,10 +475,27 @@
   opacity: 1;
   color: rgba(var(--cartel-cream), 0.55);
 }
+/* The badge row's resting geometry is restated from component-list-payment.css
+   (deferred, media="print" onload): without it the <ul class="list list-payment">
+   painted as a bulleted, 40px-indented vertical stack until that sheet arrived.
+   Values match what the sheet resolves to once it lands, so nothing moves then:
+   flex row, no indent, padding-top 1rem below 750px and 0 above; margin and
+   justify-content already come from §9b's .footer__payment .list-payment. */
 .footer .list-payment {
+  display: flex;
+  flex-wrap: wrap;
+  list-style: none;
+  padding-left: 0;
   gap: 0.7rem;
 }
+@media screen and (max-width: 749px) {
+  .footer .list-payment {
+    padding-top: 1rem;
+  }
+}
 .footer .list-payment__item {
+  display: flex;
+  align-items: center;
   padding: 0;
 }
 .footer .list-payment__item svg {
