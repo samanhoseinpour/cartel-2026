@@ -14,19 +14,48 @@ class CartDrawer extends HTMLElement {
     cartLink.setAttribute('role', 'button');
     cartLink.setAttribute('aria-haspopup', 'dialog');
     cartLink.addEventListener('click', (event) => {
+      // Until the drawer can paint (stylesPending), the icon is what its markup says: a link to /cart.
+      if (this.stylesPending().length) return;
       event.preventDefault();
       this.open(cartLink);
     });
     cartLink.addEventListener('keydown', (event) => {
       if (event.code.toUpperCase() === 'SPACE') {
         event.preventDefault();
-        this.open(cartLink);
+        if (this.stylesPending().length) cartLink.click();
+        else this.open(cartLink);
       }
     });
   }
 
+  /* 2026-09-21: the drawer's stylesheets load deferred (layout/theme.liquid,
+     media="print" swapped to "all" by their onload, tagged data-drawer-css).
+     Until they land, `.drawer.active { visibility: visible }` and the whole skin
+     do not exist — only the inline position rule in snippets/cart-drawer.liquid
+     does. Opening in that window took the scroll lock behind a drawer nobody
+     could see, and on a slow first load the page froze until the sheets
+     arrived. The header icon now falls through to /cart instead, and every
+     other open() (renderContents after "Add to bag") waits for the last sheet. */
+  stylesPending() {
+    return Array.from(document.querySelectorAll('link[data-drawer-css]')).filter((link) => link.media === 'print');
+  }
+
   open(triggeredBy) {
     if (this.classList.contains('active')) return;
+    const pending = this.stylesPending();
+    if (pending.length) {
+      if (!this.openQueued) {
+        this.openQueued = true;
+        // The inline onload (media -> "all") was registered first, so it has already run by now.
+        const retry = () => {
+          if (this.stylesPending().length) return;
+          this.openQueued = false;
+          this.open(triggeredBy);
+        };
+        pending.forEach((link) => link.addEventListener('load', retry, { once: true }));
+      }
+      return;
+    }
     if (triggeredBy) this.setActiveElement(triggeredBy);
     const cartDrawerNote = this.querySelector('[id^="Details-"] summary');
     if (cartDrawerNote && !cartDrawerNote.hasAttribute('role')) this.setSummaryAccessibility(cartDrawerNote);

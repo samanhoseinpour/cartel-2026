@@ -459,13 +459,18 @@
         Document order still decides the cascade once the media swaps, so
         cartel-cart-drawer.css keeps winning against component-cart-drawer.css
         regardless of which finishes downloading first.
+
+        data-drawer-css: cart-drawer.js will not open the drawer while any of
+        these is still media="print" — before they land, .drawer.active is not
+        visible and opening only locked the page behind an invisible drawer.
+        Tag any sheet added to this list the same way.
       {%- endcomment -%}
-      <link rel="stylesheet" href="{{ 'component-cart-drawer.css' | asset_url }}" media="print" onload="this.media='all'">
-      <link rel="stylesheet" href="{{ 'component-cart.css' | asset_url }}" media="print" onload="this.media='all'">
-      <link rel="stylesheet" href="{{ 'component-totals.css' | asset_url }}" media="print" onload="this.media='all'">
-      <link rel="stylesheet" href="{{ 'component-price.css' | asset_url }}" media="print" onload="this.media='all'">
-      <link rel="stylesheet" href="{{ 'component-discounts.css' | asset_url }}" media="print" onload="this.media='all'">
-      <link rel="stylesheet" href="{{ 'cartel-cart-drawer.css' | asset_url }}" media="print" onload="this.media='all'">
+      <link rel="stylesheet" href="{{ 'component-cart-drawer.css' | asset_url }}" media="print" onload="this.media='all'" data-drawer-css>
+      <link rel="stylesheet" href="{{ 'component-cart.css' | asset_url }}" media="print" onload="this.media='all'" data-drawer-css>
+      <link rel="stylesheet" href="{{ 'component-totals.css' | asset_url }}" media="print" onload="this.media='all'" data-drawer-css>
+      <link rel="stylesheet" href="{{ 'component-price.css' | asset_url }}" media="print" onload="this.media='all'" data-drawer-css>
+      <link rel="stylesheet" href="{{ 'component-discounts.css' | asset_url }}" media="print" onload="this.media='all'" data-drawer-css>
+      <link rel="stylesheet" href="{{ 'cartel-cart-drawer.css' | asset_url }}" media="print" onload="this.media='all'" data-drawer-css>
       <noscript>
         {{ 'component-cart-drawer.css' | asset_url | stylesheet_tag }}
         {{ 'component-cart.css' | asset_url | stylesheet_tag }}
