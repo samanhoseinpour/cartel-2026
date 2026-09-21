@@ -151,10 +151,39 @@
       this._initC = true;
       var self = this;
       this.row = this.querySelector('.carousel, .reelrow');
-      var p = this.querySelector('[data-caro-prev]');
-      var n = this.querySelector('[data-caro-next]');
+      var p = (this.prev = this.querySelector('[data-caro-prev]'));
+      var n = (this.next = this.querySelector('[data-caro-next]'));
+      this.nav = this.querySelector('.caro-nav');
       if (p) p.addEventListener('click', function () { self.nudge(-1); });
       if (n) n.addEventListener('click', function () { self.nudge(1); });
+      /* The arrows never reflected the row: "Previous" was live at scrollLeft 0,
+         "Next" stayed live at the end, and a row with nothing to scroll (the
+         reels row at 1280px, scrollWidth 1185 = clientWidth 1185) still showed
+         two live buttons that did nothing. Re-read the row on every scroll and
+         resize; scroll events already fire at most once a frame. */
+      if (this.row && this.nav) {
+        var sync = function () { self.syncArrows(); };
+        this.row.addEventListener('scroll', sync, { passive: true });
+        if ('ResizeObserver' in window) new ResizeObserver(sync).observe(this.row);
+        else window.addEventListener('resize', sync);
+        sync();
+      }
+    }
+    /* aria-disabled, not the disabled attribute: disabling the button that has
+       focus drops keyboard focus to <body> the moment the row reaches its end.
+       nudge() already clamps to [0, max], so a click on a dimmed arrow is a
+       no-op either way. Skins: cartel-home.css, next to .caro-btn. */
+    syncArrows() {
+      var row = this.row;
+      var max = row.scrollWidth - row.clientWidth;
+      var x = row.scrollLeft;
+      var set = function (b, off) {
+        var v = off ? 'true' : 'false';
+        if (b && b.getAttribute('aria-disabled') !== v) b.setAttribute('aria-disabled', v);
+      };
+      this.nav.classList.toggle('is-idle', max <= 1);
+      set(this.prev, x <= 1);
+      set(this.next, x >= max - 1);
     }
     nudge(dir) {
       var row = this.row;

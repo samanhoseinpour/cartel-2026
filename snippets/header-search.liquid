@@ -59,7 +59,8 @@
               type="search"
               name="q"
               value="{{ search.terms | escape }}"
-              placeholder="Search products, brands, categories"
+              placeholder="Search products"
+              data-placeholder-long="Search products, brands, categories"
               {%- if settings.predictive_search_enabled -%}
                 role="combobox"
                 aria-expanded="false"

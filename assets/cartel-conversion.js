@@ -81,6 +81,18 @@
   const isRendered = (el) => !!(el && (el.offsetWidth || el.offsetHeight || el.getClientRects().length));
   const popInput = () => ov && ov.querySelector('.pop-input');
 
+  /* The image half is loading="lazy" inside the [hidden] overlay
+     (snippets/cartel-email-popup.liquid), and a lazy image in a display:none
+     subtree is not fetched until it renders — so the download only started when
+     the popup opened, and on a throttled link the half was still blank 1.2s
+     later. Start it before every way in instead: once the page has loaded when
+     the auto-open is armed, on hover/focus/touch of the offer tab, and in open()
+     itself as the backstop. Switching lazy -> eager starts the fetch at once. */
+  const warmImage = () => {
+    const img = ov && ov.querySelector('.pop-img > img');
+    if (img && img.loading === 'lazy') img.loading = 'eager';
+  };
+
   function cancelAuto() {
     if (autoTimer) {
       window.clearTimeout(autoTimer);
@@ -92,6 +104,7 @@
   function open() {
     if (!ov || isOpen()) return;
     cancelAuto();
+    warmImage();
     lastFocus = document.activeElement;
     ov.hidden = false;
     /* 2026-08-30: shared owner-counted lock (assets/cartel-scroll-lock.js).
@@ -197,7 +210,12 @@
     }
   }
 
-  if (tab) tab.addEventListener('click', open);
+  if (tab) {
+    tab.addEventListener('click', open);
+    ['pointerenter', 'focus', 'touchstart'].forEach((type) =>
+      tab.addEventListener(type, warmImage, { once: true, passive: true })
+    );
+  }
 
   if (ov) {
     ov.addEventListener('click', (e) => {
@@ -239,6 +257,9 @@
     if (!designMode && !onCartPage && !dismissed()) {
       autoTimer = window.setTimeout(autoOpen, 12000);
       document.addEventListener('mouseout', onExitIntent);
+      // after `load`, so the popup's image never competes with the page's own
+      if (document.readyState === 'complete') warmImage();
+      else window.addEventListener('load', warmImage, { once: true });
     }
   }
 })();

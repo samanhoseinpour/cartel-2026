@@ -1640,8 +1640,17 @@ product-recommendations {
    <=760px keeps its 20px gutter: the bar is a bordered, rounded
    card on phones (.vp is restyled at cartel-home.css:328) and
    running it into the screen edge reads as a clipping bug.
+
+   2026-09-21: the same holds up to 1360px, and this used to start
+   at 761px. The clip edge is the 1280px box's edge, which only
+   sits inside the screen once the viewport is wider than that box
+   — at 761-1280px it IS the screen edge, and at 1281-1360px it is
+   under 40px in. Measured on the live homepage: right gap 0 at
+   761/820/900 and 0 past the scrollbar at 1024/1100/1280 (the
+   08-29 review's M-3). Below 1361px the bar keeps its 40px gutter
+   on both sides, like the section headings above it.
    ============================================================ */
-@media (min-width: 761px) {
+@media (min-width: 1361px) {
   .cl .vpwrap {
     padding-right: 0;
   }

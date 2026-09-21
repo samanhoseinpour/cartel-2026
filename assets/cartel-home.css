@@ -107,7 +107,12 @@
 .cl .hero-media{position:absolute;inset:0;z-index:0;background:#2a0e1a}
 .cl .hero-photo,.cl .abhome-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
 .cl .hero-media-prod{background:#eceae7}
-.cl .hero-photo-prod{object-fit:contain;object-position:82% center}
+/* multiply: the packshot is shot on near-white (254,254,254 at every edge), so `contain` left a
+   brighter rectangle on the #eceae7 plate with a hard seam down each side. Multiplying by the plate
+   turns that white into the plate itself (254 -> 235 vs 236) and scales the product by the same
+   ~8%, so its own contrast is untouched. .hero-media's z-index:0 makes it the stacking context, so
+   the blend only ever sees the plate. A cut-out (transparent) packshot would take the same ~8% tint. */
+.cl .hero-photo-prod{object-fit:contain;object-position:82% center;mix-blend-mode:multiply}
 .cl .hero-ov{position:absolute;inset:0;z-index:1;background:linear-gradient(96deg,rgba(28,6,13,.9) 0%,rgba(28,6,13,.64) 32%,rgba(28,6,13,.22) 62%,rgba(28,6,13,.03) 100%)}
 .cl .hero-txt{position:relative;z-index:2;height:100%;padding:0 64px;display:flex;flex-direction:column;justify-content:center;gap:20px;align-items:flex-start;max-width:660px}
 .cl .hero-eyebrow{display:inline-flex;align-items:center;gap:9px;padding:8px 16px 8px 13px;border:1px solid rgba(210,180,140,.42);border-radius:100px;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--bronze)}
@@ -145,6 +150,10 @@
 .cl .caro-nav{display:flex;gap:9px}
 .cl .caro-btn{width:46px;height:46px;border-radius:50%;border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--bord);transition:.2s}
 .cl .caro-btn:hover{background:var(--bord);color:var(--cream);border-color:var(--bord)}
+/* state comes from cartel-home.js syncArrows(): dimmed at either end of the row,
+   hidden (space kept, out of the tab order) when the row has nothing to scroll */
+.cl .caro-btn[aria-disabled="true"]{opacity:.35;pointer-events:none}
+.cl .caro-nav.is-idle{visibility:hidden}
 .cl .carousel{display:flex;gap:20px;overflow-x:auto;scroll-behavior:smooth;max-width:1280px;margin:0 auto;padding:4px 40px 12px;scrollbar-width:none}
 .cl .carousel::-webkit-scrollbar{display:none}
 .cl .card{flex:0 0 296px;scroll-snap-align:start;display:flex;flex-direction:column;transition:transform .3s ease;cursor:pointer}
