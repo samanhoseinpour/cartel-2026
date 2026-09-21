@@ -1728,13 +1728,13 @@ product-recommendations {
 
    §9c's scrim is a 96deg gradient: rgba(28,6,13,.9) at 0%, .22 at 62%,
    .03 at 100%. Dark on the left, effectively clear on the right. That
-   works on desktop only because cartel-home.css:84 caps .hero-txt at
+   works on desktop only because cartel-home.css:112 caps .hero-txt at
    660px, so the copy never leaves the dark 55% of the card.
 
-   cartel-home.css:328 drops that cap on mobile (`max-width:none`), so
+   cartel-home.css:370 drops that cap on mobile (`max-width:none`), so
    every line now runs the full width of the card. On an `image_fit:
    contain` slide the plate behind it is .hero-media-prod's #eceae7
-   (cartel-home.css:81), and measured against that plate the tail of the
+   (cartel-home.css:109), and measured against that plate the tail of the
    gradient gives:
 
      scrim .22  ->  h1 1.82:1   sub 1.65:1
@@ -1748,11 +1748,16 @@ product-recommendations {
 
    Scoped to .hero-slide--prod (cartel-hero.liquid emits it for the same
    `fit == 'contain'` test that adds .hero-media-prod) so the three photo
-   slides keep the design's light-touch gradient, and to <=760px so the
-   desktop hero is untouched. Same selector + same specificity as §9c,
-   appended later, so it wins on source order.
+   slides keep the design's light-touch gradient. Same selector + same
+   specificity as §9c, appended later, so it wins on source order.
+
+   2026-09-21: widened from <=760px to <=1100px. The 660px cap only keeps the
+   copy in the dark part of the card when the card is wide: at 820px the card
+   is 740px, the text runs to ~89% of it, and "…for Canadian" sat right across
+   the white bottle at ~1.9-2.3:1. 1100 is the existing hero layout step
+   (cartel-home.css:332), and above it the bottle clears the text column.
    ============================================================ */
-@media screen and (max-width: 760px) {
+@media screen and (max-width: 1100px) {
   .cl .hero-slide--prod::before {
     background: linear-gradient(
       96deg,
