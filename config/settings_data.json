@@ -151,7 +151,7 @@
         "disabled": false,
         "settings": {
           "debug_mode": false,
-          "add_to_cart_text": "Add to cart",
+          "add_to_cart_text": "Add to bag",
           "sold_out_text": "Sold out",
           "unavailable_text": "Unavailable",
           "use_custom_script": false
