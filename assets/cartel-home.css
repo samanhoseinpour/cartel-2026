@@ -145,6 +145,10 @@
 .cl .caro-nav{display:flex;gap:9px}
 .cl .caro-btn{width:46px;height:46px;border-radius:50%;border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--bord);transition:.2s}
 .cl .caro-btn:hover{background:var(--bord);color:var(--cream);border-color:var(--bord)}
+/* state comes from cartel-home.js syncArrows(): dimmed at either end of the row,
+   hidden (space kept, out of the tab order) when the row has nothing to scroll */
+.cl .caro-btn[aria-disabled="true"]{opacity:.35;pointer-events:none}
+.cl .caro-nav.is-idle{visibility:hidden}
 .cl .carousel{display:flex;gap:20px;overflow-x:auto;scroll-behavior:smooth;max-width:1280px;margin:0 auto;padding:4px 40px 12px;scrollbar-width:none}
 .cl .carousel::-webkit-scrollbar{display:none}
 .cl .card{flex:0 0 296px;scroll-snap-align:start;display:flex;flex-direction:column;transition:transform .3s ease;cursor:pointer}
