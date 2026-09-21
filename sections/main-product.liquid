@@ -198,9 +198,12 @@
 
   {%- unless cl_preorder -%}
     {%- if cl_variant.available and cl_low_stock -%}
-      <span class="stockdot"></span>Low stock
-      {%- if block.settings.show_inventory_quantity %} &middot; only {{ cl_variant.inventory_quantity }} left{% endif -%}
-      &middot; order soon, dispatched within 48 hrs
+      {%- comment -%}
+        One line on purpose: the old endif carried a right-hand whitespace
+        trim that ate the space before the next middot, so the live PDP read
+        "Low stock· order soon".
+      {%- endcomment -%}
+      <span class="stockdot"></span>Low stock{% if block.settings.show_inventory_quantity %} &middot; only {{ cl_variant.inventory_quantity }} left{% endif %} &middot; order soon, dispatched within 48 hrs
     {%- elsif cl_variant.available -%}
       <span class="stockdot"></span>In stock &middot; ready to ship, dispatched within 48 hrs
     {%- else -%}

@@ -99,12 +99,24 @@
       if ('inert' in bar) bar.inert = !on;
     }
 
-    new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        pastBuyRow = !entry.isIntersecting && entry.boundingClientRect.bottom < 0;
-      });
-      render();
-    }).observe(watch);
+    /* rootMargin extends the viewport downward without limit, so "intersecting"
+       means "the buy row has not yet scrolled above the top edge". With the
+       default root, a jump that skips over the row — scroll restoration on back
+       or refresh, a tap on the iOS status bar, an anchor — crossed no threshold,
+       fired no callback and left the bar in the wrong state: off below the row
+       (measured: jump 0 -> 1500, bar off) or stuck on over the title after a jump
+       back to the top. The bottom < 0 test stays: rootMargin is ignored for a
+       cross-origin iframe (the theme editor preview), and a detached or hidden
+       target reports not-intersecting with an empty rect. */
+    new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          pastBuyRow = !entry.isIntersecting && entry.boundingClientRect.bottom < 0;
+        });
+        render();
+      },
+      { rootMargin: '0px 0px 100000px 0px' }
+    ).observe(watch);
 
     if (footer) {
       new IntersectionObserver(function (entries) {

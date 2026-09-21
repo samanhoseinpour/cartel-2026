@@ -245,7 +245,10 @@
    dereferences the result unguarded — with only .qbtn it threw on every line.
    base.css:1949-1969 then styles that class, so re-assert the Cartel skin. */
 .cl .qty .quantity__button{margin:0;font-size:inherit}
-.cl .qty-lg input.qn{min-width:30px;width:38px;font-size:14px}
+/* .qty.qty-lg (0,4,1), not .qty-lg (0,3,1): cartel-cart-drawer.css:52's
+   `.cl .qty input.qn` has the same (0,3,1) and loads later (deferred, for the
+   drawer on every page), so the /cart stepper shrank 38px -> 34px when it landed. */
+.cl .qty.qty-lg input.qn{min-width:30px;width:38px;font-size:14px}
 
 /* Thuya gate (cartel-gate-cta, gate_style: card) inside the line price cell */
 .cl .line-pricec .cartel-gate{align-items:flex-end;gap:0}
@@ -272,7 +275,16 @@ cart-items{display:block}
 /* base.css hides ALL empty divs (div:empty{display:none}) — re-show the
    empty-by-design ones: the progress fill and the summary divider */
 .cl .ship-bar-f,.cl .sum-div{display:block}
-.cl .line.cart-item{flex-wrap:wrap}
+/* component-cart-items.css loads deferred (theme.liquid), so its .cart-item
+   rules land AFTER first paint and win ties with the .cl reset on source order:
+   - :498-503 `.cart-item{margin-bottom:3.5rem}` (<=749px) put 35px under every
+     line but the last (measured 2026-09-21) and shifted the page when it landed;
+   - :383-386 `.cart-item cart-remove-button{display:flex;margin-left:1rem}` hit
+     both remove controls, widening .line-tools' 16px gap to 26px;
+   - :388-393 made them 45x45 boxes at 750-989px, stretching the tools row.
+   Restated here at their design values so the late sheet changes nothing. */
+.cl .line.cart-item{flex-wrap:wrap;margin:0}
 .cl .line>cart-remove-button{flex:none}
+.cl .line cart-remove-button{display:flex;margin:0;width:auto;height:auto}
 .cl .cart__note{display:flex;flex-direction:column;align-items:flex-start;gap:2px}
 .cl .cart__note .note-box{align-self:stretch}

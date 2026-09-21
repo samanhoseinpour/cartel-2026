@@ -65,7 +65,13 @@
 .cl .fchip svg{width:13px;height:13px;opacity:.55}
 .cl .clearall{font-size:12.5px;font-weight:700;color:var(--plum);text-decoration:underline;padding:7px 6px}
 .cl .plpbody{display:grid;grid-template-columns:258px 1fr;gap:44px;align-items:start;padding-bottom:96px}
-.cl .filters{position:sticky;top:96px}
+/* Capped to the viewport (2026-09-21): the rail is 938px tall, so at 1280x800 its
+   last ~230px (Curl, Thickness) stayed below the fold until the grid ran out.
+   116px = the 96px sticky top + 20px of air; svh keeps iPad toolbars out of it.
+   The 4px inline/bottom padding (cancelled by the negative margin) is room for
+   the 2px-offset focus rings, which overflow:auto would otherwise clip. No
+   overscroll-behavior: at the rail's end the wheel should chain to the grid. */
+.cl .filters{position:sticky;top:96px;max-height:calc(100vh - 116px);max-height:calc(100svh - 116px);overflow-y:auto;scrollbar-width:thin;padding-inline:4px;padding-bottom:4px;margin-inline:-4px}
 .cl .fhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:2px}
 .cl .fhead-t{font-size:18px;font-weight:800;color:var(--bord);letter-spacing:-.02em}
 .cl .fhead-clear{font-size:12.5px;font-weight:700;color:var(--plum);text-decoration:underline}

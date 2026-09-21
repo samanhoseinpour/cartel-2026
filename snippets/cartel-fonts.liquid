@@ -34,9 +34,55 @@
     src: url({{ 'hanken-grotesk-latin-ext.woff2' | asset_url }}) format('woff2');
     unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
   }
+  /* Metric-matched fallback (2026-09-21). font-display:swap paints the first
+     frame in the fallback, and system-ui is ~6-9% narrower than Hanken at
+     400-500, so text reflowed when the woff2 landed: the 390px hero subtitle
+     went 4 lines -> 3 and its CTAs jumped 12px (CLS 0.012; 0.002-0.004 wider).
+     These faces reshape local Arial to Hanken's box. size-adjust was tuned on
+     the site's own strings at their real size, weight and tracking: 100% keeps
+     every hero subhead on Hanken's line count at 390 and 1280; the 600-749 face
+     (93%) sits between product names/buttons and the tracked uppercase labels;
+     800-900 headings need 96%. Vertical metrics come from the shipped woff2
+     (UPM 1000, ascent 1000, descent 303, line gap 0), each override divided by
+     size-adjust; the result matches Hanken's ascent/descent exactly at every
+     weight. The weight ranges do not overlap, so nothing is synthetically
+     bolded. No Arial (Android) = local() fails and the stack falls through to
+     system-ui as before. Every stack that names Hanken must carry this family
+     second: cartel.css (x2, !important), cartel-home.css .cl,
+     cartel-conversion.css, gift_card. */
+  @font-face {
+    font-family: 'Hanken Grotesk Fallback';
+    src: local('Arial'), local('ArialMT');
+    font-weight: 100 599;
+    font-display: swap;
+    size-adjust: 100%;
+    ascent-override: 100%;
+    descent-override: 30.3%;
+    line-gap-override: 0%;
+  }
+  @font-face {
+    font-family: 'Hanken Grotesk Fallback';
+    src: local('Arial Bold'), local('Arial-BoldMT');
+    font-weight: 600 749;
+    font-display: swap;
+    size-adjust: 93%;
+    ascent-override: 107.5%;
+    descent-override: 32.6%;
+    line-gap-override: 0%;
+  }
+  @font-face {
+    font-family: 'Hanken Grotesk Fallback';
+    src: local('Arial Bold'), local('Arial-BoldMT');
+    font-weight: 750 1000;
+    font-display: swap;
+    size-adjust: 96%;
+    ascent-override: 104.2%;
+    descent-override: 31.6%;
+    line-gap-override: 0%;
+  }
   :root{
-    --font-body-family:'Hanken Grotesk',system-ui,-apple-system,sans-serif;
-    --font-heading-family:'Hanken Grotesk',system-ui,-apple-system,sans-serif;
+    --font-body-family:'Hanken Grotesk','Hanken Grotesk Fallback',system-ui,-apple-system,sans-serif;
+    --font-heading-family:'Hanken Grotesk','Hanken Grotesk Fallback',system-ui,-apple-system,sans-serif;
     --font-body-style:normal;--font-body-weight:400;--font-body-weight-bold:700;
     --font-heading-style:normal;--font-heading-weight:800;
   }

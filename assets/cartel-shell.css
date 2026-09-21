@@ -398,7 +398,14 @@
   color: rgb(var(--cartel-cream));
 }
 /* socials — 42px circles, bronze fill on hover */
+/* display/flex-wrap restated (2026-09-21), the same fix §12 made for the
+   menu drawer's copy of this list: the only sheet that gives .list-social
+   display:flex is component-list-social.css, which footer.liquid loads with the
+   media="print" onload swap. Until it lands the icons stack vertically, which
+   shows on short pages (empty cart, 404) where the footer is on screen. */
 .footer .footer__list-social.list-social {
+  display: flex;
+  flex-wrap: wrap;
   gap: 1rem;
   margin-top: 2.2rem;
 }
@@ -468,10 +475,27 @@
   opacity: 1;
   color: rgba(var(--cartel-cream), 0.55);
 }
+/* The badge row's resting geometry is restated from component-list-payment.css
+   (deferred, media="print" onload): without it the <ul class="list list-payment">
+   painted as a bulleted, 40px-indented vertical stack until that sheet arrived.
+   Values match what the sheet resolves to once it lands, so nothing moves then:
+   flex row, no indent, padding-top 1rem below 750px and 0 above; margin and
+   justify-content already come from §9b's .footer__payment .list-payment. */
 .footer .list-payment {
+  display: flex;
+  flex-wrap: wrap;
+  list-style: none;
+  padding-left: 0;
   gap: 0.7rem;
 }
+@media screen and (max-width: 749px) {
+  .footer .list-payment {
+    padding-top: 1rem;
+  }
+}
 .footer .list-payment__item {
+  display: flex;
+  align-items: center;
   padding: 0;
 }
 .footer .list-payment__item svg {
@@ -1704,13 +1728,13 @@ product-recommendations {
 
    §9c's scrim is a 96deg gradient: rgba(28,6,13,.9) at 0%, .22 at 62%,
    .03 at 100%. Dark on the left, effectively clear on the right. That
-   works on desktop only because cartel-home.css:84 caps .hero-txt at
+   works on desktop only because cartel-home.css:112 caps .hero-txt at
    660px, so the copy never leaves the dark 55% of the card.
 
-   cartel-home.css:328 drops that cap on mobile (`max-width:none`), so
+   cartel-home.css:370 drops that cap on mobile (`max-width:none`), so
    every line now runs the full width of the card. On an `image_fit:
    contain` slide the plate behind it is .hero-media-prod's #eceae7
-   (cartel-home.css:81), and measured against that plate the tail of the
+   (cartel-home.css:109), and measured against that plate the tail of the
    gradient gives:
 
      scrim .22  ->  h1 1.82:1   sub 1.65:1
@@ -1724,11 +1748,16 @@ product-recommendations {
 
    Scoped to .hero-slide--prod (cartel-hero.liquid emits it for the same
    `fit == 'contain'` test that adds .hero-media-prod) so the three photo
-   slides keep the design's light-touch gradient, and to <=760px so the
-   desktop hero is untouched. Same selector + same specificity as §9c,
-   appended later, so it wins on source order.
+   slides keep the design's light-touch gradient. Same selector + same
+   specificity as §9c, appended later, so it wins on source order.
+
+   2026-09-21: widened from <=760px to <=1100px. The 660px cap only keeps the
+   copy in the dark part of the card when the card is wide: at 820px the card
+   is 740px, the text runs to ~89% of it, and "…for Canadian" sat right across
+   the white bottle at ~1.9-2.3:1. 1100 is the existing hero layout step
+   (cartel-home.css:332), and above it the bottle clears the text column.
    ============================================================ */
-@media screen and (max-width: 760px) {
+@media screen and (max-width: 1100px) {
   .cl .hero-slide--prod::before {
     background: linear-gradient(
       96deg,
@@ -1736,6 +1765,23 @@ product-recommendations {
       rgba(28, 6, 13, 0.8) 38%,
       rgba(28, 6, 13, 0.68) 70%,
       rgba(28, 6, 13, 0.62) 100%
+    );
+  }
+}
+/* Desktop (>1100px) keeps §9c's light right-hand side so the product stays
+   bright, but §9c reaches only ~.42 by the subhead's right end (44% of the
+   card at >=1280px, ~51% at 1101px), about 2.3-3.0:1 against the #eceae7
+   plate. Hold >=.62, the AA value from the table above, through 52%, then
+   fade before most of the bottle (it starts at ~61% of the card). */
+@media screen and (min-width: 1101px) {
+  .cl .hero-slide--prod::before {
+    background: linear-gradient(
+      96deg,
+      rgba(28, 6, 13, 0.9) 0%,
+      rgba(28, 6, 13, 0.74) 30%,
+      rgba(28, 6, 13, 0.62) 52%,
+      rgba(28, 6, 13, 0.12) 72%,
+      rgba(28, 6, 13, 0.03) 100%
     );
   }
 }

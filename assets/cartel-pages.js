@@ -180,7 +180,10 @@
           num.className = 'pol-tocnum';
           num.textContent = i + 1;
           link.appendChild(num);
-          link.appendChild(document.createTextNode(h2.textContent.trim()));
+          /* Same guard as the article TOC (cartel-blog.js): the row has its own
+             number chip, so a hand-numbered heading would read "1  1. …". */
+          var raw = h2.textContent.trim();
+          link.appendChild(document.createTextNode(raw.replace(/^\d{1,2}\s*[.)]\s+/, '') || raw));
           link.addEventListener('click', function () {
             target.scrollIntoView({ behavior: 'smooth', block: 'start' });
           });

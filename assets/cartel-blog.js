@@ -119,7 +119,12 @@
       num.className = 'bl-toc-n';
       num.textContent = String(i + 1).padStart(2, '0');
       a.appendChild(num);
-      a.appendChild(document.createTextNode(h.textContent.trim()));
+      /* The row already carries its own "01" counter, so a heading the writer
+         numbered by hand ("1. Proper full set…") rendered as "01  1. Proper…".
+         Strip that leading number from the LABEL only — the id above is still
+         derived from the full heading text, so existing anchors keep working. */
+      var raw = h.textContent.trim();
+      a.appendChild(document.createTextNode(raw.replace(/^\d{1,2}\s*[.)]\s+/, '') || raw));
       a.addEventListener('click', function (e) {
         e.preventDefault();
         h.scrollIntoView({ behavior: 'smooth', block: 'start' });

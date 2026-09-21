@@ -175,7 +175,9 @@
 .cl .pol-cta .btn-out:hover{background:var(--bord);color:var(--cream);border-color:var(--bord)}
 @media (max-width:1040px){
   .cl .pol-layout{grid-template-columns:1fr;gap:28px}
-  .cl .pol-rail{position:static;flex-direction:row;flex-wrap:wrap;gap:12px}
+  /* align-items:flex-start: the default stretch pulled "Still have questions?"
+     to the nav card's height, leaving it half empty (2026-09-21) */
+  .cl .pol-rail{position:static;flex-direction:row;flex-wrap:wrap;gap:12px;align-items:flex-start}
   .cl .pol-railcard{flex:1 1 260px}
   .cl .pol-toc{display:none}
   .cl .pol-help{flex:1 1 260px}
@@ -184,7 +186,8 @@
 @media (max-width:760px){
   .cl .pol-h1{font-size:36px}
   .cl .pol-intro{font-size:16px}
-  .cl .pol-rail{flex-direction:column}
+  /* back to a column: stretch again, or flex-start above shrinks the cards */
+  .cl .pol-rail{flex-direction:column;align-items:stretch}
   .cl .pol-railcard,.cl .pol-help{flex:1 1 auto}
   .cl .pol-summary{padding:20px}
   .cl .pol-sec-t{font-size:20px}

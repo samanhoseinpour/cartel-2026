@@ -12,10 +12,10 @@
 }
 /* Type — Hanken Grotesk everywhere (works even if the theme font picker lacks it) */
 body, .button, button, input, select, textarea, .price, .cart-item, summary{
-  font-family:'Hanken Grotesk', system-ui, -apple-system, sans-serif !important;
+  font-family:'Hanken Grotesk', 'Hanken Grotesk Fallback', system-ui, -apple-system, sans-serif !important;
 }
 h1,h2,h3,h4,h5,.h0,.h1,.h2,.h3,.h4,.h5{
-  font-family:'Hanken Grotesk', system-ui, sans-serif !important;
+  font-family:'Hanken Grotesk', 'Hanken Grotesk Fallback', system-ui, sans-serif !important;
   font-weight:800; letter-spacing:-.03em;
 }
 h1,.h0,.h1{ font-weight:900; letter-spacing:-.04em; }
