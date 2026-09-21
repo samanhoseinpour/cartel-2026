@@ -234,7 +234,9 @@
 @media (max-width:1040px){
   .cl .bl-grid{grid-template-columns:1fr 1fr}
   .cl .bl-art-layout{grid-template-columns:1fr;gap:30px;max-width:720px}
-  .cl .bl-art-rail{position:static;flex-direction:row;flex-wrap:wrap;gap:14px}
+  /* align-items:flex-start: in this wrapping row the default stretch pulled the
+     Share card to the TOC card's height, a ~300px empty greige box (2026-09-21) */
+  .cl .bl-art-rail{position:static;flex-direction:row;flex-wrap:wrap;gap:14px;align-items:flex-start}
   .cl .bl-toc-card{flex:1 1 300px}
   .cl .bl-share-card{flex:1 1 200px}
   .cl .bl-art-body{max-width:none}
@@ -252,7 +254,8 @@
   .cl .bl-h2{font-size:23px}
   .cl .bl-quote p{font-size:20px}
   .cl .bl-art-by{flex-wrap:wrap;justify-content:center}
-  .cl .bl-art-rail{flex-direction:column}
+  /* back to a column: stretch again, or flex-start above shrinks the cards */
+  .cl .bl-art-rail{flex-direction:column;align-items:stretch}
   .cl .bl-toc-card,.cl .bl-share-card{flex:1 1 auto}
 }
 
