@@ -1768,6 +1768,23 @@ product-recommendations {
     );
   }
 }
+/* Desktop (>1100px) keeps §9c's light right-hand side so the product stays
+   bright, but §9c reaches only ~.42 by the subhead's right end (44% of the
+   card at >=1280px, ~51% at 1101px), about 2.3-3.0:1 against the #eceae7
+   plate. Hold >=.62, the AA value from the table above, through 52%, then
+   fade before most of the bottle (it starts at ~61% of the card). */
+@media screen and (min-width: 1101px) {
+  .cl .hero-slide--prod::before {
+    background: linear-gradient(
+      96deg,
+      rgba(28, 6, 13, 0.9) 0%,
+      rgba(28, 6, 13, 0.74) 30%,
+      rgba(28, 6, 13, 0.62) 52%,
+      rgba(28, 6, 13, 0.12) 72%,
+      rgba(28, 6, 13, 0.03) 100%
+    );
+  }
+}
 
 /* ============================================================
    18. THE MOBILE GUTTER SPLIT (2026-08-30)
