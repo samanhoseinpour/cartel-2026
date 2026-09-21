@@ -1183,6 +1183,16 @@
     padding: 13px 16px;
   }
 }
+/* 2026-09-21: on 320px phones the field was 118px wide and even the short
+   phone placeholder ("Search products", swapped in by cartel-nav.js) needs
+   ~124px at 17px. Narrower side gutters on the overlay give the panel back
+   16px (field ~134px). Longhands, so the 11vh top offset is untouched. */
+@media (max-width: 359px) {
+  .header__search .search-modal.modal__content {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+}
 
 /* ----- 11f. 404 PAGE (reported: not centered + UI issues). The block
    sat at a fixed 96px from the header with a dead sea of cream under the
