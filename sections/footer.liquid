@@ -359,6 +359,20 @@
             {%- endfor -%}
           </ul>
         {%- endif -%}
+        {%- comment -%}
+          Agency credit. Last in the column so it keeps its own line under the ©
+          (display:block, cartel.css) whether or not the policy links render.
+        {%- endcomment -%}
+        <small class="footer__credit">
+          <a
+            href="https://www.perseustudio.com/"
+            target="_blank"
+            rel="noopener"
+            aria-describedby="a11y-new-window-message"
+          >
+            Powered by Perseus Creative Studio
+          </a>
+        </small>
       </div>
       <div class="footer__column footer__localization isolate">
         {%- if section.settings.enable_country_selector and localization.available_countries.size > 1 -%}
