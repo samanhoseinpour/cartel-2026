@@ -157,12 +157,31 @@
     "trust": {
       "type": "cartel-trust",
       "blocks": {
+        "item_zmAFVm": {
+          "type": "item",
+          "settings": {
+            "icon": "lock",
+            "title": "Duties included",
+            "sub": "No surprise fees",
+            "market_visibility": "us"
+          }
+        },
+        "item_DB4xQH": {
+          "type": "item",
+          "settings": {
+            "icon": "truck",
+            "title": "Free shipping $150+",
+            "sub": "$9.99 flat rate under",
+            "market_visibility": "us"
+          }
+        },
         "t1": {
           "type": "item",
           "settings": {
             "icon": "truck",
             "title": "Free shipping $150+",
-            "sub": "Across Canada"
+            "sub": "Across Canada",
+            "market_visibility": "ca"
           }
         },
         "t2": {
@@ -170,7 +189,8 @@
           "settings": {
             "icon": "pin",
             "title": "Local pick-up",
-            "sub": "West Van + Burnaby"
+            "sub": "West Van + Burnaby",
+            "market_visibility": "ca"
           }
         },
         "t3": {
@@ -178,7 +198,8 @@
           "settings": {
             "icon": "star",
             "title": "Industry Leading Brands",
-            "sub": "Professional favourites"
+            "sub": "Professional favourites",
+            "market_visibility": "all"
           }
         },
         "t4": {
@@ -186,11 +207,14 @@
           "settings": {
             "icon": "clock",
             "title": "Fast dispatch",
-            "sub": "Out in 1–2 days"
+            "sub": "Out in 1–2 days",
+            "market_visibility": "all"
           }
         }
       },
       "block_order": [
+        "item_zmAFVm",
+        "item_DB4xQH",
         "t1",
         "t2",
         "t3",
