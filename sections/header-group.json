@@ -14,29 +14,50 @@
     "announcement-bar": {
       "type": "announcement-bar",
       "blocks": {
+        "announcement_JHG7DP": {
+          "type": "announcement",
+          "settings": {
+            "text": "No duties or surprise fees at delivery",
+            "link": "",
+            "market_visibility": "us"
+          }
+        },
+        "announcement_WqVQPK": {
+          "type": "announcement",
+          "settings": {
+            "text": "$9.99 flat-rate US shipping · Free over $150USD",
+            "link": "",
+            "market_visibility": "us"
+          }
+        },
         "ann-shipping": {
           "type": "announcement",
           "settings": {
             "text": "Free shipping on Canadian orders over $150",
-            "link": ""
+            "link": "",
+            "market_visibility": "ca"
           }
         },
         "ann-pickup": {
           "type": "announcement",
           "settings": {
             "text": "Local pick-up available, West Vancouver + Burnaby",
-            "link": ""
+            "link": "",
+            "market_visibility": "ca"
           }
         },
         "ann-thuya": {
           "type": "announcement",
           "settings": {
             "text": "Log in to unlock pricing on Thuya professional products",
-            "link": ""
+            "link": "",
+            "market_visibility": "all"
           }
         }
       },
       "block_order": [
+        "announcement_JHG7DP",
+        "announcement_WqVQPK",
         "ann-shipping",
         "ann-pickup",
         "ann-thuya"
