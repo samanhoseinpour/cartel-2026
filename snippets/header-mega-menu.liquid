@@ -8,6 +8,7 @@
 <nav class="header__inline-menu">
   <ul class="list-menu list-menu--inline" role="list">
     {%- for link in section.settings.menu.links -%}
+      {%- if link.type == 'collection_link' and link.object.products_count == 0 -%}{%- continue -%}{%- endif -%}
       <li>
         {%- if link.links != blank -%}
           <header-menu>
@@ -36,6 +37,7 @@
                   role="list"
                 >
                   {%- for childlink in link.links -%}
+                    {%- if childlink.type == 'collection_link' and childlink.object.products_count == 0 -%}{%- continue -%}{%- endif -%}
                     <li>
                       <a
                         id="HeaderMenu-{{ link.handle }}-{{ childlink.handle }}"
@@ -50,6 +52,7 @@
                       {%- if childlink.links != blank -%}
                         <ul class="list-unstyled" role="list">
                           {%- for grandchildlink in childlink.links -%}
+                            {%- if grandchildlink.type == 'collection_link' and grandchildlink.object.products_count == 0 -%}{%- continue -%}{%- endif -%}
                             <li>
                               <a
                                 id="HeaderMenu-{{ link.handle }}-{{ childlink.handle }}-{{ grandchildlink.handle }}"
