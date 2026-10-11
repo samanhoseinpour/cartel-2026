@@ -755,9 +755,14 @@
               show_pickup_availability: true,
               pickup_only: true
             -%}
-            <div class="p-perks">
-              <div class="perk"><b>FREE shipping</b> in Canada over $150</div>
-              <div class="perk"><b>Local pick-up</b> West Vancouver + Burnaby</div>
+             <div class="p-perks">
+              {%- if localization.country.iso_code == 'US' -%}
+                <div class="perk"><b>FREE shipping</b> on US orders over $150 USD</div>
+                <div class="perk"><b>Duties included</b> no surprise fees at delivery</div>
+              {%- else -%}
+                <div class="perk"><b>FREE shipping</b> in Canada over $150</div>
+                <div class="perk"><b>Local pick-up</b> West Vancouver + Burnaby</div>
+              {%- endif -%}
               <div class="perk"><b>100% authentic</b> pro stock, direct from the brands</div>
             </div>
 
@@ -861,9 +866,15 @@
                   <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><path d="M6 9.5l6 6 6-6"></path></svg>
                 </summary>
                 <div class="acc-b">
-                  Dispatched within 48 hours from Vancouver. Free shipping on Canadian orders over
-                  $150, flat-rate otherwise. Local pick-up in West Vancouver and Burnaby. Unopened
-                  trays can be returned within 30 days.
+                                    {%- if localization.country.iso_code == 'US' -%}
+                    Dispatched within 48 hours. $9.99 flat-rate US shipping, free on orders over
+                    $150 USD. Duties and import fees are included, so there's nothing extra to pay
+                    at delivery. Unopened trays can be returned within 30 days.
+                  {%- else -%}
+                    Dispatched within 48 hours from Vancouver. Free shipping on Canadian orders over
+                    $150, flat-rate otherwise. Local pick-up in West Vancouver and Burnaby. Unopened
+                    trays can be returned within 30 days.
+                  {%- endif -%}
                 </div>
               </details>
             </div>
