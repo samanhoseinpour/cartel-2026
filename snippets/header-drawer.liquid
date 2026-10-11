@@ -22,8 +22,9 @@
           <nav class="menu-drawer__navigation">
             <ul class="menu-drawer__menu has-submenu list-menu" role="list">
               {%- for link in section.settings.menu.links -%}
+                {%- if link.type == 'collection_link' and link.object.products_count == 0 -%}{%- continue -%}{%- endif -%}
                 <li>
-                  {%- if link.links != blank -%}
+                {%- if link.links != blank -%}
                     <details id="Details-menu-drawer-menu-item-{{ forloop.index }}">
                       <summary
                         id="HeaderDrawer-{{ link.handle }}"
@@ -51,6 +52,7 @@
                           </button>
                           <ul class="menu-drawer__menu list-menu" role="list" tabindex="-1">
                             {%- for childlink in link.links -%}
+                              {%- if childlink.type == 'collection_link' and childlink.object.products_count == 0 -%}{%- continue -%}{%- endif -%}
                               <li>
                                 {%- if childlink.links == blank -%}
                                   <a
@@ -96,6 +98,7 @@
                                         tabindex="-1"
                                       >
                                         {%- for grandchildlink in childlink.links -%}
+                                        {%- if grandchildlink.type == 'collection_link' and grandchildlink.object.products_count == 0 -%}{%- continue -%}{%- endif -%}
                                           <li>
                                             <a
                                               id="HeaderDrawer-{{ link.handle }}-{{ childlink.handle }}-{{ grandchildlink.handle }}"
