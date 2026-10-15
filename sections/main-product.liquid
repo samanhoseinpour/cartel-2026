@@ -748,17 +748,19 @@
             {%- endfor -%}
 
             {%- comment -%} Cartel: pickup card (dynamic, styled as .p-pickup) + static perks {%- endcomment -%}
-            {%- render 'buy-buttons',
-              product: product,
-              product_form_id: product_form_id,
-              section_id: section.id,
-              show_pickup_availability: true,
-              pickup_only: true
-            -%}
+            {%- if localization.country.iso_code != 'US' -%}
+              {%- render 'buy-buttons',
+                product: product,
+                product_form_id: product_form_id,
+                section_id: section.id,
+                show_pickup_availability: true,
+                pickup_only: true
+              -%}
+            {%- endif -%}
              <div class="p-perks">
               {%- if localization.country.iso_code == 'US' -%}
-                <div class="perk"><b>FREE shipping</b> on US orders over $150 USD</div>
-                <div class="perk"><b>Duties included</b> no surprise fees at delivery</div>
+                <div class="perk"><b>FREE shipping</b> on US orders over $120 USD</div>               
+               <div class="perk"><b>Duties included</b> no surprise fees at delivery</div>
               {%- else -%}
                 <div class="perk"><b>FREE shipping</b> in Canada over $150</div>
                 <div class="perk"><b>Local pick-up</b> West Vancouver + Burnaby</div>
@@ -868,7 +870,7 @@
                 <div class="acc-b">
                                     {%- if localization.country.iso_code == 'US' -%}
                     Dispatched within 48 hours. $9.99 flat-rate US shipping, free on orders over
-                    $150 USD. Duties and import fees are included, so there's nothing extra to pay
+                    $120 USD. Duties and import fees are included, so there's nothing extra to pay
                     at delivery. Unopened trays can be returned within 30 days.
                   {%- else -%}
                     Dispatched within 48 hours from Vancouver. Free shipping on Canadian orders over
