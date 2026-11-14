@@ -55,9 +55,9 @@
   </div>
   {%- if p.vendor != blank -%}<span class="pbrand">{{ p.vendor }}</span>{%- endif -%}
   <a class="plink" href="{{ p.url }}"><h3 class="pname">{{ p.title | default: 'Product name' | escape }}</h3></a>
-  {%- unless v.title == 'Default Title' or v.title == blank -%}
-    <span class="pvar">{{ v.title }}</span>
-  {%- endunless -%}
+  {%- if p.variants_count > 1 -%}
+    <span class="pvar">{{ p.variants_count }} options available</span>
+  {%- endif -%}
   <div class="prow">
     {%- if gated -%}
       <span class="plock">
