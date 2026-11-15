@@ -73,6 +73,19 @@
             "image_fit": "photo"
           }
         },
+        "brand_P9kiUF": {
+          "type": "brand",
+          "settings": {
+            "collection": "salon-jieun",
+            "accent": "bx-blush",
+            "badge": "Korean lash lift",
+            "eyebrow": "Salon Jieun · Korea",
+            "blurb": "Pro favourites from Seoul: Dream Rods, Super Mix, Shu Cream Conditioner and the Returning Buffer for healthy, glossy lifts.",
+            "specs": "",
+            "image": "shopify://shop_images/Salon_Jieun_Logo.png",
+            "image_fit": "photo"
+          }
+        },
         "linger": {
           "type": "brand",
           "settings": {
@@ -104,6 +117,7 @@
         "noemi",
         "cartel",
         "brand_rL3MAd",
+        "brand_P9kiUF",
         "linger",
         "prolong"
       ],
