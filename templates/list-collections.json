@@ -60,6 +60,18 @@
             "image_fit": "logo"
           }
         },
+        "brand_rL3MAd": {
+          "type": "brand",
+          "settings": {
+            "collection": "early",
+            "accent": "bx-sage",
+            "badge": "Korean Lash Lift",
+            "eyebrow": "Early · Korean Lash Lift",
+            "blurb": "",
+            "specs": "",
+            "image_fit": "photo"
+          }
+        },
         "linger": {
           "type": "brand",
           "settings": {
@@ -90,6 +102,7 @@
         "bronsun",
         "noemi",
         "cartel",
+        "brand_rL3MAd",
         "linger",
         "prolong"
       ],
