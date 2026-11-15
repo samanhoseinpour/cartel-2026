@@ -77,7 +77,7 @@
         "mobile_thumbnails": "show",
         "media_position": "left",
         "image_zoom": "lightbox",
-        "hide_variants": true,
+        "hide_variants": false,
         "enable_video_looping": false,
         "padding_top": 0,
         "padding_bottom": 0
@@ -86,8 +86,10 @@
     "related-products": {
       "type": "related-products",
       "settings": {
+        "kicker": "Complete the kit",
         "heading": "You may also like",
         "products_to_show": 4,
+        "exclude_collections": "all, frontpage, best-sellers, best-selling-collection, new-collection, clearance",
         "color_scheme": "background-1",
         "padding_top": 88,
         "padding_bottom": 0
