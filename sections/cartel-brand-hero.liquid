@@ -4,14 +4,20 @@
   product grid, and this lane only owns this section file):
     - "hero"  : breadcrumbs + .btabs brand switcher + .bhead themed panel
                 (logo lockup or wordmark, tagline, Thuya gate note) + .bchip row
-    - "story" : .bwhy "why pros choose" band + .bcross cross-brand CTA
+    - "story" : .bwhy "why pros choose" band + .bfaq brand FAQ + .bcross cross-brand CTA
   collection.brand.json runs: hero → main-collection-product-grid → story.
-
+ 
   Collection metafields:
     custom.brand_logo (file)  — logo lockup, falls back to the wordmark
     custom.tagline (text)     — .bhead-tag, falls back to the description text
     custom.theme_key (text)   — bronsun|noemi|thuya|linger|cartel|prolong panel themes
     custom.gated (boolean)    — trade-line note (fallback: title is "Thuya")
+    custom.why_1_title … custom.why_3_title (text) — why-band points; when
+      why_1_title is set, the points come from metafields instead of the blocks
+    custom.why_1_text … custom.why_3_text (text)   — why-band point copy
+    custom.why_image (file)   — why-band image, falls back to the section image
+    custom.faq_1_q / faq_1_a … faq_6_q / faq_6_a  — brand FAQ, rendered as
+      <details> + FAQPage JSON-LD. Hidden when no questions are set.
 {% endcomment %}
 {%- liquid
   assign tk = collection.metafields.custom.theme_key.value | downcase | strip
@@ -20,7 +26,7 @@
     when 'bronsun', 'noemi', 'thuya', 'linger', 'cartel', 'prolong'
       assign theme_class = tk
   endcase
-
+ 
   # Test that the metafield EXISTS, not that it is truthy. `gated_mf != blank`
   # delegates blank? to the value, so a boolean set to false read as "not set"
   # and fell through to the title fallback — a collection called "Thuya" could
@@ -34,7 +40,7 @@
     assign gated = true
   endif
 -%}
-
+ 
 {%- if section.settings.mode == 'hero' -%}
   {%- liquid
     assign logo = collection.metafields.custom.brand_logo.value
@@ -48,7 +54,7 @@
     else
       assign tagline = collection.description | strip_html | truncate: 180
     endif
-
+ 
     assign tab_count = 0
     assign chip_count = 0
     for block in section.blocks
@@ -61,7 +67,7 @@
   -%}
   <div class="cl">
     <section class="wrap">{% render 'cartel-breadcrumbs' %}</section>
-
+ 
     {%- if tab_count > 0 -%}
       <section class="wrap btabs-wrap">
         <div class="btabs">
@@ -89,7 +95,7 @@
         </div>
       </section>
     {%- endif -%}
-
+ 
     <section class="wrap">
       <div class="bhead {{ theme_class }}">
         {%- if logo -%}
@@ -110,7 +116,7 @@
         {%- endif -%}
       </div>
     </section>
-
+ 
     {%- if chip_count > 0 -%}
       <section class="wrap bsubnav-wrap">
         <div class="bsubnav">
@@ -127,14 +133,37 @@
       </section>
     {%- endif -%}
   </div>
-
+ 
 {%- else -%}
-
+ 
   {%- liquid
     assign heading = section.settings.why_heading
     if heading == blank
       assign heading = 'Why pros choose ' | append: collection.title
     endif
+ 
+    assign mf = collection.metafields.custom
+ 
+    # Brand-specific points win when the collection has them; otherwise the
+    # section's own point blocks render, so brands without metafields are unchanged.
+    assign use_mf_points = false
+    if mf.why_1_title.value != blank
+      assign use_mf_points = true
+    endif
+ 
+    assign why_img = mf.why_image.value
+    if why_img == blank
+      assign why_img = section.settings.why_image
+    endif
+ 
+    assign faq_count = 0
+    for i in (1..6)
+      assign q_key = 'faq_' | append: i | append: '_q'
+      assign a_key = 'faq_' | append: i | append: '_a'
+      if mf[q_key].value != blank and mf[a_key].value != blank
+        assign faq_count = faq_count | plus: 1
+      endif
+    endfor
   -%}
   <div class="cl">
     <section class="wrap bpage">
@@ -143,22 +172,44 @@
           <span class="bkick">{{ section.settings.why_kick | escape }}</span>
           <h2 class="bwhy-h">{{ heading | escape }}</h2>
           <div class="bwhy-points">
-            {%- for block in section.blocks -%}
-              {%- if block.type == 'point' -%}
-                <div class="bwhy-pt" {{ block.shopify_attributes }}>
-                  <div class="bwhy-dot"></div>
-                  <div>
-                    <div class="bwhy-t">{{ block.settings.title | escape }}</div>
-                    <div class="bwhy-s">{{ block.settings.text | escape }}</div>
+            {%- if use_mf_points -%}
+              {%- for i in (1..3) -%}
+                {%- liquid
+                  assign t_key = 'why_' | append: i | append: '_title'
+                  assign s_key = 'why_' | append: i | append: '_text'
+                  assign pt_t = mf[t_key].value
+                  assign pt_s = mf[s_key].value
+                -%}
+                {%- if pt_t != blank -%}
+                  <div class="bwhy-pt">
+                    <div class="bwhy-dot"></div>
+                    <div>
+                      <div class="bwhy-t">{{ pt_t | escape }}</div>
+                      {%- if pt_s != blank -%}
+                        <div class="bwhy-s">{{ pt_s | escape }}</div>
+                      {%- endif -%}
+                    </div>
                   </div>
-                </div>
-              {%- endif -%}
-            {%- endfor -%}
+                {%- endif -%}
+              {%- endfor -%}
+            {%- else -%}
+              {%- for block in section.blocks -%}
+                {%- if block.type == 'point' -%}
+                  <div class="bwhy-pt" {{ block.shopify_attributes }}>
+                    <div class="bwhy-dot"></div>
+                    <div>
+                      <div class="bwhy-t">{{ block.settings.title | escape }}</div>
+                      <div class="bwhy-s">{{ block.settings.text | escape }}</div>
+                    </div>
+                  </div>
+                {%- endif -%}
+              {%- endfor -%}
+            {%- endif -%}
           </div>
         </div>
         <div class="bwhy-r">
-          {%- if section.settings.why_image -%}
-            {{ section.settings.why_image | image_url: width: 900 | image_tag: class: 'bwhy-img', widths: '450,675,900', alt: heading }}
+          {%- if why_img != blank -%}
+            {{ why_img | image_url: width: 900 | image_tag: class: 'bwhy-img', widths: '450,675,900', alt: heading }}
           {%- else -%}
             <div class="bwhy-ph bcard-ph">
               {%- if settings.logo -%}
@@ -169,7 +220,57 @@
           {%- endif -%}
         </div>
       </div>
-
+ 
+      {%- if faq_count > 0 -%}
+        <div class="bfaq">
+          <span class="bkick">FAQ</span>
+          <h2 class="bfaq-h">{{ collection.title | escape }} questions, answered</h2>
+          <div class="bfaq-list">
+            {%- for i in (1..6) -%}
+              {%- liquid
+                assign q_key = 'faq_' | append: i | append: '_q'
+                assign a_key = 'faq_' | append: i | append: '_a'
+                assign fq = mf[q_key].value
+                assign fa = mf[a_key].value
+              -%}
+              {%- if fq != blank and fa != blank -%}
+                <details class="bfaq-item">
+                  <summary class="bfaq-q">{{ fq | escape }}</summary>
+                  <div class="bfaq-a">{{ fa | escape | newline_to_br }}</div>
+                </details>
+              {%- endif -%}
+            {%- endfor -%}
+          </div>
+        </div>
+ 
+        <script type="application/ld+json">
+          {
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": [
+              {%- assign faq_printed = 0 -%}
+              {%- for i in (1..6) -%}
+                {%- liquid
+                  assign q_key = 'faq_' | append: i | append: '_q'
+                  assign a_key = 'faq_' | append: i | append: '_a'
+                  assign fq = mf[q_key].value
+                  assign fa = mf[a_key].value
+                -%}
+                {%- if fq != blank and fa != blank -%}
+                  {%- if faq_printed > 0 -%},{%- endif -%}
+                  {
+                    "@type": "Question",
+                    "name": {{ fq | json }},
+                    "acceptedAnswer": { "@type": "Answer", "text": {{ fa | json }} }
+                  }
+                  {%- assign faq_printed = faq_printed | plus: 1 -%}
+                {%- endif -%}
+              {%- endfor -%}
+            ]
+          }
+        </script>
+      {%- endif -%}
+ 
       {%- if section.settings.cross_heading != blank -%}
         <div class="bcross">
           <div>
@@ -183,8 +284,31 @@
       {%- endif -%}
     </section>
   </div>
+ 
+  {%- if faq_count > 0 -%}
+    <style>
+      .bfaq { margin-top: 48px; max-width: 820px; }
+      .bfaq-h { margin: 8px 0 20px; }
+      .bfaq-list { border-top: 1px solid rgba(0, 0, 0, 0.12); }
+      .bfaq-item { border-bottom: 1px solid rgba(0, 0, 0, 0.12); }
+      .bfaq-q {
+        cursor: pointer;
+        list-style: none;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        padding: 18px 0;
+        font-weight: 600;
+      }
+      .bfaq-q::-webkit-details-marker { display: none; }
+      .bfaq-q::after { content: '+'; font-size: 1.4em; line-height: 1; opacity: 0.6; }
+      .bfaq-item[open] .bfaq-q::after { content: '\2212'; }
+      .bfaq-a { padding: 0 0 20px; opacity: 0.85; line-height: 1.6; }
+    </style>
+  {%- endif -%}
 {%- endif -%}
-
+ 
 {% schema %}
 {
   "name": "Cartel brand bands",
@@ -208,6 +332,10 @@
     },
     { "type": "header", "content": "Story band" },
     {
+      "type": "paragraph",
+      "content": "Brands with 'Why point' and 'FAQ' metafields filled in use those automatically. The point blocks below are the fallback for brands without them."
+    },
+    {
       "type": "text",
       "id": "why_kick",
       "label": "Why-band eyebrow",
@@ -222,7 +350,8 @@
     {
       "type": "image_picker",
       "id": "why_image",
-      "label": "Why-band image"
+      "label": "Why-band image",
+      "info": "Fallback. A brand's 'Why image' metafield is used first."
     },
     {
       "type": "text",
@@ -277,7 +406,7 @@
       "name": "Story: point",
       "settings": [
         { "type": "text", "id": "title", "label": "Title", "default": "Point title" },
-        { "type": "textarea", "id": "text", "label": "Text", "default": "A line or two on what makes this brand worth the chair time." }
+        { "type": "text", "id": "text", "label": "Text", "default": "A line or two on what makes this brand worth the chair time." }
       ]
     }
   ],
@@ -298,3 +427,4 @@
   ]
 }
 {% endschema %}
+ 
