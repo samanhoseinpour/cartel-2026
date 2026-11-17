@@ -36,7 +36,7 @@
         "point-1": {
           "type": "point",
           "settings": {
-            "title": "Made for working artists",
+            "title": "{{ collection.metafields.custom.why_1_title.value }}",
             "text": "Professional lash essentials thoughtfully developed to make everyday lashing simpler and more seamless."
           }
         },
@@ -65,7 +65,7 @@
         "tabs_label": "Shop by brand",
         "why_kick": "The line",
         "why_heading": "",
-        "why_image": "shopify://shop_images/CashmereDreamLashTrays-0.07.avif",
+        "why_image": "shopify://shop_images/ThuyaBrowLaminationKit.avif",
         "cross_kick": "Keep exploring",
         "cross_heading": "",
         "cross_label": "View the line",
