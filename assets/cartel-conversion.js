@@ -101,7 +101,9 @@
     document.removeEventListener('mouseout', onExitIntent);
   }
 
-  function open() {
+  /* fromUser: the offer-tab click passes its event (truthy); autoOpen() and the success
+     reopen pass nothing. */
+  function open(fromUser) {
     if (!ov || isOpen()) return;
     cancelAuto();
     warmImage();
@@ -125,7 +127,12 @@
        <body> and nothing for the focus trap to hold. Pick what is actually
        rendered, keeping the input's precedence on the normal path (the close X
        is earlier in the DOM, so document order alone would flip it). */
-    const first = isRendered(popInput()) ? popInput() : ov.querySelector('[data-popup-close]');
+    /* 2026-11-18: an UNPROMPTED open focuses the close X (cartel-email-popup.liquid:17, outside
+       the customer form). Focusing .pop-input is a focusin on a form_type=customer form, which
+       is the trigger for Shopify's form-captcha loader: the 12s auto-open was pulling ~1MB of
+       hCaptcha (plus long tasks) into every visit nobody touched. Captcha still loads, and
+       still protects the form, the moment a shopper focuses the field. */
+    const first = fromUser && isRendered(popInput()) ? popInput() : ov.querySelector('[data-popup-close]');
     if (first) first.focus();
   }
 
