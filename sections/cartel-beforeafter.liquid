@@ -44,7 +44,7 @@
           {% unless forloop.first %}inert aria-hidden="true"{% endunless %}
           {{ block.shopify_attributes }}
         >
-          <div class="ba-layer">
+          <div class="ba-layer{% if block.settings.after != blank %} lqip{% endif %}" style="{% render 'cartel-lqip', image: block.settings.after %}">
             {%- if block.settings.after != blank -%}
               {{
                 block.settings.after
@@ -58,7 +58,7 @@
             {%- endif -%}
             <span class="ba-tag ba-tagr">{{ section.settings.after_label }}</span>
           </div>
-          <div class="ba-layer ba-before" style="clip-path:inset(0 50% 0 0)">
+          <div class="ba-layer ba-before{% if block.settings.before != blank %} lqip{% endif %}" style="clip-path:inset(0 50% 0 0);{% render 'cartel-lqip', image: block.settings.before %}">
             {%- if block.settings.before != blank -%}
               {{
                 block.settings.before

@@ -20,7 +20,7 @@
     <div class="resgrid">
       {%- for block in section.blocks -%}
         <a class="rescard" href="{{ block.settings.link | default: '/pages/free-resources' }}" {{ block.shopify_attributes }}>
-          <div class="res-img">
+          <div class="res-img{% if block.settings.image != blank %} lqip{% endif %}" style="{% render 'cartel-lqip', image: block.settings.image %}">
             {%- if block.settings.tag != blank -%}<span class="res-tag">{{ block.settings.tag }}</span>{%- endif -%}
             {%- if block.settings.image != blank -%}
               {%- comment -%}

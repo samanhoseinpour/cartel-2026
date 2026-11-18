@@ -76,7 +76,7 @@
   endif
 -%}
 <article class="bl-card">
-  <div class="bl-card-img">
+  <div class="bl-card-img{% if article.image %} lqip{% endif %}" style="{% render 'cartel-lqip', image: article.image %}">
     {%- if show_cat_pill -%}<span class="bl-card-cat">{{ cat_label }}</span>{%- endif -%}
     <a href="{{ article.url }}" aria-label="{{ article.title | escape }}" tabindex="-1">
       {%- if article.image -%}

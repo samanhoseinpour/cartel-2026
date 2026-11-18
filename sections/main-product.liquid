@@ -918,7 +918,7 @@
         <div class="sec">
           <div class="pfeat{% if cl_feature_image == blank %} pfeat--noimg{% endif %}">
             {%- if cl_feature_image != blank -%}
-              <div class="pfeat-img">
+              <div class="pfeat-img lqip" style="{% render 'cartel-lqip', image: cl_feature_image %}">
                 {{ cl_feature_image | image_url: width: 1400 | image_tag: loading: 'lazy', class: 'pfeat-photo', alt: cl_feat_title }}
               </div>
             {%- endif -%}
@@ -957,11 +957,11 @@
             </div>
           </div>
           <div class="cmp" id="CartelCmp-{{ section.id }}">
-            <div class="cmp-layer">
+            <div class="cmp-layer lqip" style="{% render 'cartel-lqip', image: cl_cmp_after %}">
               {{ cl_cmp_after | image_url: width: 1600 | image_tag: loading: 'lazy', class: 'cmp-photo', alt: 'After' }}
               <span class="cmp-tag cmp-tagr">After</span>
             </div>
-            <div class="cmp-layer cmp-before">
+            <div class="cmp-layer cmp-before lqip" style="{% render 'cartel-lqip', image: cl_cmp_before %}">
               {{ cl_cmp_before | image_url: width: 1600 | image_tag: loading: 'lazy', class: 'cmp-photo', alt: 'Before' }}
               <span class="cmp-tag cmp-tagl">Before</span>
             </div>
