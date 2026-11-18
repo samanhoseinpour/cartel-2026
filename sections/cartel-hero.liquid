@@ -151,10 +151,11 @@
               <span class="hero-eyebrow"><span class="dot"></span>{{ block.settings.eyebrow }}</span>
             {%- endif -%}
             {%- if block.settings.heading != blank -%}
-              <h1 class="h-hero">
+              {%- comment -%} h2: the header logo is the homepage H1 (SEO audit 2026-11-18). {%- endcomment -%}
+              <h2 class="h-hero">
                 {{- block.settings.heading | strip -}}
                 {%- if block.settings.heading_accent != blank %} <span class="hero-accent">{{ block.settings.heading_accent }}</span>{% endif -%}
-              </h1>
+              </h2>
             {%- endif -%}
             {%- if block.settings.sub != blank -%}<p class="hero-sub">{{ block.settings.sub }}</p>{%- endif -%}
             <div class="hero-cta">
