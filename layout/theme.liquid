@@ -89,7 +89,7 @@
         (all 65 in the import), so appending the store name only buys truncation.
         Every other template still gets the suffix.
       {%- endcomment -%}
-      {%- unless cl_title contains shop.name or template.name == 'product' %} &ndash; {{ shop.name }}{% endunless -%}
+      {%- unless cl_title contains shop.name or template.name == 'product' %} | {{ shop.name }}{% endunless -%}
     </title>
 
     {%- comment -%}
