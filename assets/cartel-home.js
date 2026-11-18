@@ -9,11 +9,14 @@
 
   /* Later hero slides and every reel ship their poster as data-poster (cartel-hero /
      cartel-reels .liquid): a poster attribute can't be lazy-loaded, so those images were
-     downloading next to the LCP image. This puts it back once the video is about to show. */
+     downloading next to the LCP image. This puts it back once the video is about to show.
+     Hero videos also carry data-poster-sm, the 1100w still for the hero's phone layout. */
   function warmPoster(v) {
     if (v && v.dataset.poster) {
-      v.poster = v.dataset.poster;
+      var sm = v.dataset.posterSm;
+      v.poster = sm && window.matchMedia('(max-width: 760px)').matches ? sm : v.dataset.poster;
       v.removeAttribute('data-poster');
+      v.removeAttribute('data-poster-sm');
     }
   }
 
@@ -146,9 +149,12 @@
         dot.classList.toggle('on', n === i);
         var f = dot.querySelector('.hero-fill');
         if (!f) return;
+        var restart = f.classList.contains('go');
         f.classList.remove('go', 'pz');
-        void f.offsetWidth;
         if (n === i && !RM) {
+          /* Only re-activating the running slide needs the reflow to restart its fill;
+             forcing it on every dot made the first activation a forced layout (PSI). */
+          if (restart) void f.offsetWidth;
           f.style.animationDuration = d / 1000 + 's';
           f.classList.add('go');
           if (self.paused) f.classList.add('pz');

@@ -59,9 +59,9 @@
       is ever rendered in Assistant, so warming that connection (and the
       @font-face + preload blocks that used to sit below) only stole bandwidth
       from the request that actually paints text.
-      Hanken Grotesk is now self-hosted: cartel-fonts.liquid declares it and
-      carries its own `rel=preload` for the latin woff2, so there is no
-      third-party origin left in front of the first painted glyph.
+      Hanken Grotesk is now self-hosted: cartel-fonts.liquid declares it, so
+      there is no third-party origin left in front of the first painted glyph.
+      It is deliberately not preloaded (see that snippet).
     {%- endcomment -%}
 
     <title>
@@ -497,10 +497,9 @@
       family it never paints, inside the LCP window, on every page, competing
       with the Hanken Grotesk request that does.
 
-      Hanken IS now self-hosted, but its preload lives in cartel-fonts.liquid
-      rather than here: that snippet renders immediately before base.css, well
-      above this point, and a font preload is only worth issuing as early as the
-      parser can see it.
+      Hanken is self-hosted and not preloaded either: on the homepage its
+      preload competed with the hero LCP image (cartel-fonts.liquid has the
+      numbers). Don't add one back here.
     {%- endcomment -%}
 
     {%- comment -%}

@@ -12,11 +12,14 @@
   400-900. Both subsets below are those exact files, served from Shopify's CDN.
   Licensed under the SIL Open Font License 1.1, which permits redistribution.
 
-  Only latin is preloaded. latin-ext is declared with its unicode-range so the
-  browser fetches it only if the page actually contains a character that needs
-  it — preloading it would download 19KB for nothing on every English page.
+  Neither subset is preloaded (batch 24, 2026-11-18). The latin preload put
+  34.7KB of woff2 in the same window as the hero LCP image, and PSI's LCP model
+  charges every request that lands before LCP: ~0.1-0.17s of mobile LCP. Now the
+  browser fetches latin at first layout and paints the metric-matched fallback
+  below until it lands, so the swap moves nothing. latin-ext is declared with
+  its unicode-range, so it is fetched only if a page contains a character that
+  needs it.
 {%- endcomment -%}
-{{ 'hanken-grotesk-latin.woff2' | asset_url | preload_tag: as: 'font' }}
 <style>
   @font-face {
     font-family: 'Hanken Grotesk';
