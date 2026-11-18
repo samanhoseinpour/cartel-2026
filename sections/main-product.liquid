@@ -794,7 +794,8 @@
               endunless
               assign cl_acc_benefits = cl_ben_raw | split: cl_ben_sep
               assign cl_acc_ing = product.metafields.custom.ingredients.value
-              assign cl_acc_ing_label = product.metafields.custom.ingredients_label.value | default: 'Ingredients'
+              # The CSV importer stored some labels as the JSON text ["Materials"]; join is shape-agnostic, then drop the brackets.
+              assign cl_acc_ing_label = product.metafields.custom.ingredients_label.value | join: ', ' | remove_first: '["' | remove_last: '"]' | replace: '","', ', ' | strip | default: 'Ingredients'
               assign cl_acc_howto = product.metafields.custom.how_to_use.value
             -%}
             <div class="accwrap">
