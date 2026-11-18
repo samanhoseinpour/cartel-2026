@@ -12,7 +12,6 @@
 {%- unless settings.cart_type == 'drawer' -%}
   <script src="{{ 'cart.js' | asset_url }}" defer="defer"></script>
 {%- endunless -%}
-<script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
 
 {%- liquid
   # Accumulate the priced (non-gated) side DIRECTLY. Deriving it by subtracting

@@ -101,7 +101,9 @@
     document.removeEventListener('mouseout', onExitIntent);
   }
 
-  function open() {
+  /* fromUser: the offer-tab click passes its event (truthy); autoOpen() and the success
+     reopen pass nothing. */
+  function open(fromUser) {
     if (!ov || isOpen()) return;
     cancelAuto();
     warmImage();
@@ -125,7 +127,12 @@
        <body> and nothing for the focus trap to hold. Pick what is actually
        rendered, keeping the input's precedence on the normal path (the close X
        is earlier in the DOM, so document order alone would flip it). */
-    const first = isRendered(popInput()) ? popInput() : ov.querySelector('[data-popup-close]');
+    /* 2026-11-18: an UNPROMPTED open focuses the close X (cartel-email-popup.liquid:17, outside
+       the customer form). Focusing .pop-input is a focusin on a form_type=customer form, which
+       is the trigger for Shopify's form-captcha loader: the 12s auto-open was pulling ~1MB of
+       hCaptcha (plus long tasks) into every visit nobody touched. Captcha still loads, and
+       still protects the form, the moment a shopper focuses the field. */
+    const first = fromUser && isRendered(popInput()) ? popInput() : ov.querySelector('[data-popup-close]');
     if (first) first.focus();
   }
 
@@ -270,12 +277,10 @@
    every template, and the drawer is rendered on every template.
 
    Why not Dawn's <product-form>:
-   1. assets/product-form.js is loaded per SECTION (main-product:43,
-      featured-product:510, the three grids, cartel-product-row:25,
-      main-cart-items:15) and never by layout/theme.liquid. A <product-form> in
-      the always-rendered drawer would be inert on /blogs, /pages, /404 and the
-      account templates. Loading it from the drawer snippet would add a request
-      to EVERY page for a control most sessions never see.
+   1. (historical) assets/product-form.js used to be loaded per section, so a
+      <product-form> in the always-rendered drawer would have been inert on
+      /blogs, /pages, /404 and the account templates. Since batch 23
+      layout/theme.liquid loads it on every page; reasons 2 and 3 still apply.
    2. It double-renders. product-form.js publishes cartUpdate with source
       'product-form', which cart.js:38-41 turns into a SECOND
       `?section_id=cart-drawer` fetch plus a replaceWith of cart-drawer-items and

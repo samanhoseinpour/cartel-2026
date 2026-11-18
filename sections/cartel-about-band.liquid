@@ -11,16 +11,28 @@
             (cartel-home.css:263), so this column is 46% of 1200px = 552px on a
             wide screen, and full width below the 900px breakpoint at :267.
           {%- endcomment -%}
-          {{
-            section.settings.image
-            | image_url: width: 1400
-            | image_tag:
-              class: 'abhome-photo',
-              widths: '500,760,1000,1400',
-              sizes: '(min-width: 1360px) 552px, (min-width: 901px) calc(46vw - 37px), (min-width: 761px) calc(100vw - 80px), calc(100vw - 40px)',
-              loading: 'lazy',
-              alt: section.settings.image.alt
-          }}
+          {%- comment -%}
+            image_tag drops alt entirely for a blank value (image-alt failed in a11y
+            and SEO). With no alt set in Files the photo is treated as decorative:
+            the heading beside it carries the message, and repeating that text as
+            alt would be read twice. An alt entered in Files still wins.
+          {%- endcomment -%}
+          {%- capture abhome_img -%}
+            {{
+              section.settings.image
+              | image_url: width: 1400
+              | image_tag:
+                class: 'abhome-photo',
+                widths: '500,760,1000,1400',
+                sizes: '(min-width: 1360px) 552px, (min-width: 901px) calc(46vw - 37px), (min-width: 761px) calc(100vw - 80px), calc(100vw - 40px)',
+                loading: 'lazy',
+                alt: section.settings.image.alt
+            }}
+          {%- endcapture -%}
+          {%- unless abhome_img contains ' alt=' -%}
+            {%- assign abhome_img = abhome_img | replace: '<img ', '<img alt="" ' -%}
+          {%- endunless -%}
+          {{- abhome_img -}}
         {%- endif -%}
       </div>
       <div class="abhome-txt">

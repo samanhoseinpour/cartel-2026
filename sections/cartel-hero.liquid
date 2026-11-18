@@ -47,9 +47,26 @@
             {%- if block.settings.image == blank and has_video == false %} hero-media--empty{% endif -%}
           ">
             {%- if has_video -%}
+              {%- comment -%}
+                A poster attribute is fetched the moment the parser sees it and cannot be
+                lazy-loaded, so every later slide's poster (1600x, ~80KB) downloaded at
+                Medium priority next to the LCP image even though the slide is opacity:0.
+                Only slide 1 keeps it; cartel-home.js copies data-poster back when a slide
+                is shown and warms the next one after window load. The <img> video_tag
+                nests as fallback is never rendered where <video> works, but the parser
+                still fetches it unless it is lazy, and it had no alt (image-alt audit).
+              {%- endcomment -%}
+              {%- liquid
+                assign poster_attr = ' poster="'
+                unless forloop.first
+                  assign poster_attr = ' data-poster="'
+                endunless
+              -%}
               {{
                 block.settings.video
                 | video_tag: image_size: '1600x', class: photo_class, autoplay: false, loop: false, muted: true, controls: false, preload: 'none'
+                | replace: ' poster="', poster_attr
+                | replace: '<img src=', '<img alt="" loading="lazy" src='
               }}
             {%- elsif block.settings.image != blank -%}
               {%- comment -%}
@@ -59,17 +76,32 @@
                 candidate a full step or two too large. The ladder keeps 2400
                 because a DPR-2 desktop genuinely lands there.
               {%- endcomment -%}
-              {{
-                block.settings.image
-                | image_url: width: 2400
-                | image_tag:
-                  class: photo_class,
-                  widths: '760,1100,1600,2000,2400',
-                  sizes: '(min-width: 1360px) 1200px, (min-width: 750px) calc(100vw - 80px), calc(100vw - 24px)',
-                  loading: hero_loading,
-                  fetchpriority: hero_priority,
-                  alt: block.settings.image.alt
-              }}
+              {%- comment -%}
+                preload: slide 1 is the LCP element; this puts it in the response's Link
+                header (with imagesrcset/imagesizes) so the fetch starts with the document
+                instead of after ~110KB of <head>. alt: the photo sits behind the h1 and
+                adds nothing the heading doesn't say, so with no alt set in Files it is
+                decorative (alt="") — image_tag drops the attribute entirely for a blank
+                value, which failed image-alt in both a11y and SEO.
+              {%- endcomment -%}
+              {%- capture hero_img -%}
+                {{
+                  block.settings.image
+                  | image_url: width: 2400
+                  | image_tag:
+                    class: photo_class,
+                    widths: '760,1100,1600,2000,2400',
+                    sizes: '(min-width: 1360px) 1200px, (min-width: 750px) calc(100vw - 80px), calc(100vw - 24px)',
+                    loading: hero_loading,
+                    fetchpriority: hero_priority,
+                    preload: forloop.first,
+                    alt: block.settings.image.alt
+                }}
+              {%- endcapture -%}
+              {%- unless hero_img contains ' alt=' -%}
+                {%- assign hero_img = hero_img | replace: '<img ', '<img alt="" ' -%}
+              {%- endunless -%}
+              {{- hero_img -}}
             {%- endif -%}
           </div>
           <div class="hero-ov"></div>
