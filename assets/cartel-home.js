@@ -146,9 +146,12 @@
         dot.classList.toggle('on', n === i);
         var f = dot.querySelector('.hero-fill');
         if (!f) return;
+        var restart = f.classList.contains('go');
         f.classList.remove('go', 'pz');
-        void f.offsetWidth;
         if (n === i && !RM) {
+          /* Only re-activating the running slide needs the reflow to restart its fill;
+             forcing it on every dot made the first activation a forced layout (PSI). */
+          if (restart) void f.offsetWidth;
           f.style.animationDuration = d / 1000 + 's';
           f.classList.add('go');
           if (self.paused) f.classList.add('pz');
