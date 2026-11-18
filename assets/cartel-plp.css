@@ -217,8 +217,14 @@
 .cl .sortmenu{display:none}
 .cl .sortwrap.open .sortmenu{display:block}
 .cl cartel-sort:defined .cl-sortsel{position:absolute;width:1px;height:1px;padding:0;border:0;clip-path:inset(50%);overflow:hidden;white-space:nowrap}
-.cl cartel-sort:not(:defined) .sortbtn,.cl cartel-sort:not(:defined) .sortmenu{display:none}
-.cl cartel-sort:not(:defined) .cl-sortsel{appearance:none;-webkit-appearance:none;border:1.5px solid var(--line);background:#fff;border-radius:100px;padding:11px 17px;font-size:13.5px;font-weight:700;color:var(--bord)}
+/* Until cartel-plp.js defines <cartel-sort>, the native select stands in for the button. The
+   button keeps its box (visibility, not display) and the select covers it, so the swap can't
+   resize the toolbar. Before, a 152px select became a 244px button that no longer fit beside
+   Filters and wrapped onto its own line after the grid had painted: CLS 0.08 at 390px, 0.23 at
+   600px on a slow phone load. */
+.cl cartel-sort:not(:defined) .sortmenu{display:none}
+.cl cartel-sort:not(:defined) .sortbtn{visibility:hidden}
+.cl cartel-sort:not(:defined) .cl-sortsel{position:absolute;inset:0;width:100%;height:100%;appearance:none;-webkit-appearance:none;border:1.5px solid var(--line);background:#fff;border-radius:100px;padding:11px 17px;font-size:13.5px;font-weight:700;color:var(--bord)}
 
 /* facet inputs: labels wrap visually-hidden checkboxes */
 .cl .fopt,.cl .fpill,.cl .fswitch-row,.cl .fswitch{cursor:pointer}
