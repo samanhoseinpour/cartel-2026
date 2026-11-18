@@ -28,6 +28,18 @@
             assign hero_loading = 'eager'
             assign hero_priority = 'high'
           endif
+
+          # Blur-up preview (snippets/cartel-lqip.liquid): the photo, or the video's poster
+          # still. Packshot (contain) slides keep their flat #eceae7 plate, which already
+          # matches the packshot's own background.
+          assign lqip_src = nil
+          if fit != 'contain'
+            if has_video
+              assign lqip_src = block.settings.video.preview_image
+            else
+              assign lqip_src = block.settings.image
+            endif
+          endif
         -%}
         {%- comment -%}
           Inactive slides are only opacity:0 + pointer-events:none, which stops
@@ -45,7 +57,8 @@
             {%- if has_video %} hero-media-vid{% endif -%}
             {%- if fit == 'contain' %} hero-media-prod{% endif -%}
             {%- if block.settings.image == blank and has_video == false %} hero-media--empty{% endif -%}
-          ">
+            {%- if lqip_src %} lqip{% endif -%}
+          "{% if lqip_src %} style="{% render 'cartel-lqip', image: lqip_src %}"{% endif %}>
             {%- if has_video -%}
               {%- comment -%}
                 A poster attribute is fetched the moment the parser sees it and cannot be

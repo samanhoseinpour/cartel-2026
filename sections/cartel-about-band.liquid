@@ -4,7 +4,7 @@
 <div class="cl">
   <section class="sec wrap" style="--cl-pt:{{ section.settings.pad_top }}px;--cl-pb:{{ section.settings.pad_bottom }}px">
     <div class="abhome ondark">
-      <div class="abhome-img">
+      <div class="abhome-img{% if section.settings.image != blank %} lqip{% endif %}" style="{% render 'cartel-lqip', image: section.settings.image %}">
         {%- if section.settings.image != blank -%}
           {%- comment -%}
             .cl .abhome is `grid-template-columns:.92fr 1.08fr` inside .wrap

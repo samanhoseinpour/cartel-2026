@@ -140,7 +140,7 @@
 .cl .bwhy-dot{display:block;width:9px;height:9px;border-radius:50%;background:var(--bronze-d);margin-top:7px;flex:none}
 .cl .bwhy-t{font-size:16px;font-weight:800;color:var(--bord)}
 .cl .bwhy-s{font-size:14px;line-height:1.55;color:var(--ink);opacity:.85;margin-top:3px}
-.cl .bwhy-r{aspect-ratio:1;background:#fff;border-radius:var(--r);overflow:hidden;box-shadow:0 18px 44px rgba(40,8,18,.14);position:relative}
+.cl .bwhy-r{aspect-ratio:1;background:#fff;border-radius:var(--r);overflow:hidden;box-shadow:0 18px 44px rgba(40,8,18,.14);position:relative;--lqip-pad:7%} /* = .bwhy-img padding (blur-up plate) */
 .cl .bwhy-img{width:100%;height:100%;object-fit:contain;padding:7%}
 .cl .plock svg{width:16px;height:16px}
 .cl .bcard-login{position:absolute;left:12px;right:12px;bottom:12px;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--bord);color:var(--cream);border-radius:100px;padding:12px;font-size:13px;font-weight:700;z-index:2}

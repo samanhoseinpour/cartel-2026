@@ -28,7 +28,8 @@
     <div class="reelrow">
       {%- for block in section.blocks -%}
         {%- if block.type == 'reel' -%}
-          <div class="reel" data-reel data-caption="{{ block.settings.caption | escape }}" {{ block.shopify_attributes }}>
+          {%- assign reel_lqip = block.settings.video.preview_image | default: block.settings.image -%}
+          <div class="reel{% if reel_lqip %} lqip{% endif %}" style="{% render 'cartel-lqip', image: reel_lqip %}" data-reel data-caption="{{ block.settings.caption | escape }}" {{ block.shopify_attributes }}>
             {%- if block.settings.video != blank -%}
               {%- comment -%}
                 autoplay is deliberately OFF and preload is 'none': cartel-home.js

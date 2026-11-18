@@ -181,7 +181,7 @@
           endunless
         -%}
         <article class="bl-feat">
-          <div class="bl-feat-img">
+          <div class="bl-feat-img{% if feat.image %} lqip{% endif %}" style="{% render 'cartel-lqip', image: feat.image %}">
             {%- if feat_cat != blank -%}<span class="bl-card-cat">{{ feat_cat }}</span>{%- endif -%}
             <a href="{{ feat.url }}" aria-label="{{ feat.title | escape }}" tabindex="-1">
               {%- if feat.image -%}

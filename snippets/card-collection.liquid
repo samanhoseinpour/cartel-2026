@@ -41,7 +41,7 @@
 {%- else -%}
   <div class="bx-card {{ accent }}">
 {%- endif -%}
-  <div class="bx-imgwrap{{ fit_class }}">
+  <div class="bx-imgwrap{{ fit_class }}{% if img and fit_class == blank %} lqip{% endif %}"{% if fit_class == blank %} style="{% render 'cartel-lqip', image: img %}"{% endif %}>
     {%- if img -%}
       {{ img | image_url: width: 900 | image_tag: widths: '450,675,900', loading: 'lazy', alt: card_title }}
     {%- else -%}

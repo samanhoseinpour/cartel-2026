@@ -37,7 +37,7 @@
       </div>
       {%- if section.settings.show_featured -%}
         <div class="fr-feat">
-          <div class="fr-feat-cover">
+          <div class="fr-feat-cover{% if section.settings.feat_image %} lqip{% endif %}" style="{% render 'cartel-lqip', image: section.settings.feat_image %}">
             {%- if section.settings.feat_image -%}
               {{ section.settings.feat_image | image_url: width: 1200 | image_tag: widths: '600,900,1200', loading: 'eager', alt: section.settings.feat_heading }}
             {%- endif -%}
@@ -142,7 +142,7 @@
             endif
           -%}
           <div class="fr-card" data-fr-card data-category="{{ bc | escape }}" {{ block.shopify_attributes }}>
-            <div class="fr-cover">
+            <div class="fr-cover{% if block.settings.image %} lqip{% endif %}" style="{% render 'cartel-lqip', image: block.settings.image %}">
               {%- if block.settings.badge != blank -%}<span class="fr-badge">{{ block.settings.badge }}</span>{%- endif -%}
               {%- if block.settings.is_video -%}
                 <div class="fr-play">

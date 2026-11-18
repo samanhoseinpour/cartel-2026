@@ -17,7 +17,7 @@
       <button class="pop-close" type="button" data-popup-close aria-label="Close">
         <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M5.5 5.5l13 13M18.5 5.5l-13 13"></path></svg>
       </button>
-      <div class="pop-img">
+      <div class="pop-img{% if settings.popup_image != blank %} lqip{% endif %}" style="{% render 'cartel-lqip', image: settings.popup_image %}">
         {%- comment -%}
           The panel is half the 900px popup on desktop and full-bleed but only
           200px tall on mobile, so the crop is severe: honour the focal point

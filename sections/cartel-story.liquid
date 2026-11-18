@@ -13,7 +13,7 @@
       {%- when 'story' -%}
         <section class="wrap ab-sec" style="--cl-pt:{{ block.settings.pad_top }}px;--cl-pb:{{ block.settings.pad_bottom }}px" {{ block.shopify_attributes }}>
           <div class="ab-story">
-            <div class="ab-story-img">
+            <div class="ab-story-img{% if block.settings.image %} lqip{% endif %}" style="{% render 'cartel-lqip', image: block.settings.image %}">
               {%- if block.settings.image -%}
                 {{ block.settings.image | image_url: width: 1200 | image_tag: widths: '520,760,1200', loading: 'lazy', alt: block.settings.image.alt }}
               {%- endif -%}
@@ -80,13 +80,13 @@
             {%- if block.settings.heading != blank -%}<h2 class="stitle">{{ block.settings.heading }}</h2>{%- endif -%}
           </div>
           <div class="ab-cmp" data-cmp>
-            <div class="ab-cmp-layer">
+            <div class="ab-cmp-layer{% if block.settings.image_after %} lqip{% endif %}" style="{% render 'cartel-lqip', image: block.settings.image_after %}">
               {%- if block.settings.image_after -%}
                 {{ block.settings.image_after | image_url: width: 1600 | image_tag: widths: '760,1200,1600', loading: 'lazy', alt: block.settings.label_after }}
               {%- endif -%}
               <span class="ab-cmp-tag ab-cmp-tagr">{{ block.settings.label_after | default: 'After' }}</span>
             </div>
-            <div class="ab-cmp-layer ab-cmp-before" data-cmp-before>
+            <div class="ab-cmp-layer ab-cmp-before{% if block.settings.image_before %} lqip{% endif %}" style="{% render 'cartel-lqip', image: block.settings.image_before %}" data-cmp-before>
               {%- if block.settings.image_before -%}
                 {{ block.settings.image_before | image_url: width: 1600 | image_tag: widths: '760,1200,1600', loading: 'lazy', alt: block.settings.label_before }}
               {%- endif -%}

@@ -34,7 +34,7 @@
             {%- endif -%}
           </div>
           <div class="ab-hero-r">
-            <div class="ab-hero-img">
+            <div class="ab-hero-img{% if section.settings.image %} lqip{% endif %}" style="{% render 'cartel-lqip', image: section.settings.image %}">
               {%- if section.settings.image -%}
                 {{ section.settings.image | image_url: width: 1200 | image_tag: widths: '520,760,1200', loading: 'eager', alt: section.settings.image.alt }}
               {%- endif -%}

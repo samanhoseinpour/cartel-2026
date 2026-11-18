@@ -205,6 +205,29 @@ PSI moves ±3-5 points between runs of the same page.
 
 ## Already fixed in the theme
 
+### Batch 25 (branch `feat/blur-up-batch-25`): blur-up previews, a felt-speed change
+
+1. **What it does.** Every photo box shows a blurred 32px copy of its photo from Shopify's CDN until
+   the photo has loaded and decoded, instead of a flat burgundy, beige or white box. It is for
+   shoppers on slow phones, not for the score.
+2. **What it costs PSI.** The previews are CSS backgrounds, which can't lazy-load, so every rendered
+   photo box fetches one at first layout.
+   - **Measured on the dev theme:** 26 preview requests on the homepage (hero 3, best sellers 8, kits
+     6, reels 4, about band 1, resources 3, the visible before/after pair; hidden pairs and the
+     popup fetch none).
+   - **Size:** each is 0.9-1.1 KB (WebP for Chrome's Accept header, JPEG XL where accepted), about
+     29 KB of bodies in all. A 16px copy saves only ~25%, because WebP's floor is ~0.8 KB.
+   - **Effect:** they finish before the hero, so PSI's LCP model counts their bytes. In real Chrome
+     throttled to 1.6 Mbps / 150 ms, the hero LCP was 4.76-4.88 s with previews and 4.76-5.85 s
+     without them (two runs each, too few to resolve under ~200 ms). Check the first PSI row after
+     batch 25 against this.
+3. **What it doesn't change.** Low-detail placeholders don't become the LCP element. Chromium also
+   scales an upscaled image's LCP size down to its natural size, so a 32px preview can't win. On
+   the dev theme the LCP elements stayed the real photos: hero `<img>`, PDP gallery and PLP card.
+   CLS was unchanged with the previews on and off (the PLP's 0.10 on a throttled phone load comes
+   from its toolbar, `.plptop-r`/`.sorting`, and predates batch 25).
+4. **Without JS** nothing changes and no preview is fetched.
+
 ### Batch 24 (branch `perf/psi-home-batch-24`)
 
 1. **Hanken Grotesk is no longer preloaded.**

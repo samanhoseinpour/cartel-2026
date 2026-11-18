@@ -96,7 +96,7 @@
     </div>
 
     {%- if article.image -%}
-      <div class="bl-art-hero">
+      <div class="bl-art-hero lqip" style="{% render 'cartel-lqip', image: article.image %}">
         {{
           article.image
           | image_url: width: 2400

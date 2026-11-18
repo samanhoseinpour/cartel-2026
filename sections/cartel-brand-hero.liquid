@@ -207,7 +207,7 @@
             {%- endif -%}
           </div>
         </div>
-        <div class="bwhy-r">
+        <div class="bwhy-r{% if why_img != blank %} lqip lqip--plate{% endif %}" style="{% render 'cartel-lqip', image: why_img %}">
           {%- if why_img != blank -%}
             {{ why_img | image_url: width: 900 | image_tag: class: 'bwhy-img', widths: '450,675,900', alt: heading }}
           {%- else -%}
