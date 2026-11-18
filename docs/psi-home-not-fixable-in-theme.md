@@ -205,6 +205,21 @@ PSI moves ±3-5 points between runs of the same page.
 
 ## Already fixed in the theme
 
+### Batch 25 (branch `feat/blur-up-batch-25`): blur-up previews, a felt-speed change
+
+1. **What it does.** Every photo box shows a blurred 32px copy of its photo (about 0.3-0.6 KB from
+   Shopify's CDN) until the photo has loaded and decoded, instead of a flat burgundy, beige or white
+   box. It is for shoppers on slow phones, not for the score.
+2. **What it costs PSI.** The previews are CSS backgrounds, which can't lazy-load, so every rendered
+   photo box fetches one at first layout. Counted from `templates/index.json`, that is at most 27 on
+   the homepage: hero 3, best sellers 8, kits 6, reels 4, about band 1, resources 3 and the visible
+   before/after pair 2. They finish before the hero, so PSI's LCP model counts their bytes. Expect
+   a change inside the ±3-5 point noise, and check the first PSI row after batch 25 against it.
+3. **What it doesn't change.** Chrome ignores low-detail placeholders for LCP, so the hero `<img>`
+   stays the LCP element. On small boxes, such as product cards on phones, a preview can carry
+   enough detail to count. If a PSI or CrUX LCP element is ever a `.lqip` box, this is why.
+4. **Without JS** nothing changes and no preview is fetched.
+
 ### Batch 24 (branch `perf/psi-home-batch-24`)
 
 1. **Hanken Grotesk is no longer preloaded.**
