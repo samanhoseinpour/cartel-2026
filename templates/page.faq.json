@@ -76,7 +76,7 @@
           "settings": {
             "category": "Shipping & pick-up",
             "question": "Do you ship outside Canada?",
-            "answer": "<p>We currently ship within Canada. If you're outside Canada and want Cartel supplies, <a href=\"/pages/contact\">get in touch</a> — we'll see what we can do.</p>"
+            "answer": "<p>Yes, we ship to the United States as well as across Canada. US orders are a $9.99 USD flat rate, free over $150 USD, and duties and import fees are included, so there's nothing extra to pay at delivery. Full details live on the <a href=\"/pages/shipping-policy\">shipping policy</a>.</p>"
           }
         },
         "q9": {
@@ -116,7 +116,7 @@
           "settings": {
             "category": "Returns & support",
             "question": "What is your return policy?",
-            "answer": "<p>Unopened, unused products can be returned within 30 days of delivery. For hygiene reasons opened consumables can't be restocked. Full details live on the <a href=\"/pages/return-policy\">returns page</a>.</p>"
+            "answer": "<p>Unopened, unused products can be returned within 14 days of delivery. For hygiene reasons opened consumables can't be restocked. Full details live on the <a href=\"/pages/return-policy\">returns page</a>.</p>"
           }
         },
         "q14": {
@@ -124,7 +124,7 @@
           "settings": {
             "category": "Returns & support",
             "question": "My order arrived damaged — what now?",
-            "answer": "<p>Photograph the parcel and the product, then <a href=\"/pages/contact\">contact us</a> within 7 days with your order number. We'll replace or refund it — no long forms.</p>"
+            "answer": "<p>Photograph the parcel and the product, then <a href=\"/pages/contact\">contact us</a> within 48 hours with your order number. We'll replace or refund it — no long forms.</p>"
           }
         },
         "q15": {
