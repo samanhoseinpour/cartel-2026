@@ -24,7 +24,7 @@
   assign form_id = 'cartel-addkit-' | append: section.id | append: '-' | append: p.id
 -%}
 <div class="kitcard">
-  <div class="kit-img">
+  <div class="kit-img{% if p.featured_media %} lqip lqip--plate{% endif %}" style="{% render 'cartel-lqip', image: p.featured_media %}">
     {%- if on_sale -%}
       <span class="kit-save">Save {{ saved }}</span>
     {%- elsif p.tags contains 'bundle' -%}

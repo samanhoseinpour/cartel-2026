@@ -34,7 +34,7 @@
   assign form_id = 'cartel-add-' | append: section.id | append: '-' | append: p.id
 -%}
 <div class="card {{ card_extra }}">
-  <div class="card-img">
+  <div class="card-img{% if p.featured_media %} lqip lqip--plate{% endif %}" style="{% render 'cartel-lqip', image: p.featured_media %}">
     {%- if tag_label != blank -%}<span class="ptag">{{ tag_label }}</span>{%- endif -%}
     <a class="imglink" href="{{ p.url }}" aria-label="{{ p.title | escape }}">
       {%- if p.featured_media -%}

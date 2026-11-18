@@ -77,7 +77,7 @@
       {% endcase %}
     </span>
     {%- render 'loading-spinner' -%}
-    <div class="product__media media media--transparent">
+    <div class="product__media media media--transparent{% if media.preview_image %} lqip lqip--plate{% endif %}" style="{% render 'cartel-lqip', image: media.preview_image %}">
       {{
         media.preview_image
         | image_url: width: 1946
@@ -102,9 +102,9 @@
 
   {%- if media.media_type != 'image' -%}
     {%- if media.media_type == 'model' -%}
-      <product-model class="deferred-media media media--transparent" data-media-id="{{ media.id }}">
+      <product-model class="deferred-media media media--transparent{% if media.preview_image %} lqip lqip--plate{% endif %}" style="{% render 'cartel-lqip', image: media.preview_image %}" data-media-id="{{ media.id }}">
     {%- else -%}
-      <deferred-media class="deferred-media media media--transparent" data-media-id="{{ media.id }}">
+      <deferred-media class="deferred-media media media--transparent{% if media.preview_image %} lqip lqip--plate{% endif %}" style="{% render 'cartel-lqip', image: media.preview_image %}" data-media-id="{{ media.id }}">
     {%- endif -%}
     <button id="Deferred-Poster-Modal-{{ media.id }}" class="deferred-media__poster" type="button">
       <span class="deferred-media__poster-button motion-reduce">
