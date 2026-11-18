@@ -1,5 +1,6 @@
 {%- liquid
-  assign og_title = page_title | default: shop.name
+  # cl_title is theme.liquid's page_title with U+200C removed (see the <title> comment there).
+  assign og_title = cl_title | default: page_title | default: shop.name
   assign og_url = canonical_url | default: request.origin
   assign og_type = 'website'
   # cl_description comes from theme.liquid's `cartel-meta-description` capture,

@@ -48,6 +48,15 @@
       {%- endcase -%}
     {%- endif -%}
     <link rel="canonical" href="{{ cl_canonical }}">
+    {%- comment -%}
+      Cartel SEO 2026-11-18: search results, the cart and Shopify's auto-built vendor/type
+      listings (/collections/vendors?q=…, one per spelling of each brand) were indexable; /cart
+      alone drew 146 impressions, and the vendor pages took brand queries from the curated
+      brand collections. robots.txt does not block them, so Google sees this tag.
+    {%- endcomment -%}
+    {%- if request.page_type == 'search' or request.page_type == 'cart' or request.path == '/collections/vendors' or request.path == '/collections/types' %}
+    <meta name="robots" content="noindex,follow">
+    {%- endif %}
 
     {% render 'cartel-favicon' %}
 
@@ -64,8 +73,15 @@
       It is deliberately not preloaded (see that snippet).
     {%- endcomment -%}
 
+    {%- comment -%}
+      Cartel SEO 2026-11-18: 30 Word-exported article SEO titles carry U+200C
+      (zero-width non-joiner) inside "Cartel Lash", so `contains shop.name` below
+      missed and the brand was appended twice. url_encode makes the invisible
+      character matchable as %E2%80%8C; the clean value is both printed and tested.
+    {%- endcomment -%}
+    {%- assign cl_title = page_title | url_encode | remove: '%E2%80%8C' | url_decode -%}
     <title>
-      {{ page_title }}
+      {{ cl_title }}
       {%- if current_tags %} &ndash; tagged "{{ current_tags | join: ', ' }}"{% endif -%}
       {%- if current_page != 1 %} &ndash; Page {{ current_page }}{% endif -%}
       {%- comment -%}
@@ -73,7 +89,7 @@
         (all 65 in the import), so appending the store name only buys truncation.
         Every other template still gets the suffix.
       {%- endcomment -%}
-      {%- unless page_title contains shop.name or template.name == 'product' %} &ndash; {{ shop.name }}{% endunless -%}
+      {%- unless cl_title contains shop.name or template.name == 'product' %} &ndash; {{ shop.name }}{% endunless -%}
     </title>
 
     {%- comment -%}
@@ -92,7 +108,7 @@
       <meta name="description" content="{{ cl_meta_description | escape_once }}">
     {% endif %}
 
-    {% render 'meta-tags', cl_description: cl_meta_description %}
+    {% render 'meta-tags', cl_description: cl_meta_description, cl_title: cl_title %}
 
     <script type="module">
       import * as StandardEvents from 'https://cdn.shopify.com/storefront/standard-events.js';

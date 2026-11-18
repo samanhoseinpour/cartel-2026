@@ -24,7 +24,9 @@
       "block_order": [
         "author"
       ],
-      "settings": {}
+      "settings": {
+        "shop_collection": "cleanser-shampoo"
+      }
     }
   },
   "order": [
