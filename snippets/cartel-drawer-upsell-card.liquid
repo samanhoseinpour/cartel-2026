@@ -10,11 +10,10 @@
       drawer, so ids would collapse to `cartel-add--{product id}` and collide.
 
   No <form> and no <product-form> here, on purpose:
-    - assets/product-form.js is loaded per SECTION (main-product:43,
-      featured-product:510, the three grids, cartel-product-row:25,
-      main-cart-items:15) and never by layout/theme.liquid, so a <product-form>
-      in the always-rendered drawer would be inert on /blogs, /pages, /404 and
-      the account templates;
+    - (historical) assets/product-form.js used to be loaded per section, so a
+      <product-form> here would have been inert on /blogs, /pages, /404 and the
+      account templates. Since batch 23 layout/theme.liquid loads it on every
+      page, but the reason below still rules a form out;
     - a <form> anywhere under #CartDrawer-Form would be dropped by the HTML
       parser, taking product-form.js's unguarded this.form with it.
   The button is driven by the delegated handler in assets/cartel-conversion.js.

@@ -129,6 +129,15 @@
     <script src="{{ 'cartel-scroll-lock.js' | asset_url }}" defer="defer"></script>
     <script src="{{ 'global.js' | asset_url }}" defer="defer"></script>
     {%- comment -%}
+      product-form.js used to be loaded by each of the seven sections that render a
+      <product-form>. Two of them on one page (the homepage's best_sellers + kits rows)
+      meant two <script> tags for the same file - Lighthouse's duplicated-JavaScript
+      insight - and a section re-rendered via the Section Rendering API never ran its
+      own tag anyway. Loading it once here covers every template; it only defines the
+      custom element (2KB gzip, cached).
+    {%- endcomment -%}
+    <script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
+    {%- comment -%}
       cart-disclosure-modal.js and cart-disclosure-tooltip.js were loaded here on
       every page. snippets/cart-disclosure-indicator.liquid — the only thing that
       emits `.cart-item__disclosure` / `<cart-disclosure-modal>` — is never rendered

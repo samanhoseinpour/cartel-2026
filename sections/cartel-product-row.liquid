@@ -22,7 +22,6 @@
   endif
 -%}
 {%- if has_products or request.design_mode -%}
-  <script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
   <cl-carousel class="cl">
     <section class="sec" style="--cl-pt:{{ section.settings.pad_top }}px;--cl-pb:{{ section.settings.pad_bottom }}px">
       <div class="wrap sec-head">

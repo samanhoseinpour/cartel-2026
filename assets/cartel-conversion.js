@@ -277,12 +277,10 @@
    every template, and the drawer is rendered on every template.
 
    Why not Dawn's <product-form>:
-   1. assets/product-form.js is loaded per SECTION (main-product:43,
-      featured-product:510, the three grids, cartel-product-row:25,
-      main-cart-items:15) and never by layout/theme.liquid. A <product-form> in
-      the always-rendered drawer would be inert on /blogs, /pages, /404 and the
-      account templates. Loading it from the drawer snippet would add a request
-      to EVERY page for a control most sessions never see.
+   1. (historical) assets/product-form.js used to be loaded per section, so a
+      <product-form> in the always-rendered drawer would have been inert on
+      /blogs, /pages, /404 and the account templates. Since batch 23
+      layout/theme.liquid loads it on every page; reasons 2 and 3 still apply.
    2. It double-renders. product-form.js publishes cartUpdate with source
       'product-form', which cart.js:38-41 turns into a SECOND
       `?section_id=cart-drawer` fetch plus a replaceWith of cart-drawer-items and
