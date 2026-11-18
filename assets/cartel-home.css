@@ -163,7 +163,7 @@
 .cl .carousel::-webkit-scrollbar{display:none}
 .cl .card{flex:0 0 296px;scroll-snap-align:start;display:flex;flex-direction:column;transition:transform .3s ease;cursor:pointer}
 .cl .card:hover{transform:translateY(-6px)}
-.cl .card-img{position:relative;aspect-ratio:1;background:var(--prodbg);border-radius:var(--r);overflow:hidden;margin-bottom:15px}
+.cl .card-img{position:relative;aspect-ratio:1;background:var(--prodbg);border-radius:var(--r);overflow:hidden;margin-bottom:15px;--lqip-pad:8%} /* = .card-photo padding (blur-up plate) */
 .cl .card-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#fff;padding:8%}
 .cl .kit-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#fff;padding:6%}
 .cl .ci-photo{width:100%;height:100%;object-fit:contain;background:#fff}
@@ -224,7 +224,7 @@
 .cl .on .brow-arrow{opacity:1;transform:none;color:var(--plum)}
 .cl .kitcard{flex:0 0 340px;scroll-snap-align:start;display:flex;flex-direction:column;background:#fff;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;transition:transform .3s ease;cursor:pointer}
 .cl .kitcard:hover{transform:translateY(-6px)}
-.cl .kit-img{position:relative;aspect-ratio:16/11;background:var(--prodbg)}
+.cl .kit-img{position:relative;aspect-ratio:16/11;background:var(--prodbg);--lqip-pad:6%} /* = .kit-photo padding (blur-up plate) */
 .cl .kit-save{position:absolute;top:14px;left:14px;z-index:2;background:var(--bronze);color:var(--bord);font-size:11px;font-weight:800;letter-spacing:.03em;padding:6px 13px;border-radius:100px}
 .cl .kit-b{padding:22px 22px 24px;display:flex;flex-direction:column;flex:1}
 .cl .kit-name{font-size:18px;font-weight:800;color:var(--bord);letter-spacing:-.02em;line-height:1.2}
@@ -521,6 +521,34 @@ body.cartel-noscroll{overflow:hidden}
   .cl .clph--lg .clph-m{width:42%}
   .cl .clph--md.clph{padding:16px}
 }
+
+/* ==========================================================================
+   Blur-up placeholders (batch 25): snippets/cartel-lqip.liquid
+   A photo box marked .lqip carries --lqip, a 32px CDN copy of its photo. This
+   paints it blurred behind the real image until the loader in layout/theme.liquid
+   marks the box .lqip-done (photo loaded and decoded). Everything hangs off
+   html.lqip-on, which that loader sets, so without JS nothing here applies and
+   every box keeps its flat fill. Lives here for the same reason as the tile above:
+   this sheet is render-blocking on every template, so it owns the resting state.
+   - isolation + z-index:-1 puts the preview above the box's own fill and below the
+     photo, whether the photo is absolutely positioned or in flow. Every .lqip box
+     is already position:relative or absolute; nothing here sets it.
+   - inset:-36px is 3x the blur: the blur fades the edge to transparent, so the
+     preview bleeds past the box and overflow:hidden trims it back to full-bleed.
+   ========================================================================== */
+.lqip-on .lqip{isolation:isolate;overflow:hidden}
+.lqip-on .lqip::before{content:"";position:absolute;inset:-36px;z-index:-1;background:var(--lqip) center/cover no-repeat;filter:blur(12px)}
+/* Packshots shown whole on a white plate: the preview is contained in the photo's
+   own content box, on white out to the bleed edge. The padding is the bleed plus
+   --lqip-pad (set beside each photo's own padding), and both percentages resolve
+   against the same box, so the blur sits exactly where the sharp packshot lands. */
+.lqip-on .lqip--plate::before{padding:calc(36px + var(--lqip-pad, 0px));background:var(--lqip) center/contain no-repeat content-box,#fff}
+/* A photo's own fill (the #fff plates, the reels' #1c0b12) would paint over the
+   preview, so it waits for .lqip-done. Video boxes never get it (no image load):
+   their poster and frames cover the preview. Doubled .lqip: cartel-pdp.css's
+   gallery rules are (0,3,1) and load later. */
+.lqip-on .lqip.lqip:not(.lqip-done) :is(img,video){background-color:transparent}
+.lqip-on .lqip-done::before{content:none}
 
 /* The ported .cl .crumb rule is copied into 14 stylesheets and only the PDP's
    copy (cartel-pdp.css:39) carries flex-wrap — so a long article or product

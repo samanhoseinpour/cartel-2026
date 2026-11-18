@@ -1,0 +1,8 @@
+{%- comment -%}
+  Blur-up placeholder: prints the --lqip declaration for a photo box marked .lqip.
+  Usage: <div class="… lqip" style="{% render 'cartel-lqip', image: img %}">
+  cartel-home.css ("Blur-up placeholders") paints this ~0.5 KB, 32px CDN copy blurred
+  behind the real photo; the loader in layout/theme.liquid drops it once the photo has
+  decoded. The trailing ; lets it share a style attribute with other declarations.
+{%- endcomment -%}
+{%- if image != blank -%}--lqip:url('{{ image | image_url: width: 32 }}');{%- endif -%}

@@ -94,6 +94,24 @@
 
     {% render 'meta-tags', cl_description: cl_meta_description %}
 
+    {%- comment -%}
+      Blur-up placeholders (snippets/cartel-lqip.liquid, CSS in cartel-home.css). This
+      runs before any <img> is parsed, so its capture listener sees every image load,
+      including HTML swapped in later (facets, cart, recommendations, variant changes),
+      with no sweep. It sits above content_for_header and the stylesheets so it waits on
+      neither. html.lqip-on gates all the CSS: without JS nothing changes. decode()
+      before the swap: dropping the preview while the photo is still decoding flashes
+      the flat box for a frame on Android.
+    {%- endcomment -%}
+    <script>
+      document.documentElement.classList.add('lqip-on');
+      document.addEventListener('load', function (e) {
+        var img = e.target;
+        var box = img.tagName === 'IMG' && img.closest('.lqip');
+        if (box) img.decode().then(function () { box.classList.add('lqip-done'); }, function () {});
+      }, true);
+    </script>
+
     <script type="module">
       import * as StandardEvents from 'https://cdn.shopify.com/storefront/standard-events.js';
 
