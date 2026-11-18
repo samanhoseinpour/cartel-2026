@@ -139,9 +139,12 @@
           >
             {%- liquid
               assign media_position = media_position | default: 0 | plus: 1
+              # Position 1 here means the variant has no featured_media, so this is the LCP image.
               assign lazy_load = false
+              assign cl_fetch = 'high'
               if media_position > 1
                 assign lazy_load = true
+                assign cl_fetch = nil
               endif
             -%}
             {% render 'product-thumbnail',
@@ -156,7 +159,8 @@
               media_width: media_width,
               media_fit: section.settings.media_fit,
               constrain_to_viewport: section.settings.constrain_to_viewport,
-              lazy_load: lazy_load
+              lazy_load: lazy_load,
+              fetch_priority: cl_fetch
             %}
           </li>
         {%- endunless -%}
