@@ -454,10 +454,18 @@
 {%- endcapture -%}
 {%- assign cartel_same_as = cartel_same_as | strip -%}
 
+{%- comment -%}
+  Cartel SEO 2026-11-18: `url` was request.origin + page.url, so on every /pages/* template the
+  Organization claimed the current page as its URL. shop.url is the primary domain with no
+  trailing slash (verified on breadcrumb items). WebSite drops its SearchAction: Google retired
+  the sitelinks search box in 2024, and the block stays only for the site name.
+{%- endcomment -%}
+{%- assign cl_org_id = shop.url | append: '/#organization' -%}
 <script type="application/ld+json">
   {
-    "@context": "http://schema.org",
+    "@context": "https://schema.org",
     "@type": "Organization",
+    "@id": {{ cl_org_id | json }},
     "name": {{ shop.name | json }},
     {% if settings.logo %}
       "logo": {{ settings.logo | image_url: width: 500 | prepend: "https:" | json }},
@@ -465,23 +473,19 @@
     {%- if cartel_same_as != blank %}
     "sameAs": [{{ cartel_same_as }}],
     {%- endif %}
-    "url": {{ request.origin | append: page.url | json }}
+    "url": {{ shop.url | append: '/' | json }}
   }
 </script>
 
 {%- if request.page_type == 'index' -%}
-  {% assign potential_action_target = request.origin | append: routes.search_url | append: '?q={search_term_string}' %}
   <script type="application/ld+json">
     {
-      "@context": "http://schema.org",
+      "@context": "https://schema.org",
       "@type": "WebSite",
+      "@id": {{ shop.url | append: '/#website' | json }},
       "name": {{ shop.name | json }},
-      "potentialAction": {
-        "@type": "SearchAction",
-        "target": {{ potential_action_target | json }},
-        "query-input": "required name=search_term_string"
-      },
-      "url": {{ request.origin | append: page.url | json }}
+      "url": {{ shop.url | append: '/' | json }},
+      "publisher": { "@id": {{ cl_org_id | json }} }
     }
   </script>
 {%- endif -%}
