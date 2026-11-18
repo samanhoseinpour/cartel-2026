@@ -61,7 +61,9 @@
 .cl .muted{color:var(--muted)}
 .cl .ic{width:22px;height:22px;display:block}
 .cl .ic-sm{width:18px;height:18px;display:block}
-.cl .icbtn{width:42px;height:42px;display:inline-flex;align-items:center;justify-content:center;color:var(--bord);border-radius:50%;transition:.2s}
+/* Enumerated (was `transition:.2s` = all): when the deferred drawer sheets land they change
+   .drawer__close's box, and `all` animated that geometry through ~26 layout frames. */
+.cl .icbtn{width:42px;height:42px;display:inline-flex;align-items:center;justify-content:center;color:var(--bord);border-radius:50%;transition:background-color .2s ease,color .2s ease,transform .2s ease}
 .cl .icbtn:hover{background:rgba(74,18,36,.07)}
 /* Enumerated: bare `transition:.22s` = `transition:all`, which animated the hover
    box-shadow (26px blur) through ~13 repaint frames on the site's most-hovered element. */
@@ -130,7 +132,7 @@
 .cl .hero-fill{position:absolute;left:0;top:0;bottom:0;width:100%;transform:scaleX(0);transform-origin:left center;background:var(--cream);border-radius:100px}
 .cl .hero-fill.go{animation:fillbar 6s linear forwards}
 .cl .hero-fill.pz{animation-play-state:paused}
-.cl .hero-play{width:27px;height:27px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--cream);background:rgba(250,246,240,.16);margin-left:5px;flex:none;transition:.2s}
+.cl .hero-play{width:27px;height:27px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--cream);background:rgba(250,246,240,.16);margin-left:5px;flex:none;transition:background-color .2s ease}
 .cl .hero-play:hover{background:rgba(250,246,240,.3)}
 .cl .ic-xs{width:13px;height:13px}
 /* scaleX not width: width is layout, so this ran ~360 main-thread frames per slide, forever. */
@@ -151,7 +153,7 @@
 .cl .viewlink svg{transition:transform .2s ease}
 .cl .viewlink:hover svg{transform:translateX(4px)}
 .cl .caro-nav{display:flex;gap:9px}
-.cl .caro-btn{width:46px;height:46px;border-radius:50%;border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--bord);transition:.2s}
+.cl .caro-btn{width:46px;height:46px;border-radius:50%;border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--bord);transition:background-color .2s ease,color .2s ease,border-color .2s ease,opacity .2s ease}
 .cl .caro-btn:hover{background:var(--bord);color:var(--cream);border-color:var(--bord)}
 /* state comes from cartel-home.js syncArrows(): dimmed at either end of the row,
    hidden (space kept, out of the tab order) when the row has nothing to scroll */
@@ -167,7 +169,7 @@
 .cl .ci-photo{width:100%;height:100%;object-fit:contain;background:#fff}
 .cl .ptag{position:absolute;top:14px;left:14px;z-index:2;background:var(--cream);color:var(--bord);font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:6px 12px;border-radius:100px}
 .cl .ptag.pro{background:var(--bord);color:var(--cream)}
-.cl .wish{position:absolute;top:12px;right:12px;z-index:2;width:38px;height:38px;border-radius:50%;background:rgba(250,246,240,.9);color:var(--bord);display:flex;align-items:center;justify-content:center;opacity:0;transition:.2s}
+.cl .wish{position:absolute;top:12px;right:12px;z-index:2;width:38px;height:38px;border-radius:50%;background:rgba(250,246,240,.9);color:var(--bord);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s ease}
 .cl .card:hover .wish{opacity:1}
 .cl .pbrand{font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--bronze-d);font-weight:700}
 .cl .pname{font-size:16px;font-weight:700;color:var(--bord);margin:5px 0 1px;line-height:1.25;letter-spacing:-.015em}
@@ -182,7 +184,7 @@
 .cl .marquee-track{display:flex;width:max-content;animation:marq var(--mq-dur,32s) linear infinite}
 .cl .mq-group{display:flex;gap:60px;padding-right:60px;flex:none}
 .cl .marquee:hover .marquee-track{animation-play-state:paused}
-.cl .brandname{font-weight:800;font-size:30px;color:var(--bord);opacity:.42;letter-spacing:-.025em;white-space:nowrap;transition:.2s;cursor:pointer}
+.cl .brandname{font-weight:800;font-size:30px;color:var(--bord);opacity:.42;letter-spacing:-.025em;white-space:nowrap;transition:opacity .2s ease,color .2s ease;cursor:pointer}
 .cl .brandname:hover{opacity:1;color:var(--plum)}
 /* .marqsec is deliberately full-bleed (padding:64px 0) so the marquee can scroll
    edge to edge — but the note is ordinary body copy, and with no gutter of its own
@@ -214,7 +216,7 @@
 .cl .brow-main{flex:1;display:flex;flex-direction:column;gap:1px;min-width:0}
 .cl .brow-name{font-size:17px;font-weight:800;color:var(--bord);letter-spacing:-.02em;line-height:1.15}
 .cl .brow-tag{font-size:11.5px;color:var(--muted);font-weight:600}
-.cl .brow-arrow{width:16px;height:16px;color:var(--bord);opacity:0;transform:translateX(-6px);transition:.22s;flex:none}
+.cl .brow-arrow{width:16px;height:16px;color:var(--bord);opacity:0;transform:translateX(-6px);transition:opacity .22s ease,transform .22s ease,color .22s ease;flex:none}
 .cl .on .brow-n{color:var(--plum)}
 .cl .on .brow-name{color:var(--plum)}
 .cl .on .brow-arrow{opacity:1;transform:none;color:var(--plum)}
@@ -313,7 +315,7 @@
   .cl .abhome-txt{padding:36px 26px;gap:14px}
 }
 .cl .ba-chips{display:flex;gap:10px;flex-wrap:wrap;margin:2px 0 24px}
-.cl .ba-chip{padding:11px 22px;border-radius:100px;border:1.5px solid var(--line);background:#fff;font-size:13.5px;font-weight:700;color:var(--ink);cursor:pointer;transition:.18s;font-family:inherit}
+.cl .ba-chip{padding:11px 22px;border-radius:100px;border:1.5px solid var(--line);background:#fff;font-size:13.5px;font-weight:700;color:var(--ink);cursor:pointer;transition:background-color .18s ease,border-color .18s ease,color .18s ease;font-family:inherit}
 .cl .ba-chip:hover{border-color:var(--plum);color:var(--plum)}
 .cl .ba-chip.on{background:var(--bord);border-color:var(--bord);color:var(--cream)}
 .cl .ba-cmp{position:relative;aspect-ratio:16/9;border-radius:var(--r-lg);overflow:hidden;box-shadow:0 24px 56px rgba(40,8,18,.16);user-select:none;background:#efe6d7}
