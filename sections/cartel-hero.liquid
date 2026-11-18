@@ -49,25 +49,49 @@
             {%- if has_video -%}
               {%- comment -%}
                 A poster attribute is fetched the moment the parser sees it and cannot be
-                lazy-loaded, so every later slide's poster (1600x, ~80KB) downloaded at
+                lazy-loaded, so every later slide's poster (1600w, ~80KB) downloaded at
                 Medium priority next to the LCP image even though the slide is opacity:0.
-                Only slide 1 keeps it; cartel-home.js copies data-poster back when a slide
-                is shown and warms the next one after window load. The <img> video_tag
-                nests as fallback is never rendered where <video> works, but the parser
-                still fetches it unless it is lazy, and it had no alt (image-alt audit).
+                Only slide 1 keeps it; cartel-home.js copies data-poster back (data-poster-sm
+                on phones) when a slide is shown and warms the next one after window load.
+                Built by hand because video_tag emits only the top MP4 rendition: phones
+                (the hero's 760px breakpoint) get the smallest rendition that is still
+                720p+, about 0.6MB less than the 1080p file every time the slide plays.
+                shortcut: a video with no MP4 rendition renders poster-only; Shopify
+                transcodes every upload to MP4, so add a video_tag fallback only if one shows up.
               {%- endcomment -%}
               {%- liquid
-                assign poster_attr = ' poster="'
-                unless forloop.first
-                  assign poster_attr = ' data-poster="'
-                endunless
+                assign vid = block.settings.video
+                assign mp4s = vid.sources | where: 'format', 'mp4' | sort: 'height'
+                assign vid_full = mp4s | last
+                assign vid_phone = nil
+                for src in mp4s
+                  if src.height >= 720 and src.height < vid_full.height
+                    assign vid_phone = src
+                    break
+                  endif
+                endfor
               -%}
-              {{
-                block.settings.video
-                | video_tag: image_size: '1600x', class: photo_class, autoplay: false, loop: false, muted: true, controls: false, preload: 'none'
-                | replace: ' poster="', poster_attr
-                | replace: '<img src=', '<img alt="" loading="lazy" src='
-              }}
+              <video
+                class="{{ photo_class }}"
+                playsinline
+                muted
+                preload="none"
+                {%- if vid.preview_image %}
+                  {%- if forloop.first %}
+                    poster="{{ vid.preview_image | image_url: width: 1600 }}"
+                  {%- else %}
+                    data-poster="{{ vid.preview_image | image_url: width: 1600 }}"
+                    data-poster-sm="{{ vid.preview_image | image_url: width: 1100 }}"
+                  {%- endif %}
+                {%- endif %}
+              >
+                {%- if vid_phone -%}
+                  <source media="(max-width: 760px)" src="{{ vid_phone.url }}" type="{{ vid_phone.mime_type }}">
+                {%- endif -%}
+                {%- if vid_full -%}
+                  <source src="{{ vid_full.url }}" type="{{ vid_full.mime_type }}">
+                {%- endif -%}
+              </video>
             {%- elsif block.settings.image != blank -%}
               {%- comment -%}
                 `sizes: '100vw'` was a lie: .herowrap is max-width:1280px with
