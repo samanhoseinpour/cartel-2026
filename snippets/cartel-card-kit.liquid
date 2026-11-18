@@ -33,9 +33,10 @@
     <a class="imglink" href="{{ p.url }}" aria-label="{{ p.title | escape }}">
       {%- if p.featured_media -%}
         {%- comment -%}
-          .cl .kitcard is flex:0 0 340px above 1040px (cartel-home.css:177) and
-          82% of the viewport below it (:351). Without `sizes` the browser
-          assumes 100vw and always takes the 900w candidate for a 340px slot.
+          .cl .kitcard is flex:0 0 340px down to 761px and 82% of the carousel
+          below that, whose content box is 100vw - 40px (cartel-home.css .card /
+          .kitcard / .carousel, max-width:760px block). The old `1041px ... 82vw`
+          claimed ~650px on tablets for a 340px slot and ~30px too much on phones.
           Only the homepage row renders this card, so the value is inline.
         {%- endcomment -%}
         {{
@@ -44,7 +45,7 @@
           | image_tag:
             class: 'kit-photo',
             widths: '360,540,720,900',
-            sizes: '(min-width: 1041px) 340px, 82vw',
+            sizes: '(min-width: 761px) 340px, calc(82vw - 33px)',
             loading: 'lazy',
             alt: p.title
         }}
