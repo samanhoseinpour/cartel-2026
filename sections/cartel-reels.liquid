@@ -39,9 +39,17 @@
                 off-screen at any moment. The observer plays what's visible and
                 pauses what isn't; play() triggers the load.
               {%- endcomment -%}
+              {%- comment -%}
+                data-poster, not poster: a poster can't be lazy-loaded, so all four
+                (~40KB each) downloaded during first paint; cartel-home.js restores them
+                when the row nears the viewport. The fallback <img> is never rendered
+                where <video> plays but was fetched and had no alt (image-alt audit).
+              {%- endcomment -%}
               {{
                 block.settings.video
                 | video_tag: image_size: '480x', class: 'reel-media', autoplay: false, loop: true, muted: true, controls: false, preload: 'none'
+                | replace: ' poster="', ' data-poster="'
+                | replace: '<img src=', '<img alt="" loading="lazy" src='
               }}
             {%- elsif block.settings.image != blank -%}
               {%- comment -%}

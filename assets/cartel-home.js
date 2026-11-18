@@ -7,6 +7,16 @@
 (function () {
   var RM = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  /* Later hero slides and every reel ship their poster as data-poster (cartel-hero /
+     cartel-reels .liquid): a poster attribute can't be lazy-loaded, so those images were
+     downloading next to the LCP image. This puts it back once the video is about to show. */
+  function warmPoster(v) {
+    if (v && v.dataset.poster) {
+      v.poster = v.dataset.poster;
+      v.removeAttribute('data-poster');
+    }
+  }
+
   /* ---------------- hero ---------------- */
   class CLHero extends HTMLElement {
     connectedCallback() {
@@ -110,6 +120,11 @@
     activate(i) {
       var self = this;
       this.i = i;
+      var vid = function (s) { return s && s.querySelector('video'); };
+      warmPoster(vid(this.slides[i]));
+      var next = vid(this.slides[(i + 1) % this.slides.length]);
+      if (document.readyState === 'complete') warmPoster(next);
+      else window.addEventListener('load', function () { warmPoster(next); }, { once: true });
       this.slides.forEach(function (s, n) {
         s.classList.toggle('on', n === i);
         /* opacity:0 + pointer-events:none hides an inactive slide from the mouse
@@ -281,11 +296,23 @@
           });
         }, { threshold: 0.25 });
         this.querySelectorAll('.reel video').forEach(function (v) { io.observe(v); });
-      } else if (!RM) {
-        /* no IO support — fall back to the old behaviour so the row isn't dead */
-        this.querySelectorAll('.reel video').forEach(function (v) {
-          var pr = v.play(); if (pr && pr.catch) pr.catch(function () {});
-        });
+        /* Posters load when the section nears the viewport, never during first paint.
+           Observe the section, not each video: off-row reels are clipped by the
+           horizontal scroller, so they would only intersect mid-swipe (empty tile). */
+        var pio = new IntersectionObserver(function (es) {
+          if (!es.some(function (en) { return en.isIntersecting; })) return;
+          self.querySelectorAll('.reel video').forEach(warmPoster);
+          pio.disconnect();
+        }, { rootMargin: '300px 0px' });
+        pio.observe(this);
+      } else {
+        this.querySelectorAll('.reel video').forEach(warmPoster);
+        if (!RM) {
+          /* no IO support — fall back to the old behaviour so the row isn't dead */
+          this.querySelectorAll('.reel video').forEach(function (v) {
+            var pr = v.play(); if (pr && pr.catch) pr.catch(function () {});
+          });
+        }
       }
     }
     icons(reel) {
