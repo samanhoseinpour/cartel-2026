@@ -48,6 +48,15 @@
       {%- endcase -%}
     {%- endif -%}
     <link rel="canonical" href="{{ cl_canonical }}">
+    {%- comment -%}
+      Cartel SEO 2026-11-18: search results, the cart and Shopify's auto-built vendor/type
+      listings (/collections/vendors?q=…, one per spelling of each brand) were indexable; /cart
+      alone drew 146 impressions, and the vendor pages took brand queries from the curated
+      brand collections. robots.txt does not block them, so Google sees this tag.
+    {%- endcomment -%}
+    {%- if request.page_type == 'search' or request.page_type == 'cart' or request.path == '/collections/vendors' or request.path == '/collections/types' %}
+    <meta name="robots" content="noindex,follow">
+    {%- endif %}
 
     {% render 'cartel-favicon' %}
 
