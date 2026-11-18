@@ -122,7 +122,10 @@
 .cl .hero-sub{font-size:17px;line-height:1.6;color:rgba(250,246,240,.82);max-width:460px}
 .cl .hero-cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:6px}
 .cl .hero-dots{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);z-index:6;display:flex;align-items:center;gap:9px;background:rgba(18,4,9,.4);backdrop-filter:blur(16px);border:1px solid rgba(250,246,240,.18);padding:8px 10px;border-radius:100px}
-.cl .hero-dot{position:relative;width:22px;height:6px;border-radius:100px;background:rgba(250,246,240,.34);overflow:hidden;transition:width .45s ease;flex:none}
+/* No width transition: width is layout, so easing it ran ~27 main-thread layout frames on
+   every slide change, for as long as the slideshow cycles (76% of Lighthouse's layout-based
+   Speed Index, 2026-11-18 trace). The dot snaps; the fill below is the motion. */
+.cl .hero-dot{position:relative;width:22px;height:6px;border-radius:100px;background:rgba(250,246,240,.34);overflow:hidden;flex:none}
 .cl .hero-dot.on{width:48px;background:rgba(250,246,240,.26)}
 .cl .hero-fill{position:absolute;left:0;top:0;bottom:0;width:100%;transform:scaleX(0);transform-origin:left center;background:var(--cream);border-radius:100px}
 .cl .hero-fill.go{animation:fillbar 6s linear forwards}
