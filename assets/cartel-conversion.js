@@ -50,6 +50,14 @@
   const ov = document.getElementById('cl-popup-ov');
   const tab = document.getElementById('cl-offtab');
   if (!ov && !tab) return;
+  /* 2026-11-19: an UNPROMPTED open on a phone is a bottom sheet, not a modal. The modal
+     covered 100% (scrim) / 67% (panel) of a 390x844 screen 12s in, which Google's
+     page-experience guidance names an intrusive interstitial. The sheet keeps the offer on
+     screen but leaves the page scrollable and tappable and takes no focus; a tap on the
+     offer tab (fromUser) still opens the full modal. Decided at open time, so a later
+     rotation never strands a scroll lock (cartel-scroll-lock.js re-assess rule). */
+  const phone = window.matchMedia('(max-width: 749px)');
+  let sheet = false;
 
   const dismissed = () => {
     try {
@@ -108,7 +116,12 @@
     cancelAuto();
     warmImage();
     lastFocus = document.activeElement;
+    sheet = !fromUser && phone.matches;
+    ov.classList.toggle('is-sheet', sheet);
+    const dlg = ov.querySelector('[role="dialog"]');
+    if (dlg) dlg.setAttribute('aria-modal', sheet ? 'false' : 'true');
     ov.hidden = false;
+    if (sheet) return; // non-modal: no scroll lock, no focus move, no Tab trap
     /* 2026-08-30: shared owner-counted lock (assets/cartel-scroll-lock.js).
        The bare class never held on iOS, and this popup's close() removed it
        unconditionally — which is how dismissing it released the cart drawer's
@@ -139,9 +152,13 @@
   function close() {
     if (!ov || !isOpen()) return;
     ov.hidden = true;
+    const wasSheet = sheet;
+    sheet = false;
+    ov.classList.remove('is-sheet');
+    mark();
+    if (wasSheet) return; // the sheet never locked scroll or took focus
     if (window.clScrollLock) window.clScrollLock.unlock('cl-popup');
     else document.body.classList.remove('overflow-hidden');
-    mark();
     if (lastFocus && typeof lastFocus.focus === 'function') lastFocus.focus();
   }
 
@@ -240,7 +257,7 @@
         close();
         return;
       }
-      if (e.key === 'Tab') trapTab(e);
+      if (e.key === 'Tab' && !sheet) trapTab(e);
     });
 
     // A just-submitted signup (success or validation error) reopens once so

@@ -152,7 +152,9 @@
                         {{ 'products.product.duties_included' | t }}
                       {%- endif -%}
                       {%- if shop.shipping_policy.body != blank -%}
-                        {{ 'products.product.shipping_policy_html' | t: link: shop.shipping_policy.url }}
+                        {%- # 2026-11-19: link the /pages/ twin, not the /policies/ URL that canonicalises to it (layout/theme.liquid) -%}
+                        {%- assign cl_ship_url = pages['shipping-policy'].url | default: shop.shipping_policy.url -%}
+                        {{ 'products.product.shipping_policy_html' | t: link: cl_ship_url }}
                       {%- endif -%}
                     </div>
                   {%- endif -%}
@@ -983,7 +985,7 @@
       {%- endcomment -%}
       <div class="pdp-sticky" id="CartelSticky-{{ section.id }}" aria-hidden="true">
         {%- if cartel_gated -%}
-          <a class="btn btn-fill btn-lg w100" href="{{ routes.account_login_url }}">Log in to view pricing</a>
+          <a rel="nofollow" class="btn btn-fill btn-lg w100" href="{{ routes.account_login_url }}">Log in to view pricing</a>
         {%- comment -%} must mirror buy-buttons.liquid's condition exactly {%- endcomment -%}
         {%- elsif product.selected_or_first_available_variant.price == 0
           and product.selected_or_first_available_variant.available

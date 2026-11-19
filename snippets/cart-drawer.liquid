@@ -307,7 +307,7 @@
           </div>
           <div class="dw-note">Taxes &amp; shipping calculated at checkout</div>
           {%- if dw_gate_count > 0 -%}
-            <a class="btn btn-fill w100" href="{{ routes.account_login_url }}">Log in to checkout</a>
+            <a rel="nofollow" class="btn btn-fill w100" href="{{ routes.account_login_url }}">Log in to checkout</a>
           {%- else -%}
             <button
               type="submit"
