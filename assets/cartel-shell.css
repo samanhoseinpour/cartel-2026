@@ -49,8 +49,9 @@
   display: none;
 }
 @media screen and (max-width: 749px) {
+  /* 2026-11-19: 12px floor for legibility (was 1rem = 10px). */
   .utility-bar .announcement-bar__message {
-    font-size: 1rem;
+    font-size: 1.2rem;
     letter-spacing: 0.1em;
   }
 }
