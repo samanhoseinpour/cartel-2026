@@ -463,6 +463,8 @@
   repeat the footer contact block (sections/footer-group.json). The return policy restates
   /policies/refund-policy (14 days, unopened, customer pays return shipping): change both
   together. No itemDefectReturnFees: damage claims have a 48 h window, not 14 days.
+  alternateName/legalName quote /policies/contact-information ("Cartel Lash Supply is a trade
+  name of Mizu Supply Inc."). No address until the client decides D5 (only a PMB is public).
 {%- endcomment -%}
 {%- assign cl_org_id = shop.url | append: '/#organization' -%}
 <script type="application/ld+json">
@@ -471,6 +473,8 @@
     "@type": "OnlineStore",
     "@id": {{ cl_org_id | json }},
     "name": {{ shop.name | json }},
+    "alternateName": "Cartel Lash Supply",
+    "legalName": "Mizu Supply Inc.",
     {% if settings.logo %}
       "logo": {{ settings.logo | image_url: width: 500 | prepend: "https:" | json }},
     {% endif %}
