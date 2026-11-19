@@ -459,12 +459,16 @@
   Organization claimed the current page as its URL. shop.url is the primary domain with no
   trailing slash (verified on breadcrumb items). WebSite drops its SearchAction: Google retired
   the sitelinks search box in 2024, and the block stays only for the site name.
+  2026-11-19: OnlineStore is the subtype Google asks ecommerce sites to use. email/telephone
+  repeat the footer contact block (sections/footer-group.json). The return policy restates
+  /policies/refund-policy (14 days, unopened, customer pays return shipping): change both
+  together. No itemDefectReturnFees: damage claims have a 48 h window, not 14 days.
 {%- endcomment -%}
 {%- assign cl_org_id = shop.url | append: '/#organization' -%}
 <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "Organization",
+    "@type": "OnlineStore",
     "@id": {{ cl_org_id | json }},
     "name": {{ shop.name | json }},
     {% if settings.logo %}
@@ -473,6 +477,21 @@
     {%- if cartel_same_as != blank %}
     "sameAs": [{{ cartel_same_as }}],
     {%- endif %}
+    "email": "info@cartellash.ca",
+    "telephone": "+1-778-251-5550",
+    "hasMerchantReturnPolicy": {
+      "@type": "MerchantReturnPolicy",
+      "applicableCountry": ["CA", "US"],
+      "returnPolicyCountry": "CA",
+      "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+      "merchantReturnDays": 14,
+      "itemCondition": "https://schema.org/NewCondition",
+      "returnMethod": "https://schema.org/ReturnByMail",
+      "returnFees": "https://schema.org/ReturnFeesCustomerResponsibility",
+      "returnLabelSource": "https://schema.org/ReturnLabelCustomerResponsibility",
+      "refundType": "https://schema.org/FullRefund",
+      "merchantReturnLink": {{ shop.url | append: '/pages/return-policy' | json }}
+    },
     "url": {{ shop.url | append: '/' | json }}
   }
 </script>
