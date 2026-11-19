@@ -1,0 +1,28 @@
+{%- comment -%}
+  Product JSON-LD for main-product and featured-product: Shopify's `structured_data`, with two changes.
+  - Gated products emit none. structured_data serialises offers.price, which would publish the
+    price the page hides behind "Log in to see price". The accepted cost is no price/availability
+    rich results on those PDPs (decision D2). The caller passes its own `cartel_gated`, so the
+    vendor test stays byte-identical to the others (see snippets/meta-tags.liquid).
+  - ProductGroup variants repeat the group description. GSC flagged "Missing field description"
+    on every variant (2026-11-19): Google doesn't inherit it from the group.
+    shortcut: string surgery on Shopify's compact output, where "description" is the key right
+    before "hasVariant". If Shopify changes that shape, a guard fails and the output stays
+    Shopify's own; re-run tools/check_jsonld.py on a crawl after Shopify changes the filter.
+
+  Usage: {% render 'cartel-product-ld', product: product, gated: cartel_gated %}
+{%- endcomment -%}
+{%- unless gated -%}
+  {%- capture cl_ld -%}{{ product | structured_data }}{%- endcapture -%}
+  {%- assign cl_parts = cl_ld | split: ',"hasVariant":' -%}
+  {%- if cl_parts.size == 2 and cl_ld contains '"@type":"ProductGroup"' -%}
+    {%- assign cl_desc = cl_parts.first | split: '"description":' | last -%}
+    {%- unless cl_desc == '""' or cl_desc contains '":' or cl_parts.last contains '"description":' -%}
+      {%- assign cl_with = '"@type":"Product","description":' | append: cl_desc | append: ',"' -%}
+      {%- assign cl_ld = cl_ld | replace: '"@type":"Product","', cl_with -%}
+    {%- endunless -%}
+  {%- endif -%}
+  <script type="application/ld+json">
+    {{ cl_ld }}
+  </script>
+{%- endunless -%}

@@ -1050,17 +1050,7 @@
         endif
       -%}
 
-      {%- comment -%}
-        structured_data serialises offers.price, so it published the gated price
-        in plain text while the page showed "Log in to see price". Suppressed for
-        gated products — the accepted cost is losing price/availability rich
-        results on those PDPs.
-      {%- endcomment -%}
-      {%- unless cartel_gated -%}
-        <script type="application/ld+json">
-          {{ product | structured_data }}
-        </script>
-      {%- endunless -%}
+      {%- render 'cartel-product-ld', product: product, gated: cartel_gated -%}
     </div>
   </product-component>
 </product-info>

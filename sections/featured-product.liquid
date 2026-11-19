@@ -521,16 +521,7 @@
     <script src="{{ 'product-model.js' | asset_url }}" defer></script>
   {%- endif -%}
 
-  {%- comment -%}
-    Gated: structured_data serialises offers.price, publishing the price this
-    page deliberately hides. Accepted cost — no price/availability rich results
-    for gated products.
-  {%- endcomment -%}
-  {%- unless cartel_gated -%}
-    <script type="application/ld+json">
-      {{ product | structured_data }}
-    </script>
-  {%- endunless -%}
+  {%- render 'cartel-product-ld', product: product, gated: cartel_gated -%}
 
   {% if product.media.size > 0 %}
     <script src="{{ 'product-modal.js' | asset_url }}" defer="defer"></script>
