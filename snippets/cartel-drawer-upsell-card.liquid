@@ -33,15 +33,15 @@
   {%- comment -%}
     ONE link around image, name and price. cartel-card.liquid uses two (:30 and
     :43); here that would be 3 cards x 3 stops = 9 tab stops before Checkout.
-    alt is empty on purpose — the link's accessible name is the title inside it,
-    and a duplicated name is announced twice.
+    alt is the title: image_tag drops a blank alt entirely (the old alt: '' left
+    these with none), so the name is announced twice rather than the image unnamed.
   {%- endcomment -%}
   <a class="uc-link" href="{{ p.url }}">
     {%- if p.featured_media -%}
       {{
         p.featured_media
         | image_url: width: 160
-        | image_tag: class: 'uc-photo', widths: '52,104,156', sizes: '52px', loading: 'lazy', alt: ''
+        | image_tag: class: 'uc-photo', widths: '52,104,156', sizes: '52px', loading: 'lazy', alt: p.title
       }}
     {%- else -%}
       {% render 'cartel-photo-placeholder', ph_size: 'xs', ph_class: 'uc-photo' %}

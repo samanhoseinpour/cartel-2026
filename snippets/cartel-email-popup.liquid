@@ -21,12 +21,12 @@
         {%- comment -%}
           The panel is half the 900px popup on desktop and full-bleed but only
           200px tall on mobile, so the crop is severe: honour the focal point
-          the merchant set on the file. alt is left to image_tag, which reads
-          the file's own alt text and emits alt="" (correctly decorative, like
-          the monogram panel it replaces) when there is none.
+          the merchant set on the file. alt: the file's own alt text, else the
+          shop name. Bing counts alt="" as missing, and this renders on every page.
         {%- endcomment -%}
         {%- if settings.popup_image != blank -%}
           {%- liquid
+            assign pop_alt = settings.popup_image.alt | default: shop.name
             assign pop_focal = settings.popup_image.presentation.focal_point
             assign pop_img_style = ''
             if pop_focal
@@ -40,7 +40,8 @@
               widths: '300,450,600,900',
               sizes: '(min-width: 750px) 450px, 94vw',
               loading: 'lazy',
-              style: pop_img_style
+              style: pop_img_style,
+              alt: pop_alt
           }}
         {%- else -%}
           <div class="pop-img-brand" aria-hidden="true">
