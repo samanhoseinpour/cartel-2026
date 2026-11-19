@@ -465,6 +465,8 @@
   together. No itemDefectReturnFees: damage claims have a 48 h window, not 14 days.
   alternateName/legalName quote /policies/contact-information ("Cartel Lash Supply is a trade
   name of Mizu Supply Inc."). No address until the client decides D5 (only a PMB is public).
+  description restates the homepage meta description and the shipping policy ("across Canada
+  and the United States"): if the shipping area changes, change it here too.
 {%- endcomment -%}
 {%- assign cl_org_id = shop.url | append: '/#organization' -%}
 <script type="application/ld+json">
@@ -475,6 +477,7 @@
     "name": {{ shop.name | json }},
     "alternateName": "Cartel Lash Supply",
     "legalName": "Mizu Supply Inc.",
+    "description": "Canadian supplier of professional lash lift, brow lamination and lash extension supplies, shipping across Canada and the United States.",
     {% if settings.logo %}
       "logo": {{ settings.logo | image_url: width: 500 | prepend: "https:" | json }},
     {% endif %}
