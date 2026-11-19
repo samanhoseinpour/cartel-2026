@@ -180,6 +180,14 @@
           {%- case block.type -%}
             {%- when 'author' -%}
               {%- liquid
+                # The card names one fixed person. On posts with another byline it contradicted
+                # the byline and the Article JSON-LD author (2 posts on 2026-11-19), so it only
+                # shows when the two agree.
+                assign cl_card_name = block.settings.name | strip
+                assign cl_byline = article.author | strip
+                if cl_card_name != cl_byline
+                  continue
+                endif
                 assign bio_initials = ''
                 assign bio_words = block.settings.name | strip | split: ' '
                 # `split: ' '` on a name with a double space yields an empty token, so
