@@ -10,7 +10,7 @@
 {%- assign gate_style = gate_style | default: 'card' -%}
 {%- if gate_style == 'quick-add' -%}
   <div class="quick-add">
-    <a class="quick-add__submit button button--full-width button--secondary" href="{{ routes.account_login_url }}">Log in to view</a>
+    <a rel="nofollow" class="quick-add__submit button button--full-width button--secondary" href="{{ routes.account_login_url }}">Log in to view</a>
   </div>
 {%- else -%}
   <div class="cartel-gate cartel-gate--{{ gate_style }}">
@@ -23,7 +23,7 @@
     {%- if gate_style == 'product' or gate_style == 'buttons' -%}
       {%- comment -%} SEO audit 2026-11-18: search visitors land here from priced SERPs; say why there is no price. {%- endcomment -%}
       <p class="cartel-gate__note">This is a trade line, so prices are for account holders.</p>
-      <a href="{{ routes.account_login_url }}" class="button button--full-width cartel-gate__btn">Log in to view pricing</a>
+      <a rel="nofollow" href="{{ routes.account_login_url }}" class="button button--full-width cartel-gate__btn">Log in to view pricing</a>
       <a href="{{ routes.account_register_url }}" class="link underlined-link cartel-gate__note">New here? Create a free account — it takes a minute.</a>
     {%- endif -%}
   </div>

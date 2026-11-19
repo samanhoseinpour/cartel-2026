@@ -80,7 +80,7 @@
     {%- endif -%}
   </div>
   {%- if gated -%}
-    <a class="btn btn-out btn-sm w100" href="{{ routes.account_login_url }}">Log in to view</a>
+    <a rel="nofollow" class="btn btn-out btn-sm w100" href="{{ routes.account_login_url }}">Log in to view</a>
   {%- elsif p == blank -%}
     <span class="btn btn-fill btn-sm w100" aria-disabled="true">Add to bag</span>
   {%- elsif p.available == false -%}

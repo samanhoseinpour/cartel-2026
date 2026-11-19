@@ -23,7 +23,6 @@
       signed off here.
     {%- endcomment -%}
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="theme-color" content="">
     {%- comment -%}
       batch 19 · The four Settings → Policies documents duplicate the four /pages/ policy pages
       word for word (the pages are the designed version and the footer links them; /policies/ is
@@ -53,8 +52,10 @@
       listings (/collections/vendors?q=…, one per spelling of each brand) were indexable; /cart
       alone drew 146 impressions, and the vendor pages took brand queries from the curated
       brand collections. robots.txt does not block them, so Google sees this tag.
+      2026-11-19: tag-filtered listings too (current_tags: /blogs/news/tagged/x and the legacy
+      /collections/<c>/<tag>). The new lash-lift post's five tags made five identical tag pages.
     {%- endcomment -%}
-    {%- if request.page_type == 'search' or request.page_type == 'cart' or request.path == '/collections/vendors' or request.path == '/collections/types' %}
+    {%- if request.page_type == 'search' or request.page_type == 'cart' or request.path == '/collections/vendors' or request.path == '/collections/types' or current_tags %}
     <meta name="robots" content="noindex,follow">
     {%- endif %}
 
