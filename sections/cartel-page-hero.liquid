@@ -36,7 +36,9 @@
           <div class="ab-hero-r">
             <div class="ab-hero-img{% if section.settings.image %} lqip{% endif %}" style="{% render 'cartel-lqip', image: section.settings.image %}">
               {%- if section.settings.image -%}
-                {{ section.settings.image | image_url: width: 1200 | image_tag: widths: '520,760,1200', loading: 'eager', alt: section.settings.image.alt }}
+                {%- comment -%} Never blank: image_tag drops a blank alt, and Bing counts alt="" as missing. {%- endcomment -%}
+                {%- assign ph_alt = section.settings.image.alt | default: section.settings.heading | strip_html | default: shop.name -%}
+                {{ section.settings.image | image_url: width: 1200 | image_tag: widths: '520,760,1200', loading: 'eager', alt: ph_alt }}
               {%- endif -%}
             </div>
             {%- if section.settings.show_badge and section.settings.badge_title != blank -%}

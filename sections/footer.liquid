@@ -125,6 +125,8 @@
                         {%- capture brand_image_sizes -%}
                           {{ settings.brand_image_width }}px
                         {%- endcapture -%}
+                        {%- comment -%} Same fallback as the header logo: Bing counts alt="" as missing. {%- endcomment -%}
+                        {%- assign brand_image_alt = settings.brand_image.alt | default: shop.name -%}
                         <div
                           class="footer-block__image-wrapper"
                           style="max-width: min(100%, {{ settings.brand_image_width }}px);"
@@ -145,7 +147,8 @@
                               widths: '50, 100, 150, 200, 300, 400',
                               sizes: brand_image_sizes,
                               height: brand_image_height,
-                              width: settings.brand_image_width
+                              width: settings.brand_image_width,
+                              alt: brand_image_alt
                           }}
                         </div>
                       {%- endif -%}

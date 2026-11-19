@@ -96,6 +96,8 @@
     </div>
 
     {%- if article.image -%}
+      {%- comment -%} A post imported without alt text would otherwise ship an <img> with no alt (image_tag drops a blank one). {%- endcomment -%}
+      {%- assign art_alt = article.image.alt | default: article.title -%}
       <div class="bl-art-hero lqip" style="{% render 'cartel-lqip', image: article.image %}">
         {{
           article.image
@@ -106,7 +108,7 @@
             sizes: '(min-width: 1280px) 1200px, calc(100vw - 40px)',
             loading: 'eager',
             fetchpriority: 'high',
-            alt: article.image.alt
+            alt: art_alt
         }}
       </div>
     {%- endif -%}

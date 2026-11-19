@@ -79,6 +79,7 @@
     </span>
     {%- render 'loading-spinner' -%}
     <div class="product__media media media--transparent{% if media.preview_image %} lqip lqip--plate{% endif %}" style="{% render 'cartel-lqip', image: media.preview_image %}">
+      {%- comment -%} media.alt falls back to the product title; image_tag's own alt (from preview_image) is "" when the media has none. {%- endcomment -%}
       {{
         media.preview_image
         | image_url: width: 1946
@@ -87,7 +88,8 @@
           loading: lazy,
           fetchpriority: fetch_priority,
           sizes: sizes,
-          widths: '246, 493, 600, 713, 823, 990, 1100, 1206, 1346, 1426, 1646, 1946'
+          widths: '246, 493, 600, 713, 823, 990, 1100, 1206, 1346, 1426, 1646, 1946',
+          alt: media.alt
       }}
     </div>
     <button
@@ -128,7 +130,8 @@
         | image_tag:
           loading: lazy,
           sizes: sizes,
-          widths: '246, 493, 600, 713, 823, 990, 1100, 1206, 1346, 1426, 1646, 1946'
+          widths: '246, 493, 600, 713, 823, 990, 1100, 1206, 1346, 1426, 1646, 1946',
+          alt: media.alt
       }}
     </button>
     <template>
