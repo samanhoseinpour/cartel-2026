@@ -23,10 +23,64 @@
         "enable_filtering": true,
         "enable_sorting": true
       }
+    },
+    "cartel_brand_hero_ByBczf": {
+      "type": "cartel-brand-hero",
+      "blocks": {
+        "point_6XPNUL": {
+          "type": "point",
+          "settings": {
+            "title": "Point title",
+            "text": "A line or two on what makes this brand worth the chair time."
+          }
+        },
+        "point_pn76PG": {
+          "type": "point",
+          "settings": {
+            "title": "Point title",
+            "text": "A line or two on what makes this brand worth the chair time."
+          }
+        },
+        "point_KXjrmk": {
+          "type": "point",
+          "settings": {
+            "title": "Point title",
+            "text": "A line or two on what makes this brand worth the chair time."
+          }
+        }
+      },
+      "block_order": [
+        "point_6XPNUL",
+        "point_pn76PG",
+        "point_KXjrmk"
+      ],
+      "name": "Cartel brand story",
+      "settings": {
+        "mode": "story",
+        "tabs_label": "Shop by brand",
+        "why_kick": "The line",
+        "why_heading": "",
+        "cross_kick": "Keep exploring",
+        "cross_heading": "",
+        "cross_label": "View the line",
+        "cross_link": ""
+      }
+    },
+    "custom_liquid_qhqbHr": {
+      "type": "custom-liquid",
+      "name": "t:sections.custom-liquid.presets.name",
+      "settings": {
+        "custom_liquid": "{{ 'cartel-brand.css' | asset_url | stylesheet_tag }}\n<style>\n  .bwhy-r { display: none; }\n  .bwhy { grid-template-columns: 1fr; }\n</style>",
+        "color_scheme": "",
+        "padding_top": 40,
+        "padding_bottom": 52
+      }
     }
   },
   "order": [
     "banner",
-    "product-grid"
+    "product-grid",
+    "cartel_brand_hero_ByBczf",
+    "custom_liquid_qhqbHr"
   ]
 }
