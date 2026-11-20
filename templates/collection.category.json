@@ -70,10 +70,10 @@
       "type": "custom-liquid",
       "name": "t:sections.custom-liquid.presets.name",
       "settings": {
-        "custom_liquid": "{{ 'cartel-brand.css' | asset_url | stylesheet_tag }}\n<style>\n  .bwhy-r { display: none; }\n  .bwhy { grid-template-columns: 1fr; }\n</style>",
+        "custom_liquid": "{{ 'cartel-brand.css' | asset_url | stylesheet_tag }}<style>.bwhy-r{display:none}.bwhy{grid-template-columns:1fr}.collhead-p{font-size:15px;line-height:1.6}</style>",
         "color_scheme": "",
-        "padding_top": 40,
-        "padding_bottom": 52
+        "padding_top": 0,
+        "padding_bottom": 0
       }
     }
   },
