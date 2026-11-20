@@ -86,6 +86,30 @@
             "image_fit": "photo"
           }
         },
+        "brand_MbNGBV": {
+          "type": "brand",
+          "settings": {
+            "collection": "lash-clinic",
+            "accent": "bx-wine",
+            "badge": "Lift care",
+            "eyebrow": "Lash Clinic · Korea",
+            "blurb": "Korean lash lift care built around lash condition: the Lash Clinic 1.5 protein treatment, Balm E conditioning balm and U-Lyal silicone shields.",
+            "specs": "",
+            "image_fit": "photo"
+          }
+        },
+        "brand_q6WFer": {
+          "type": "brand",
+          "settings": {
+            "collection": "lash-factory",
+            "accent": "bx-bronze",
+            "badge": "Korean lash lift",
+            "eyebrow": "Lash Factory · Korea",
+            "blurb": "A Cysteamine + TGA Korean lash lift system with EGF and peptides, in single-use sachets, plus the Flat Pad, Lifting Brush and One Pick.",
+            "specs": "",
+            "image_fit": "photo"
+          }
+        },
         "linger": {
           "type": "brand",
           "settings": {
@@ -118,6 +142,8 @@
         "cartel",
         "brand_rL3MAd",
         "brand_P9kiUF",
+        "brand_MbNGBV",
+        "brand_q6WFer",
         "linger",
         "prolong"
       ],
