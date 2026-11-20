@@ -70,7 +70,7 @@
       "type": "custom-liquid",
       "name": "t:sections.custom-liquid.presets.name",
       "settings": {
-        "custom_liquid": "{{ 'cartel-brand.css' | asset_url | stylesheet_tag }}<style>.bwhy-r{display:none}.bwhy{grid-template-columns:1fr}.cl .lead.collhead-p{font-size:15px;line-height:1.6}</style>",
+        "custom_liquid": "{{ 'cartel-brand.css' | asset_url | stylesheet_tag }}<style>.bwhy-r{display:none}.bwhy{grid-template-columns:1fr}.cl .lead.collhead-p{font-size:15px;line-height:1.6}.collhead-l .kick{display:none}</style>",
         "color_scheme": "",
         "padding_top": 0,
         "padding_bottom": 0
