@@ -43,12 +43,13 @@
         "r3": {
           "type": "resource",
           "settings": {
-            "title": "Client Consultation Form",
+            "title": "Noemi Mixing Guide",
             "category": "Templates",
-            "type_label": "Template",
+            "type_label": "Mixing Guide",
             "badge": "Free",
-            "text": "Patch tests, contraindications and consent, ready to print or adapt for your studio.",
-            "meta": "PDF · 2 pages",
+            "text": "Take the guess woeks out of micng your brow dyes! This free template guide breaks down the recommended dye to developer ratio for Noemi, making it easier to achieve consistent, customized brow tinting results.",
+            "meta": "PDF · 1 page",
+            "image": "shopify://shop_images/Screenshot_2026-11-20_at_10.43.54_PM.png",
             "file": "",
             "btn_label": "Download",
             "is_video": false
