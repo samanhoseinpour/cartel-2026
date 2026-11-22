@@ -17,10 +17,10 @@
           "settings": {
             "image": "shopify://shop_images/Website_banner.avif",
             "image_fit": "cover",
-            "eyebrow": "New season · 2026",
-            "heading": "Stock your kit like a",
-            "heading_accent": "pro.",
-            "sub": "Pro-grade adhesives, Korean lash lift, brow lamination and tints, curated for artists, shipped fast across North America.",
+            "eyebrow": "BLACK FRIDAY · 2026",
+            "heading": "Up to 25% off",
+            "heading_accent": "everything.",
+            "sub": "20% off Noemi & Bronsun 25% off Thuya                Up to 25% off everything else",
             "btn1_label": "Shop the collection",
             "btn1_link": "/collections/all",
             "btn2_label": "Explore lash lift",
@@ -80,7 +80,7 @@
         "slide4"
       ],
       "custom_css": [
-        ".hero-slide--prod::before {background: linear-gradient(90deg, rgba(28,6,13,.92) 0%, rgba(28,6,13,.75) 30%, rgba(28,6,13,0) 55%);}"
+        ".hero-slide--prod::before {background: linear-gradient( 90deg, rgba(28, 6, 13, 0.92) 0%, rgba(28, 6, 13, 0.75) 30%, rgba(28, 6, 13, 0) 55% );}"
       ],
       "settings": {}
     },
