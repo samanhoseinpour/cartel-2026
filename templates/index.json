@@ -21,10 +21,10 @@
             "heading": "Up to 25% off",
             "heading_accent": "everything.",
             "sub": "20% off Noemi & Bronsun \n25% off Thuya               \n Up to 25% off everything else\n\nNov 24-Nov 30",
-            "btn1_label": "Shop the collection",
-            "btn1_link": "/collections/all",
-            "btn2_label": "Explore lash lift",
-            "btn2_link": "/collections/lash-lift"
+            "btn1_label": "Shop Bronsun",
+            "btn1_link": "shopify://collections/bronsun",
+            "btn2_label": "Shop Noemi",
+            "btn2_link": "shopify://collections/noemi"
           }
         },
         "slide2": {
