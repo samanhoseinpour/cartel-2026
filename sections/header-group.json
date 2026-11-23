@@ -90,10 +90,21 @@
         "padding_top": 12,
         "padding_bottom": 12
       }
+    },
+    "custom_liquid_YVtLNp": {
+      "type": "custom-liquid",
+      "name": "t:sections.custom-liquid.presets.name",
+      "settings": {
+        "custom_liquid": "<div id=\"cl-bf-countdown\" class=\"cl-bf\" hidden>\n  <a href=\"/collections/all\" class=\"cl-bf__inner\">\n    <span class=\"cl-bf__label\"></span>\n    <span class=\"cl-bf__timer\"></span>\n  </a>\n</div>\n<style>\n  .cl-bf{background:#D2B48C;color:#4A1224;font-family:\"Hanken Grotesk\",system-ui,-apple-system,sans-serif;text-transform:uppercase;letter-spacing:1.68px;font-size:12px;font-weight:600;text-align:center;position:relative;z-index:3}\n  .cl-bf[hidden]{display:none}\n  .cl-bf__inner{display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap;min-height:40px;padding:8px 16px;box-sizing:border-box;color:inherit;text-decoration:none}\n  .cl-bf__inner:hover{color:inherit}\n  .cl-bf__timer{font-weight:700;font-variant-numeric:tabular-nums;background:#4A1224;color:#FAF6F0;border-radius:999px;padding:3px 10px;letter-spacing:1.2px}\n  @media (max-width:749px){.cl-bf{font-size:11px;letter-spacing:1.1px}.cl-bf__inner{gap:6px;padding:7px 12px}}\n</style>\n<script>\n  (function () {\n    var el = document.getElementById('cl-bf-countdown');\n    if (!el) return;\n    var START = Date.parse('2026-11-23T23:00:00-07:00');\n    var END = Date.parse('2026-11-30T23:59:59-07:00');\n    var sec = el.closest('.shopify-section');\n    var ab = document.querySelector('.announcement-bar-section');\n    if (ab && sec && ab !== sec) { ab.parentNode.insertBefore(el, ab); sec.style.display = 'none'; }\n    var label = el.querySelector('.cl-bf__label'), timer = el.querySelector('.cl-bf__timer');\n    function pad(n){ return n < 10 ? '0' + n : '' + n; }\n    function fmt(ms){\n      var s = Math.floor(ms / 1000), d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60), x = s % 60;\n      return (d > 0 ? d + 'd ' : '') + pad(h) + 'h ' + pad(m) + 'm ' + pad(x) + 's';\n    }\n    function tick(){\n      var now = Date.now();\n      if (now >= END) { el.hidden = true; clearInterval(t); return; }\n      if (now < START) { label.textContent = 'Black Friday starts in'; timer.textContent = fmt(START - now); }\n      else { label.textContent = 'Black Friday is live \\u00b7 Up to 25% off \\u00b7 Ends in'; timer.textContent = fmt(END - now); }\n      el.hidden = false;\n    }\n    var t = setInterval(tick, 1000);\n    tick();\n  })();\n</script>",
+        "color_scheme": "",
+        "padding_top": 40,
+        "padding_bottom": 52
+      }
     }
   },
   "order": [
     "announcement-bar",
-    "header"
+    "header",
+    "custom_liquid_YVtLNp"
   ]
 }
