@@ -422,5 +422,10 @@
         }
       }
     }
+  },
+  "platform_customizations": {
+    "custom_css": [
+      "@media screen and (max-width: 749px) {.product-media-modal__content > * {width: 100%; } .product-media-modal__content {display: flex; flex-direction: column; justify-content: center; min-height: 100vh; } }"
+    ]
   }
 }
